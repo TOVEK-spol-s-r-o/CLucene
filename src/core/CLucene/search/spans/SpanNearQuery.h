@@ -27,6 +27,9 @@ private:
 
     TCHAR *         field;
 
+    //_tcscmp cannot be used in header file, so move it to cpp prefixed with one more "_"
+    int __tcscmp(const TCHAR* s1, const TCHAR* s2);
+
 protected:
     SpanNearQuery( const SpanNearQuery& clone );
 
@@ -55,7 +58,7 @@ public:
             {
                 setField( clause->getField() );
             }
-            else if( 0 != _tcscmp( clause->getField(), field ))
+            else if( 0 != __tcscmp( clause->getField(), field ))
             {
                 _CLTHROWA( CL_ERR_IllegalArgument, "Clauses must have same field." );
             }
