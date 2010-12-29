@@ -239,6 +239,10 @@ install(FILES ${clucene-shared_SOURCE_DIR}/CLucene/SharedHeader.h
 install(FILES ${clucene-shared_SOURCE_DIR}/CLucene/LuceneThreads.h 
         DESTINATION include/CLucene 
         COMPONENT development )
+    install(FILES ${clucene-shared_SOURCE_DIR}/CLucene/util/StringBuffer.h 
+        DESTINATION include/CLucene/util 
+        COMPONENT development )
+
 
 # code for installing an script to help cmake applications determine
 # the CLucene version number
