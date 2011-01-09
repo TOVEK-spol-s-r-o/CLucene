@@ -50,7 +50,6 @@ SimpleSpanFragmenter::~SimpleSpanFragmenter()
 
 bool SimpleSpanFragmenter::isNewFragment( const CL_NS(analysis)::Token * pToken )
 {
-    _ASSERT( pToken );
     m_nPosition += pToken->getPositionIncrement();
 
     if( m_nWaitForPos == m_nPosition )
