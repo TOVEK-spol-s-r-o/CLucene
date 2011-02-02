@@ -79,6 +79,7 @@ CuSuite *testTermVectorsReader(void);
 
 #ifdef TEST_CONTRIB_LIBS
 CuSuite *testGermanAnalyzer(void);
+CuSuite *testHighlighter(void);
 #endif
 
 class English{
