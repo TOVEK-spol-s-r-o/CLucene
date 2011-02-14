@@ -40,8 +40,11 @@ SET(test_files ./tests.cpp
 ./document/TestDateTools.cpp
 ./document/TestDocument.cpp
 ./document/TestNumberTools.cpp
+./document/TestField.cpp
 ./store/TestStore.cpp
 ./store/MockRAMDirectory.cpp
+./search/MockScorer.h
+./search/MockHitCollector.h
 ./search/TestBoolean.cpp
 ./search/TestDateFilter.cpp
 ./search/TestForDuplicates.cpp
@@ -87,6 +90,7 @@ SET(test_files ./tests.cpp
 ./index/TestHighFreqTerms.cpp
 ./index/TestReuters.cpp
 ./index/TestAddIndexesNoOptimize.cpp
+./index/TestTermVectorsReader.cpp
 ./index/store/TestRAMDirectory.cpp
 ./util/TestPriorityQueue.cpp
 ./util/TestBitSet.cpp
