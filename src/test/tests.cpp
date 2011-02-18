@@ -45,6 +45,7 @@ unittest tests[] = {
     {"termvectorsreader",testTermVectorsReader},
 #ifdef TEST_CONTRIB_LIBS
     {"germananalyzer", testGermanAnalyzer},
+    {"highlighter", testHighlighter},
 #endif
     {"LastTest", NULL}
 };
