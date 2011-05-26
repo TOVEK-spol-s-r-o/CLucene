@@ -31,7 +31,7 @@
 #include "CLucene/util/_MD5Digester.h"
 
 #ifdef LUCENE_FS_MMAP
-    #include "_MMap.h"
+    #include "_MMapIndexInput.h"
 #endif
 
 CL_NS_DEF(store)
@@ -45,7 +45,6 @@ CL_NS_USE(util)
 	STATIC_DEFINE_MUTEX(DIRECTORIES_LOCK)
 
 	bool FSDirectory::disableLocks=false;
-
 
 	class FSDirectory::FSIndexInput:public BufferedIndexInput {
 		/**
@@ -269,10 +268,9 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
 	//O_RANDOM - Specifies that caching is optimized for, but not restricted to, random access from disk.
 	//O_WRONLY - Opens file for writing only;
     if ( filemode <= 0 ){
-      filemode = _S_IWRITE | _S_IREAD;
+      filemode = 0644;
     }
-    bool bExists = Misc::dir_Exists(path);
-	  if ( bExists )
+	  if ( Misc::dir_Exists(path) )
 	    fhandle = _cl_open( path, _O_BINARY | O_RDWR | _O_RANDOM | O_TRUNC, filemode);
 	  else // added by JBP
 	    fhandle = _cl_open( path, _O_BINARY | O_RDWR | _O_RANDOM | O_CREAT, filemode);
@@ -361,9 +359,9 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
   FSDirectory::FSDirectory():
    Directory(),
    refCount(0),
-   useMMap(LUCENE_USE_MMAP),
-   filemode(_S_IWRITE | _S_IREAD) //default to user (only) writable index
+   useMMap(LUCENE_USE_MMAP)
   {
+    filemode = 0644;
     this->lockFactory = NULL;
   }
 
@@ -505,8 +503,8 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
 		SCOPED_LOCK_MUTEX(DIRECTORIES_LOCK)
 		dir = DIRECTORIES.get(file);
 		if ( dir == NULL  ){
-			dir = _CLNEW FSDirectory();
-      dir->init(file,lockFactory);
+      dir = _CLNEW FSDirectory();
+      dir->init(_file,lockFactory);
 			DIRECTORIES.put( dir->directory.c_str(), dir);
 		} else {
 			if ( lockFactory != NULL && lockFactory != dir->getLockFactory() ) {
@@ -565,19 +563,6 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
       return buf.st_size;
   }
 
-  IndexInput* FSDirectory::openMMapFile(const char* name, int32_t bufferSize){
-#ifdef LUCENE_FS_MMAP
-    char fl[CL_MAX_DIR];
-    priv_getFN(fl, name);
-	if ( Misc::file_Size(fl) < LUCENE_INT32_MAX_SHOULDBE ) //todo: would this be bigger on 64bit systems?. i suppose it would be...test first
-		return _CLNEW MMapIndexInput( fl );
-	else
-		return _CLNEW FSIndexInput( fl, bufferSize );
-#else
-	_CLTHROWA(CL_ERR_Runtime,"MMap not enabled at compilation");
-#endif
-  }
-
   bool FSDirectory::openInput(const char * name, IndexInput *& ret, CLuceneError& error, int32_t bufferSize)
   {
 	CND_PRECONDITION(directory[0]!=0,"directory is not open")
@@ -588,7 +573,7 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
 	//is >2gb, then some system cannot mmap the file
 	//also some file systems mmap will fail?? could detect here too
 	if ( useMMap && Misc::file_Size(fl) < LUCENE_INT32_MAX_SHOULDBE ) //todo: would this be bigger on 64bit systems?. i suppose it would be...test first
-		return MMapIndexInput( fl, ret, error, bufferSize );
+		return MMapIndexInput::open( fl, ret, error, bufferSize );
 	else
 #endif
 	return FSIndexInput::open( fl, ret, error, bufferSize );
