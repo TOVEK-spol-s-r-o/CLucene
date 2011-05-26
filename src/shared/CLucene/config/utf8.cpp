@@ -217,7 +217,7 @@ size_t lucene_utf8towcs(wchar_t * result, const char * str, size_t result_length
     rp++;
   }
 
-  size_t ret = sp-str;
+  size_t ret = rp-result;
   if ( ret < result_length )
 	*rp = '\0';
 
