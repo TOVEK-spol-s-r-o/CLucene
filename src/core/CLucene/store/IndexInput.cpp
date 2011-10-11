@@ -108,6 +108,9 @@ CL_NS_USE(util)
     }
 
     TCHAR* ret = _CL_NEWARRAY(TCHAR,len+1);
+    if( ! ret )
+        _CLTHROWA(CL_ERR_OutOfMemory, "IndexInput::readString");
+
     readChars(ret, 0, len);
     ret[len] = 0;
 
