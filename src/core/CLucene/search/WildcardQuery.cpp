@@ -53,6 +53,7 @@ FilteredTermEnum* WildcardQuery::getEnum(IndexReader* reader) {
 WildcardQuery::WildcardQuery(const WildcardQuery& clone):
 MultiTermQuery(clone)
 {
+    termContainsWildcard = clone.termContainsWildcard;
 }
 
 Query* WildcardQuery::clone() const{
