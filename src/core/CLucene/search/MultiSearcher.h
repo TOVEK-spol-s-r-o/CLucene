@@ -11,6 +11,7 @@
 //#include "SearchHeader.h"
 #include "Searchable.h"
 CL_CLASS_DEF(document,Document)
+CL_CLASS_DEF(document,FieldSelector)
 CL_CLASS_DEF(index,Term)
 
 CL_NS_DEF(search)
@@ -41,7 +42,7 @@ CL_NS_DEF(search)
 	  int32_t docFreq(const CL_NS(index)::Term* term) const ;
 
       /** For use by {@link HitCollector} implementations. */
-	  bool doc(int32_t n, CL_NS(document)::Document* document);
+	  bool doc(int32_t n, CL_NS(document)::Document* document, const CL_NS(document)::FieldSelector* fieldSelector = NULL);
 
       /** For use by {@link HitCollector} implementations to identify the
        * index of the sub-searcher that a particular hit came from. */

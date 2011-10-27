@@ -75,9 +75,9 @@ CL_NS_DEF(search)
   }
 
   /** For use by {@link HitCollector} implementations. */
-  bool MultiSearcher::doc(int32_t n, Document* d) {
+  bool MultiSearcher::doc(int32_t n, Document* d, const CL_NS(document)::FieldSelector* fieldSelector ) {
     int32_t i = subSearcher(n);			  // find searcher index
-    return searchables[i]->doc(n - starts[i], d);	  // dispatch to searcher
+    return searchables[i]->doc(n - starts[i], d, fieldSelector);	  // dispatch to searcher
   }
 
   int32_t MultiSearcher::searcherIndex(int32_t n) const{
