@@ -177,7 +177,7 @@ CL_NS_DEF(search)
   }
   
   // inherit javadoc
-  bool IndexSearcher::doc(int32_t i, CL_NS(document)::Document& d) {
+  bool IndexSearcher::doc(int32_t i, CL_NS(document)::Document& d, const CL_NS(document)::FieldSelector* fieldSelector) {
   //Func - Retrieves i-th document found
   //       For use by HitCollector implementations.
   //Pre  - reader != NULL
@@ -185,9 +185,9 @@ CL_NS_DEF(search)
 
       CND_PRECONDITION(reader != NULL, "reader is NULL");
 
-      return reader->document(i,d);
+      return reader->document(i,d,fieldSelector);
   }
-  bool IndexSearcher::doc(int32_t i, CL_NS(document)::Document* d) {
+  bool IndexSearcher::doc(int32_t i, CL_NS(document)::Document* d, const CL_NS(document)::FieldSelector* fieldSelector) {
   //Func - Retrieves i-th document found
   //       For use by HitCollector implementations.
   //Pre  - reader != NULL
@@ -195,7 +195,7 @@ CL_NS_DEF(search)
 
       CND_PRECONDITION(reader != NULL, "reader is NULL");
 
-      return reader->document(i,*d);
+      return reader->document(i,*d,fieldSelector);
   }
 
   // inherit javadoc

@@ -12,6 +12,7 @@
 CL_CLASS_DEF(index,Term)
 //#include "Filter.h"
 CL_CLASS_DEF(document,Document)
+CL_CLASS_DEF(document,FieldSelector)
 //#include "Sort.h"
 //#include "CLucene/util/VoidList.h"
 //#include "Explanation.h"
@@ -88,7 +89,7 @@ CL_NS_DEF(search)
       * Called by {@link HitCollector} implementations.
       * @see IndexReader#document(int32_t).
       */
-      virtual bool doc(int32_t i, CL_NS(document)::Document* d) = 0;
+      virtual bool doc(int32_t i, CL_NS(document)::Document* d, const CL_NS(document)::FieldSelector* fieldSelector = NULL) = 0;
       _CL_DEPRECATED( doc(i, document) ) CL_NS(document)::Document* doc(const int32_t i);
 
       /** Expert: called to re-write queries into primitive queries. */
