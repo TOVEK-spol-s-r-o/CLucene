@@ -21,6 +21,7 @@
 #include "SimpleSpanFragmenter.h"
 #include "WeightedSpanTerm.h"
 #include "SpanHighlightScorer.h"
+#include <assert.h>
 
 CL_NS_DEF2(search,highlight)
 CL_NS_USE(analysis)
@@ -50,7 +51,7 @@ SimpleSpanFragmenter::~SimpleSpanFragmenter()
 
 bool SimpleSpanFragmenter::isNewFragment( const CL_NS(analysis)::Token * pToken )
 {
-    _ASSERT( pToken );
+    assert( pToken );
     m_nPosition += pToken->getPositionIncrement();
 
     if( m_nWaitForPos == m_nPosition )

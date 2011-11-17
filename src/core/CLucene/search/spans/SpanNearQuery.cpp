@@ -15,6 +15,10 @@
 
 CL_NS_DEF2( search, spans )
 
+int SpanNearQuery::__tcscmp(const TCHAR* s1, const TCHAR* s2){
+    return _tcscmp(s1,s2);
+}
+
 SpanNearQuery::SpanNearQuery( const SpanNearQuery& clone ) :
     SpanQuery( clone )
 {
