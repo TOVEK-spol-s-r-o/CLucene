@@ -263,7 +263,7 @@ public:
   float_t queryNorm(float_t sumOfSquaredWeights);
 
   /** Implemented as <code>sqrt(freq)</code>. */
-  inline float_t tf(float_t freq);
+  float_t tf(float_t freq);
     
   /** Implemented as <code>1 / (distance + 1)</code>. */
   float_t sloppyFreq(int32_t distance);
