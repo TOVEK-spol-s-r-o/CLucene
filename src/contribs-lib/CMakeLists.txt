@@ -116,3 +116,21 @@ SET_TARGET_PROPERTIES(clucene-contribs-lib PROPERTIES
     SOVERSION ${CLUCENE_SOVERSION}
     COMPILE_DEFINITIONS_DEBUG _DEBUG
 )
+
+#install public headers.
+FOREACH(file ${HEADERS})
+	get_filename_component(apath ${file} PATH)
+	get_filename_component(aname ${file} NAME)
+	file(RELATIVE_PATH relpath ${CMAKE_SOURCE_DIR}/src/contribs-lib ${apath})
+	IF ( NOT aname MATCHES "^_.*" )
+		install(FILES ${file} 
+		        DESTINATION include/${relpath}
+		        COMPONENT development)
+	ENDIF ( NOT aname MATCHES "^_.*" )
+ENDFOREACH(file)
+
+#and install library
+install(TARGETS clucene-contribs-lib 
+        DESTINATION ${LIB_DESTINATION}  
+        COMPONENT runtime )
+
