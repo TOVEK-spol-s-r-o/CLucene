@@ -19,13 +19,16 @@ _LUCENE_THREAD_FUNC(searchDocs, _searcher) {
     Query * query = QueryParser::parse(_T("one"), _T("content"), &an);
     Hits * hits = searcher->search(query);
 
+    usleep(9999); //make sure that searchMutex is being waited on...
+    
     CONDITION_NOTIFYALL(searchCondition);
     SCOPED_LOCK_MUTEX(deleteMutex);
 
     _CLLDELETE(hits);
     _CLLDELETE(query);
 
-    CONDITION_WAIT(deleteMutex, deleteCondition);
+    CONDITION_WAIT(deleteMutex, deleteCondition);        
+    _LUCENE_THREAD_FUNC_RETURN(0);
 }
 
 void testEndThreadException(CuTest *tc) {
@@ -57,6 +60,7 @@ void testEndThreadException(CuTest *tc) {
         SCOPED_LOCK_MUTEX(searchMutex);
 
         CONDITION_WAIT(searchMutex, searchCondition);
+	usleep(9999); //make sure that searchMutex is being waited on...
         CONDITION_NOTIFYALL(deleteCondition);
 
         _LUCENE_THREAD_JOIN(thread);
@@ -72,6 +76,7 @@ void testEndThreadException(CuTest *tc) {
         SCOPED_LOCK_MUTEX(searchMutex);
 
         CONDITION_WAIT(searchMutex, searchCondition);
+	usleep(9999); //make sure that searchMutex is being waited on...
         searcher->close();
         _CLLDELETE(searcher);
         CONDITION_NOTIFYALL(deleteCondition);
