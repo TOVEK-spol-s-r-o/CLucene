@@ -14,24 +14,27 @@ DEFINE_CONDITION(deleteCondition);
 
 _LUCENE_THREAD_FUNC(searchDocs, _searcher) {
 
-    WhitespaceAnalyzer an;
-    IndexSearcher * searcher = (IndexSearcher *)_searcher;
-    Query * query = QueryParser::parse(_T("one"), _T("content"), &an);
-    Hits * hits = searcher->search(query);
+    {
+        WhitespaceAnalyzer an;
+        IndexSearcher * searcher = (IndexSearcher *)_searcher;
+        Query * query = QueryParser::parse(_T("one"), _T("content"), &an);
+        Hits * hits = searcher->search(query);
 
-    #if defined(_WIN32) || defined(_WIN64)
-        // No sleep needed
-    #else
-        usleep(9999); //make sure that searchMutex is being waited on...
-    #endif
-    
-    CONDITION_NOTIFYALL(searchCondition);
-    SCOPED_LOCK_MUTEX(deleteMutex);
+        #if defined(_WIN32) || defined(_WIN64)
+            // No sleep needed
+        #else
+            usleep(9999); //make sure that searchMutex is being waited on...
+        #endif
+        
+        CONDITION_NOTIFYALL(searchCondition);
+        SCOPED_LOCK_MUTEX(deleteMutex);
 
-    _CLLDELETE(hits);
-    _CLLDELETE(query);
+        _CLLDELETE(hits);
+        _CLLDELETE(query);
 
-    CONDITION_WAIT(deleteMutex, deleteCondition);        
+        CONDITION_WAIT(deleteMutex, deleteCondition);        
+    }
+
     _LUCENE_THREAD_FUNC_RETURN(0);
 }
 
