@@ -1,5 +1,8 @@
-copy /Y d:\Development\CLucene\build\bin\debug\*.* d:\Build\win32\winD\
-copy /Y d:\Development\CLucene\build\bin\release\*.* d:\Build\win32\winR\
+%~d0
+cd "%~p0"
+
+copy /Y build\bin\debug\*.* \Build\win32\winD\
+copy /Y build\bin\release\*.* \Build\win32\winR\
 
 @echo off
 
