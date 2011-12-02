@@ -28,6 +28,7 @@ MultiLevelSkipListReader::MultiLevelSkipListReader(IndexInput* _skipStream, cons
 
   this->numberOfLevelsToBuffer = 0;
   this->numberOfSkipLevels = 0;
+  this->numberOfAllocatedSkipLevels = 0;
   this->docCount = 0;
   this->lastDoc = 0;
   this->lastChildPointer = 0;
@@ -132,12 +133,11 @@ void MultiLevelSkipListReader::init(const int64_t _skipPointer, const int32_t df
 	memset(skipDoc,0,sizeof(int32_t) * maxNumberOfSkipLevels);
 	memset(numSkipped,0,sizeof(int32_t) * maxNumberOfSkipLevels);
 	memset(childPointer,0,sizeof(int64_t) * maxNumberOfSkipLevels);
-    if ( numberOfSkipLevels > 1 )
-    {
-        for (int i=1;i<maxNumberOfSkipLevels;i++)
-          _CLDELETE(skipStream.values[i]);
-    }
-	haveSkipped = false;
+
+    for (int i=1;i<numberOfAllocatedSkipLevels;i++)
+      _CLDELETE(skipStream.values[i]);
+
+    haveSkipped = false;
 }
 
 void MultiLevelSkipListReader::loadSkipLevels() {
@@ -145,11 +145,11 @@ void MultiLevelSkipListReader::loadSkipLevels() {
 	if (numberOfSkipLevels > maxNumberOfSkipLevels) {
 		numberOfSkipLevels = maxNumberOfSkipLevels;
 	}
+    numberOfAllocatedSkipLevels = numberOfSkipLevels;
 
 	skipStream[0]->seek(skipPointer[0]);
 
 	int32_t toBuffer = numberOfLevelsToBuffer;
-
 	for (int32_t i = numberOfSkipLevels - 1; i > 0; i--) {
 		// the length of the current level
 		int64_t length = skipStream[0]->readVLong();
