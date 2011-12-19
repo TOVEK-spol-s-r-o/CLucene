@@ -339,7 +339,7 @@ CL_NS_DEF(search)
 	  //if(prefixLength < 0)
 	  //	_CLTHROWA(CL_ERR_IllegalArgument,"prefixLength < 0");
 	  //else
-	  if(prefixLength >= clone.getTerm()->textLength())
+	  if(prefixLength >= clone.getTerm(false)->textLength())
 		  _CLTHROWA(CL_ERR_IllegalArgument,"prefixLength >= term.textLength()");
 
   }
