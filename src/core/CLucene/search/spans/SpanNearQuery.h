@@ -29,7 +29,7 @@ private:
 
     //_tcscmp cannot be used in header file, so move it to cpp prefixed with one more "_"
     int __tcscmp(const TCHAR* s1, const TCHAR* s2);
-    
+
 protected:
     SpanNearQuery( const SpanNearQuery& clone );
 

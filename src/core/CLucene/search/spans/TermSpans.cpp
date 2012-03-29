@@ -4,11 +4,10 @@
  * Distributable under the terms of either the Apache License (Version 2.0) or 
  * the GNU Lesser General Public License, as specified in the COPYING file.
  ------------------------------------------------------------------------------*/
-#include <climits>
-#include "CLucene/_ApiHeader.h"
 
 #include <limits.h>
 
+#include "CLucene/_ApiHeader.h"
 #include "CLucene/index/Terms.h"
 #include "CLucene/index/Term.h"
 #include "CLucene/util/StringBuffer.h"

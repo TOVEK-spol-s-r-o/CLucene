@@ -53,7 +53,6 @@
 #include "WeightedSpanTermExtractor.h"
 #include "WeightedSpanTerm.h"
 
-
 CL_NS_USE(index);
 CL_NS_USE(analysis);
 CL_NS_USE(document);
@@ -348,10 +347,10 @@ void WeightedSpanTermExtractor::extractFromConstantScoreRangeQuery( ConstantScor
             do 
             {
                 Term * pTerm = pTermEnum->term( true );
-                if( pTerm && pUpper->compareTo( pTerm ) >= 0 )
+                if( pTerm && pUpper->compareTo( pTerm ) >= 0 ) {
                     setTerms.insert( pTerm );
-                else
-                {
+                }
+                else {
                     _CLLDECDELETE( pTerm );
                     break;
                 }

@@ -54,7 +54,7 @@
 		CuAssert(tc,_T("Index does not exist"), Misc::dir_Exists(loc));
 		s=_CLNEW IndexSearcher(loc);
   }
-	void testSrchCloseIndex(CuTest *tc ){
+	void testSrchCloseIndex(CuTest* /*tc*/ ){
 		if ( s!=NULL ){
 			s->close();
 			_CLDELETE(s);
@@ -355,7 +355,7 @@ void testNormEncoding(CuTest *tc) {
     CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNorm(CL_NS(search)::Similarity::decodeNorm(57)) == 57 );
 }
 
-void testSrchManyHits(CuTest *tc) {
+void testSrchManyHits(CuTest* /*tc*/) {
   SimpleAnalyzer analyzer;
 	RAMDirectory ram;
 	IndexWriter writer( &ram, &analyzer, true);
@@ -462,10 +462,9 @@ void fsSearchTest(CuTest *tc) { SearchTest(tc, false); }
 
 
 /////////////////////////////////////////////////////////////////////////////
-/*
 Directory* prepareRAMDirectory( int nCount )
 {
-	const TCHAR*    tszDocText =  _T("KOLÍN__C kolín kolín_cs NAD__C RÝNEM__C rýnem rýn_cs ÈTA__C èta èta_cs Výsledek__C výsledek výsledek_cs dnešního dnešn_cs utkání utkán_cs skupiny skup_cs 2 2_cs Poháru__C poháru pohár_cs mistrù mistr_cs evropských evropsk_cs zemí zem_cs ledním ledn_cs hokeji hokej_cs VEU__C veu veu_cs Feldkirch__C feldkirch feldkirch_cs Kolín__C kolín kolín_cs 2 2_cs 4 4_cs 0 0_cs 1 1_cs 1 1_cs 1 1_cs 1 1_cs 2 2_cs Domácí__C domácí domác_cs sobotu sobot_cs utkají utkaj_cs finále finál_cs PMEz__C pmez pmez_cs Jokeritem__C jokeritem jokerit_cs Feldkirch__C feldkirch feldkirch_cs Jörköpingem__C jörköpingem jörköping_cs popasuje popasuj_cs tøetí tøet_cs OLOMOUC__C olomouc olomouc_cs ÈTA__C èta èta_cs K__C vojenským vojensk_cs útvarùm útvar_cs 2 2_cs armádního armádn_cs sboru sbor_cs sídlem sídl_cs Olomouci__C olomouci olomouc_cs dnes dnes_cs povolávacích povolávac_cs rozkazù rozkaz_cs nastoupit nastoupit_cs celkem celk_cs 1639 1639_cs nováèkù nováèk_cs výkonu výkon_cs základní základn_cs vojenské vojensk_cs služby služb_cs Jejich__C 95 95_cs kolegù koleg_cs svou svo_cs službu služb_cs sboru sbor_cs nasluhuje nasluhuj_cs pøièemž pøièemž_cs 1226 1226_cs vojákù voják_cs základní základn_cs služby služb_cs odešlo odešl_cs civilu civil_cs 22 22_cs prosince prosinc_cs loòského loòsk_cs roku rok_cs ÈTA__C èta èta_cs informoval informoval_cs náèelník náèelník_cs skupiny skup_cs styk styk_cs veøejností veøejnost_cs 2 2_cs armádního armádn_cs sboru sbor_cs Olomouci__C olomouci olomouc_cs Dalibor__C dalibor dalibor_cs Høib__C høib høib_cs Michal__C michal michal_cs Šverdík__C šverdík šverdík_cs ŽENEVA__C ženeva ženev_cs ÈTA__C èta èta_cs OSN__C osn osn_cs uzavøe uzavø_cs nejpozdìji nejpozdìj_cs konce konc_cs týdne týdn_cs letecký leteck_cs most most_cs Sarajeva__C sarajeva sarajev_cs Oznámil__C oznámil oznámil_cs dnes dnes_cs Ženevì__C ženevì ženev_cs mluvèí mluvè_cs Vysokého__C vysokého vysok_cs komisaøe komisaø_cs OSN__C osn osn_cs uprchlíky uprchlík_cs UNHCR__C unhcr unhcr_cs Ron__C ron ron_cs Redmond__C redmond redmond_cs Letecký__C letecký leteck_cs most most_cs roku rok_cs 1992 1992_cs obsáhl obsáhl_cs 13 13_cs 000 000_cs letù let_cs pøepravil pøepravil_cs 160 160_cs 000 000_cs tun tun_cs potravin potrav_cs prostøedkù prostøedk_cs humanitární humanitárn_cs pomoci pomoc_cs dlouhou dlouh_cs dobu dob_cs jedinou jed_cs zásobovací zásobovac_cs cestou cest_cs Sarajeva__C sarajeva sarajev_cs obleženého obležen_cs bosenskými bosensk_cs Srby__C srby srb_cs Posledních__C posledních posledn_cs 210 210_cs tun tun_cs materiálu materiál_cs leží lež_cs skladech sklad_cs italském italsk_cs pøístavu pøístav_cs Ancona__C ancona ancon_cs dopraveny dopraven_cs urèení urèen_cs nìkolika nìkolik_cs pøíštích pøíšt_cs dnech dnech_cs Podle__C údajù údaj_cs OSN__C osn osn_cs zemí zem_cs bývalé býval_cs Jugoslávie__C jugoslávie jugoslávi_cs roku rok_cs 1991 1991_cs dodáno dodán_cs 1 1_cs 100 100_cs 000 000_cs tun tun_cs humanitární humanitárn_cs pomoci pomoc_cs Zdenìk__C zdenìk zdenìk_cs Altynski__C altynski altynsk_cs KOLÍN__C kolín kolín_cs NAD__C RÝNEM__C rýnem rýn_cs ÈTA__C èta èta_cs Výsledek__C výsledek výsledek_cs dnešního dnešn_cs utkání utkán_cs skupiny skup_cs 2 2_cs Poháru__C poháru pohár_cs mistrù mistr_cs evropských evropsk_cs zemí zem_cs ledním ledn_cs hokeji hokej_cs èta èta_cs cs cs_cs 4 4_cs 000 000_cs cs cs_cs 3 3_cs olomouc olomouc_cs cs cs_cs 3 3_cs osn osn_cs cs cs_cs 3 3_cs rok rok_cs cs cs_cs 3 3_cs sbor sbor_cs cs cs_cs 3 3_cs služb služb_cs cs cs_cs 3 3_cs tun tun_cs cs cs_cs 3 3_cs armádn armádn_cs cs cs_cs 2 2_cs dnes dnes_cs cs cs_cs 2 2_cs feldkirch feldkirch_cs cs cs_cs 2 2_cs humanitárn humanitárn_cs cs cs_cs 2 2_cs kolín kolín_cs cs cs_cs 2 2_cs leteck leteck_cs cs cs_cs 2 2_cs most most_cs cs cs_cs 2 2_cs pomoc pomoc_cs cs cs_cs 2 2_cs sarajev sarajev_cs cs cs_cs 2 2_cs skup skup_cs cs cs_cs 2 2_cs vojensk vojensk_cs cs cs_cs 2 2_cs zem zem_cs cs cs_cs 2 2_cs základn základn_cs cs cs_cs 2 2_cs ženev ženev_cs cs cs_cs 2 2_cs 100 100_cs cs cs_cs 1 1_cs 1226 1226_cs cs cs_cs 1 1_cs 160 160_cs cs cs_cs 1 1_cs 1639 1639_cs cs cs_cs 1 1_cs 1991 1991_cs cs cs_cs 1 1_cs 1992 1992_cs cs cs_cs 1 1_cs 210 210_cs cs cs_cs 1 1_cs altynsk altynsk_cs cs cs_cs 1 1_cs ancon ancon_cs cs cs_cs 1 1_cs bosensk bosensk_cs cs cs_cs 1 1_cs" );
+	const TCHAR*    tszDocText =  _T("KOLÃN__C kolÃ­n kolÃ­n_cs NAD__C RÃNEM__C rÃ½nem rÃ½n_cs ÄŒTA__C Äta Äta_cs VÃ½sledek__C vÃ½sledek vÃ½sledek_cs dneÅ¡nÃ­ho dneÅ¡n_cs utkÃ¡nÃ­ utkÃ¡n_cs skupiny skup_cs 2 2_cs PohÃ¡ru__C pohÃ¡ru pohÃ¡r_cs mistrÅ¯ mistr_cs evropskÃ½ch evropsk_cs zemÃ­ zem_cs lednÃ­m ledn_cs hokeji hokej_cs VEU__C veu veu_cs Feldkirch__C feldkirch feldkirch_cs KolÃ­n__C kolÃ­n kolÃ­n_cs 2 2_cs 4 4_cs 0 0_cs 1 1_cs 1 1_cs 1 1_cs 1 1_cs 2 2_cs DomÃ¡cÃ­__C domÃ¡cÃ­ domÃ¡c_cs sobotu sobot_cs utkajÃ­ utkaj_cs finÃ¡le finÃ¡l_cs PMEz__C pmez pmez_cs Jokeritem__C jokeritem jokerit_cs Feldkirch__C feldkirch feldkirch_cs JÃ¶rkÃ¶pingem__C jÃ¶rkÃ¶pingem jÃ¶rkÃ¶ping_cs popasuje popasuj_cs tÅ™etÃ­ tÅ™et_cs OLOMOUC__C olomouc olomouc_cs ÄŒTA__C Äta Äta_cs K__C vojenskÃ½m vojensk_cs ÃºtvarÅ¯m Ãºtvar_cs 2 2_cs armÃ¡dnÃ­ho armÃ¡dn_cs sboru sbor_cs sÃ­dlem sÃ­dl_cs Olomouci__C olomouci olomouc_cs dnes dnes_cs povolÃ¡vacÃ­ch povolÃ¡vac_cs rozkazÅ¯ rozkaz_cs nastoupit nastoupit_cs celkem celk_cs 1639 1639_cs novÃ¡ÄkÅ¯ novÃ¡Äk_cs vÃ½konu vÃ½kon_cs zÃ¡kladnÃ­ zÃ¡kladn_cs vojenskÃ© vojensk_cs sluÅ¾by sluÅ¾b_cs Jejich__C 95 95_cs kolegÅ¯ koleg_cs svou svo_cs sluÅ¾bu sluÅ¾b_cs sboru sbor_cs nasluhuje nasluhuj_cs pÅ™iÄemÅ¾ pÅ™iÄemÅ¾_cs 1226 1226_cs vojÃ¡kÅ¯ vojÃ¡k_cs zÃ¡kladnÃ­ zÃ¡kladn_cs sluÅ¾by sluÅ¾b_cs odeÅ¡lo odeÅ¡l_cs civilu civil_cs 22 22_cs prosince prosinc_cs loÅˆskÃ©ho loÅˆsk_cs roku rok_cs ÄŒTA__C Äta Äta_cs informoval informoval_cs nÃ¡ÄelnÃ­k nÃ¡ÄelnÃ­k_cs skupiny skup_cs styk styk_cs veÅ™ejnostÃ­ veÅ™ejnost_cs 2 2_cs armÃ¡dnÃ­ho armÃ¡dn_cs sboru sbor_cs Olomouci__C olomouci olomouc_cs Dalibor__C dalibor dalibor_cs HÅ™ib__C hÅ™ib hÅ™ib_cs Michal__C michal michal_cs Å verdÃ­k__C Å¡verdÃ­k Å¡verdÃ­k_cs Å½ENEVA__C Å¾eneva Å¾enev_cs ÄŒTA__C Äta Äta_cs OSN__C osn osn_cs uzavÅ™e uzavÅ™_cs nejpozdÄ›ji nejpozdÄ›j_cs konce konc_cs tÃ½dne tÃ½dn_cs leteckÃ½ leteck_cs most most_cs Sarajeva__C sarajeva sarajev_cs OznÃ¡mil__C oznÃ¡mil oznÃ¡mil_cs dnes dnes_cs Å½enevÄ›__C Å¾enevÄ› Å¾enev_cs mluvÄÃ­ mluvÄ_cs VysokÃ©ho__C vysokÃ©ho vysok_cs komisaÅ™e komisaÅ™_cs OSN__C osn osn_cs uprchlÃ­ky uprchlÃ­k_cs UNHCR__C unhcr unhcr_cs Ron__C ron ron_cs Redmond__C redmond redmond_cs LeteckÃ½__C leteckÃ½ leteck_cs most most_cs roku rok_cs 1992 1992_cs obsÃ¡hl obsÃ¡hl_cs 13 13_cs 000 000_cs letÅ¯ let_cs pÅ™epravil pÅ™epravil_cs 160 160_cs 000 000_cs tun tun_cs potravin potrav_cs prostÅ™edkÅ¯ prostÅ™edk_cs humanitÃ¡rnÃ­ humanitÃ¡rn_cs pomoci pomoc_cs dlouhou dlouh_cs dobu dob_cs jedinou jed_cs zÃ¡sobovacÃ­ zÃ¡sobovac_cs cestou cest_cs Sarajeva__C sarajeva sarajev_cs obleÅ¾enÃ©ho obleÅ¾en_cs bosenskÃ½mi bosensk_cs Srby__C srby srb_cs PoslednÃ­ch__C poslednÃ­ch posledn_cs 210 210_cs tun tun_cs materiÃ¡lu materiÃ¡l_cs leÅ¾Ã­ leÅ¾_cs skladech sklad_cs italskÃ©m italsk_cs pÅ™Ã­stavu pÅ™Ã­stav_cs Ancona__C ancona ancon_cs dopraveny dopraven_cs urÄenÃ­ urÄen_cs nÄ›kolika nÄ›kolik_cs pÅ™Ã­Å¡tÃ­ch pÅ™Ã­Å¡t_cs dnech dnech_cs Podle__C ÃºdajÅ¯ Ãºdaj_cs OSN__C osn osn_cs zemÃ­ zem_cs bÃ½valÃ© bÃ½val_cs JugoslÃ¡vie__C jugoslÃ¡vie jugoslÃ¡vi_cs roku rok_cs 1991 1991_cs dodÃ¡no dodÃ¡n_cs 1 1_cs 100 100_cs 000 000_cs tun tun_cs humanitÃ¡rnÃ­ humanitÃ¡rn_cs pomoci pomoc_cs ZdenÄ›k__C zdenÄ›k zdenÄ›k_cs Altynski__C altynski altynsk_cs KOLÃN__C kolÃ­n kolÃ­n_cs NAD__C RÃNEM__C rÃ½nem rÃ½n_cs ÄŒTA__C Äta Äta_cs VÃ½sledek__C vÃ½sledek vÃ½sledek_cs dneÅ¡nÃ­ho dneÅ¡n_cs utkÃ¡nÃ­ utkÃ¡n_cs skupiny skup_cs 2 2_cs PohÃ¡ru__C pohÃ¡ru pohÃ¡r_cs mistrÅ¯ mistr_cs evropskÃ½ch evropsk_cs zemÃ­ zem_cs lednÃ­m ledn_cs hokeji hokej_cs Äta Äta_cs cs cs_cs 4 4_cs 000 000_cs cs cs_cs 3 3_cs olomouc olomouc_cs cs cs_cs 3 3_cs osn osn_cs cs cs_cs 3 3_cs rok rok_cs cs cs_cs 3 3_cs sbor sbor_cs cs cs_cs 3 3_cs sluÅ¾b sluÅ¾b_cs cs cs_cs 3 3_cs tun tun_cs cs cs_cs 3 3_cs armÃ¡dn armÃ¡dn_cs cs cs_cs 2 2_cs dnes dnes_cs cs cs_cs 2 2_cs feldkirch feldkirch_cs cs cs_cs 2 2_cs humanitÃ¡rn humanitÃ¡rn_cs cs cs_cs 2 2_cs kolÃ­n kolÃ­n_cs cs cs_cs 2 2_cs leteck leteck_cs cs cs_cs 2 2_cs most most_cs cs cs_cs 2 2_cs pomoc pomoc_cs cs cs_cs 2 2_cs sarajev sarajev_cs cs cs_cs 2 2_cs skup skup_cs cs cs_cs 2 2_cs vojensk vojensk_cs cs cs_cs 2 2_cs zem zem_cs cs cs_cs 2 2_cs zÃ¡kladn zÃ¡kladn_cs cs cs_cs 2 2_cs Å¾enev Å¾enev_cs cs cs_cs 2 2_cs 100 100_cs cs cs_cs 1 1_cs 1226 1226_cs cs cs_cs 1 1_cs 160 160_cs cs cs_cs 1 1_cs 1639 1639_cs cs cs_cs 1 1_cs 1991 1991_cs cs cs_cs 1 1_cs 1992 1992_cs cs cs_cs 1 1_cs 210 210_cs cs cs_cs 1 1_cs altynsk altynsk_cs cs cs_cs 1 1_cs ancon ancon_cs cs cs_cs 1 1_cs bosensk bosensk_cs cs cs_cs 1 1_cs" );
     
 	char fsdir[CL_MAX_PATH];
 	_snprintf(fsdir,CL_MAX_PATH,"%s/%s",cl_tempDir, "test.search");
@@ -484,13 +483,13 @@ Directory* prepareRAMDirectory( int nCount )
     d->add( *_CLNEW Field( _T("_seccache"), _T("AAECAAAAAAAFIAAAACACAAAAAQEAAAAAAAUSAAAAAAEBAAAAAAAFCwAAAAABAgAAAAAABSAAAAAhAgAABA=="), Field::STORE_YES | Field::INDEX_NO ));
     d->add( *_CLNEW Field( _T("_secobject"), _T("doc/doc.txt"),   Field::STORE_YES | Field::INDEX_NO ));
     d->add( *_CLNEW Field( _T("_security"), _T("0000000033"),   Field::STORE_YES | Field::INDEX_NO ));
-    d->add( *_CLNEW Field( _T("_termvector"), _T("èta_cs_4 èta_cs_4_cs, 000 000_cs, _cs_3 _cs_3_cs, abcd_cs_3 abcd_cs_3_cs, olomouc_cs_3 olomouc_cs_3_cs, rok_cs_3 rok_cs_3_cs, sbor_cs_3 sbor_cs_3_cs, služb_cs_3 služb_cs_3_cs, tun_cs_3 tun_cs_3_cs, armádn_cs_2 armádn_cs_2_cs, dnes_cs_2 dnes_cs_2_cs, feldkirch_cs_2 feldkirch_cs_2_cs, humanitárn_cs_2 humanitárn_cs_2_cs, kal_cs_2 kal_cs_2_cs, leteck_cs_2 leteck_cs_2_cs, most_cs_2 most_cs_2_cs, pomoc_cs_2 pomoc_cs_2_cs, sarajev_cs_2 sarajev_cs_2_cs, skup_cs_2 skup_cs_2_cs, vojensk_cs_2 vojensk_cs_2_cs, zem_cs_2 zem_cs_2_cs, základn_cs_2 základn_cs_2_cs, ženev_cs_2 ženev_cs_2_cs, 100 100_cs, _cs_1 _cs_1_cs, 1226 1226_cs, _cs_1 _cs_1_cs, 160 160_cs, _cs_1 _cs_1_cs, 1639 1639_cs, _cs_1 _cs_1_cs, 1991 1991_cs, _cs_1 _cs_1_cs, 1992 1992_cs, _cs_1 _cs_1_cs, 210 210_cs, _cs_1 _cs_1_cs, altynsk_cs_1 altynsk_cs_1_cs, ancon_cs_1 ancon_cs_1_cs, bosensk_cs_1 bosensk_cs_1_cs"),   Field::STORE_YES | Field::INDEX_TOKENIZED ));
+    d->add( *_CLNEW Field( _T("_termvector"), _T("Äta_cs_4 Äta_cs_4_cs, 000 000_cs, _cs_3 _cs_3_cs, abcd_cs_3 abcd_cs_3_cs, olomouc_cs_3 olomouc_cs_3_cs, rok_cs_3 rok_cs_3_cs, sbor_cs_3 sbor_cs_3_cs, sluÅ¾b_cs_3 sluÅ¾b_cs_3_cs, tun_cs_3 tun_cs_3_cs, armÃ¡dn_cs_2 armÃ¡dn_cs_2_cs, dnes_cs_2 dnes_cs_2_cs, feldkirch_cs_2 feldkirch_cs_2_cs, humanitÃ¡rn_cs_2 humanitÃ¡rn_cs_2_cs, kal_cs_2 kal_cs_2_cs, leteck_cs_2 leteck_cs_2_cs, most_cs_2 most_cs_2_cs, pomoc_cs_2 pomoc_cs_2_cs, sarajev_cs_2 sarajev_cs_2_cs, skup_cs_2 skup_cs_2_cs, vojensk_cs_2 vojensk_cs_2_cs, zem_cs_2 zem_cs_2_cs, zÃ¡kladn_cs_2 zÃ¡kladn_cs_2_cs, Å¾enev_cs_2 Å¾enev_cs_2_cs, 100 100_cs, _cs_1 _cs_1_cs, 1226 1226_cs, _cs_1 _cs_1_cs, 160 160_cs, _cs_1 _cs_1_cs, 1639 1639_cs, _cs_1 _cs_1_cs, 1991 1991_cs, _cs_1 _cs_1_cs, 1992 1992_cs, _cs_1 _cs_1_cs, 210 210_cs, _cs_1 _cs_1_cs, altynsk_cs_1 altynsk_cs_1_cs, ancon_cs_1 ancon_cs_1_cs, bosensk_cs_1 bosensk_cs_1_cs"),   Field::STORE_YES | Field::INDEX_TOKENIZED ));
     d->add( *_CLNEW Field( _T("_timestamp"), _T("2010-12-10 14:01:23.244493"),   Field::STORE_YES | Field::INDEX_NO ));
     d->add( *_CLNEW Field( _T("date"), _T("2010-12-10 14:01:08"),   Field::STORE_YES | Field::INDEX_UNTOKENIZED ));
     d->add( *_CLNEW Field( _T("key"), _T("doc/doc.txt"),   Field::STORE_YES | Field::INDEX_UNTOKENIZED ));
     d->add( *_CLNEW Field( _T("lang"), _T("cs"),   Field::STORE_YES | Field::INDEX_UNTOKENIZED ));
     d->add( *_CLNEW Field( _T("size"), _T("0000001555"),   Field::STORE_YES | Field::INDEX_UNTOKENIZED ));
-    d->add( *_CLNEW Field( _T("summary"), _T("KOLÍN__C kolín kolín_cs NAD__C RÝNEM__C rýn_cs rýnem ÈTA__C èta èta_cs Výsledek__C výsledek výsledek_cs dnešn_cs dnešního utkán_cs utkání skup_cs skupiny 2 2_cs Poháru__C pohár_cs poháru mistr_cs mistrù evropsk_cs evropských zem_cs zemí ledn_cs ledním hokej_cs hokeji VEU__C veu veu_cs Feldkirch__C feldkirch feldkirch_cs Kal__C kal kal_cs 2 2_cs 4 4_cs 0 0_cs 1 1_cs 1 1_cs 1 1_cs 1 1_cs 2 2_cs Domácí__C domác_cs domácí sobot_cs sobotu utkaj_cs utkají finál_cs finále PMEz__C pmez pmez_cs Jokeritem__C jokerit_cs jokeritem Feldkirch__C feldkirch feldkirch_cs Jörköpingem__C jörköping_cs jörköpingem popasuj_cs popasuje tøet_cs tøetí"),   Field::STORE_YES | Field::INDEX_TOKENIZED ));
+    d->add( *_CLNEW Field( _T("summary"), _T("KOLÃN__C kolÃ­n kolÃ­n_cs NAD__C RÃNEM__C rÃ½n_cs rÃ½nem ÄŒTA__C Äta Äta_cs VÃ½sledek__C vÃ½sledek vÃ½sledek_cs dneÅ¡n_cs dneÅ¡nÃ­ho utkÃ¡n_cs utkÃ¡nÃ­ skup_cs skupiny 2 2_cs PohÃ¡ru__C pohÃ¡r_cs pohÃ¡ru mistr_cs mistrÅ¯ evropsk_cs evropskÃ½ch zem_cs zemÃ­ ledn_cs lednÃ­m hokej_cs hokeji VEU__C veu veu_cs Feldkirch__C feldkirch feldkirch_cs Kal__C kal kal_cs 2 2_cs 4 4_cs 0 0_cs 1 1_cs 1 1_cs 1 1_cs 1 1_cs 2 2_cs DomÃ¡cÃ­__C domÃ¡c_cs domÃ¡cÃ­ sobot_cs sobotu utkaj_cs utkajÃ­ finÃ¡l_cs finÃ¡le PMEz__C pmez pmez_cs Jokeritem__C jokerit_cs jokeritem Feldkirch__C feldkirch feldkirch_cs JÃ¶rkÃ¶pingem__C jÃ¶rkÃ¶ping_cs jÃ¶rkÃ¶pingem popasuj_cs popasuje tÅ™et_cs tÅ™etÃ­"),   Field::STORE_YES | Field::INDEX_TOKENIZED ));
     
     
     writer.addDocument(d);
@@ -498,7 +497,6 @@ Directory* prepareRAMDirectory( int nCount )
     writer.close();
     return pDirectory;
 }
-*/
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -577,13 +575,11 @@ void runTest(CuTest *tc, int nSize)
 
         pAnalyzer = new SimpleAnalyzer();
         pHits = searcher.search( pQry1 );
-        assert( pHits->length() == 1 );
         CLUCENE_ASSERT( pHits->length() == 1 );
         _CLDELETE( pHits );
 
         _CLDELETE( pAnalyzer );
         pHits = searcher.search( pQry1 );
-        assert( pHits->length() == 1 );
         CLUCENE_ASSERT( pHits->length() == 1 );
         _CLDELETE( pHits );
 
@@ -649,13 +645,11 @@ void testReadPastEOF(CuTest *tc)
 
     pAnalyzer = new SimpleAnalyzer();
     pHits = searcher.search( pQry1 );
-    assert( pHits->length() == 1 );
     CLUCENE_ASSERT( pHits->length() == 1 );
     _CLDELETE( pHits );
 
     _CLDELETE( pAnalyzer );
     pHits = searcher.search( pQry1 );
-    assert( pHits->length() == 1 );
     CLUCENE_ASSERT( pHits->length() == 1 );
     _CLDELETE( pHits );
 

@@ -43,7 +43,7 @@ FilteredTermEnum::FilteredTermEnum():currentTerm(NULL),actualEnum(NULL){
 		if (actualEnum == NULL){
 			return false; 
 		}
-
+		
 		//Finalize the currentTerm and reset it to NULL
        _CLDECDELETE( currentTerm );
 

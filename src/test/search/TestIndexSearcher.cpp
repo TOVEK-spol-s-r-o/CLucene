@@ -19,9 +19,9 @@ _LUCENE_THREAD_FUNC(searchDocs, _searcher) {
         IndexSearcher * searcher = (IndexSearcher *)_searcher;
         Query * query = QueryParser::parse(_T("one"), _T("content"), &an);
         Hits * hits = searcher->search(query);
+    
+    usleep(9999); //make sure that searchMutex is being waited on...
 
-        #if defined(_WIN32) || defined(_WIN64)
-            // No sleep needed
         #else
             usleep(9999); //make sure that searchMutex is being waited on...
         #endif
@@ -33,6 +33,7 @@ _LUCENE_THREAD_FUNC(searchDocs, _searcher) {
         _CLLDELETE(query);
 
         CONDITION_WAIT(deleteMutex, deleteCondition);        
+    _LUCENE_THREAD_FUNC_RETURN(0);
     }
 
     _LUCENE_THREAD_FUNC_RETURN(0);
