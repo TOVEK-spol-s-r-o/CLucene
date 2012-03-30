@@ -234,6 +234,16 @@ public:
   virtual void reset();
 
 	virtual ~TokenStream();
+
+protected:
+    TCHAR* fieldName;
+
+public:
+    TokenStream();
+
+    TokenStream(const TCHAR* _fieldName);
+    
+    const TCHAR* name() const;
 };
 
 
@@ -321,7 +331,7 @@ public:
     /** Construct a tokenizer with null input. */
 	Tokenizer();
     /** Construct a token stream processing the given input. */
-    Tokenizer(CL_NS(util)::Reader* _input);
+    Tokenizer(CL_NS(util)::Reader* _input, const TCHAR* _fieldName = NULL);
 
     /** By default, closes the input Reader. */
 	virtual void close();
