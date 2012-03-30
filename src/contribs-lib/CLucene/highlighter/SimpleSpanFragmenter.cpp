@@ -21,6 +21,7 @@
 #include "SimpleSpanFragmenter.h"
 #include "WeightedSpanTerm.h"
 #include "SpanHighlightScorer.h"
+#include <assert.h>
 
 CL_NS_DEF2(search,highlight)
 CL_NS_USE(analysis)
