@@ -256,6 +256,8 @@ TokenStream::TokenStream() : fieldName(NULL)
 }
 TokenStream::TokenStream(const TCHAR* _fieldName)
 {
+    if (!_fieldName) return;
+
     int32_t l = _tcslen(_fieldName);
     fieldName = (TCHAR*) malloc( (l+1) * sizeof(TCHAR));
     _tcsncpy(fieldName, _fieldName, l);
