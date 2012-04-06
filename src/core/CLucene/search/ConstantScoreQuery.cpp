@@ -210,7 +210,7 @@ Query* ConstantScoreQuery::clone() const{
 
 ConstantScoreRangeQuery::ConstantScoreRangeQuery( const ConstantScoreRangeQuery& copy ):
     fieldName(const_cast<TCHAR*>(CLStringIntern::intern(copy.fieldName))),
-    lowerVal(STRDUP_TtoT(copy.lowerVal)), upperVal(STRDUP_TtoT(copy.upperVal)),
+    lowerVal((copy.lowerVal) ? STRDUP_TtoT(copy.lowerVal) : NULL), upperVal((copy.upperVal) ? STRDUP_TtoT(copy.upperVal) : NULL),
     includeLower(copy.includeLower),includeUpper(copy.includeUpper)
 {
 }
