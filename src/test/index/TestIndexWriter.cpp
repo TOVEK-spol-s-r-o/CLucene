@@ -643,23 +643,66 @@ void testMergeIndex(CuTest* tc) {
   _CLLDELETE( dir );
 }
 
+void testOptimizeDelete(CuTest* tc) {
+
+    RAMDirectory* dir = _CLNEW RAMDirectory();
+    SimpleAnalyzer a;
+    IndexWriter* writer;
+    IndexReader* reader;
+    Document* doc;
+
+    writer = _CLNEW IndexWriter( dir, false, &a, true );
+
+    doc = _CLNEW Document();
+    doc->add ( *_CLNEW Field(_T("field0"), _T("value0"), Field::STORE_NO | Field::TERMVECTOR_YES | Field::INDEX_TOKENIZED) );
+    writer->addDocument(doc);
+    _CLLDELETE(doc);
+    //writer->optimize();
+    writer->close();
+    _CLLDELETE( writer );
+
+    reader = IndexReader::open(dir);
+    reader->deleteDoc( 0 );
+    reader->close();
+    _CLLDELETE(reader);
+
+    writer = _CLNEW IndexWriter(dir, &a, false);
+    writer->optimize();
+    writer->close();
+    _CLLDELETE( writer );
+
+    writer = _CLNEW IndexWriter(dir, &a, false);
+    doc = _CLNEW Document();
+    doc->add ( *_CLNEW Field(_T("field0"), _T("value1"), Field::STORE_NO | Field::TERMVECTOR_YES | Field::INDEX_TOKENIZED) );
+    writer->addDocument(doc);
+    _CLLDELETE(doc);
+
+    writer->optimize();
+    writer->close();
+    _CLLDELETE( writer );
+
+    dir->close();
+    _CLLDELETE( dir );
+}
+
 CuSuite *testindexwriter(void)
 {
-    CuSuite *suite = CuSuiteNew(_T("CLucene IndexWriter Test"));
-    SUITE_ADD_TEST(suite, testHashingBug);
-    SUITE_ADD_TEST(suite, testAddIndexes);
-    SUITE_ADD_TEST(suite, testIWmergeSegments1);
-    SUITE_ADD_TEST(suite, testIWmergeSegments2);
-    SUITE_ADD_TEST(suite, testIWmergePhraseSegments);
-    SUITE_ADD_TEST(suite, testIWlargeScaleCorrectness);
-
-    // TODO: This test fails due to differences between CLucene's StandardTokenizer and JLucene's; this test
-    // should work when the tokenizer will be brought up-to-date, 
-    //SUITE_ADD_TEST(suite, testWickedLongTerm);
-
-    SUITE_ADD_TEST(suite, testExceptionFromTokenStream);
-    SUITE_ADD_TEST(suite, testDeleteDocument);
-    SUITE_ADD_TEST(suite, testMergeIndex);
+     CuSuite *suite = CuSuiteNew(_T("CLucene IndexWriter Test"));
+//     SUITE_ADD_TEST(suite, testHashingBug);
+//     SUITE_ADD_TEST(suite, testAddIndexes);
+//     SUITE_ADD_TEST(suite, testIWmergeSegments1);
+//     SUITE_ADD_TEST(suite, testIWmergeSegments2);
+//     SUITE_ADD_TEST(suite, testIWmergePhraseSegments);
+//     SUITE_ADD_TEST(suite, testIWlargeScaleCorrectness);
+// 
+//     // TODO: This test fails due to differences between CLucene's StandardTokenizer and JLucene's; this test
+//     // should work when the tokenizer will be brought up-to-date, 
+//     //SUITE_ADD_TEST(suite, testWickedLongTerm);
+// 
+//     SUITE_ADD_TEST(suite, testExceptionFromTokenStream);
+//     SUITE_ADD_TEST(suite, testDeleteDocument);
+//     SUITE_ADD_TEST(suite, testMergeIndex);
+    SUITE_ADD_TEST(suite, testOptimizeDelete);
 
     return suite;
 }

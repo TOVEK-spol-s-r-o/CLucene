@@ -727,7 +727,7 @@ void SegmentMerger::mergeNorms() {
 //Func - Merges the norms for all fields
 //Pre  - fieldInfos != NULL
 //Post - The norms for all fields have been merged
-  ValueArray<uint8_t> normBuffer;
+  ValueArray<uint8_t> normBuffer(1);
 	IndexOutput*  output  = NULL;
   try {
 
