@@ -688,20 +688,20 @@ void testOptimizeDelete(CuTest* tc) {
 CuSuite *testindexwriter(void)
 {
      CuSuite *suite = CuSuiteNew(_T("CLucene IndexWriter Test"));
-//     SUITE_ADD_TEST(suite, testHashingBug);
-//     SUITE_ADD_TEST(suite, testAddIndexes);
-//     SUITE_ADD_TEST(suite, testIWmergeSegments1);
-//     SUITE_ADD_TEST(suite, testIWmergeSegments2);
-//     SUITE_ADD_TEST(suite, testIWmergePhraseSegments);
-//     SUITE_ADD_TEST(suite, testIWlargeScaleCorrectness);
-// 
-//     // TODO: This test fails due to differences between CLucene's StandardTokenizer and JLucene's; this test
-//     // should work when the tokenizer will be brought up-to-date, 
-//     //SUITE_ADD_TEST(suite, testWickedLongTerm);
-// 
-//     SUITE_ADD_TEST(suite, testExceptionFromTokenStream);
-//     SUITE_ADD_TEST(suite, testDeleteDocument);
-//     SUITE_ADD_TEST(suite, testMergeIndex);
+    SUITE_ADD_TEST(suite, testHashingBug);
+    SUITE_ADD_TEST(suite, testAddIndexes);
+    SUITE_ADD_TEST(suite, testIWmergeSegments1);
+    SUITE_ADD_TEST(suite, testIWmergeSegments2);
+    SUITE_ADD_TEST(suite, testIWmergePhraseSegments);
+    SUITE_ADD_TEST(suite, testIWlargeScaleCorrectness);
+
+    // TODO: This test fails due to differences between CLucene's StandardTokenizer and JLucene's; this test
+    // should work when the tokenizer will be brought up-to-date, 
+    //SUITE_ADD_TEST(suite, testWickedLongTerm);
+
+    SUITE_ADD_TEST(suite, testExceptionFromTokenStream);
+    SUITE_ADD_TEST(suite, testDeleteDocument);
+    SUITE_ADD_TEST(suite, testMergeIndex);
     SUITE_ADD_TEST(suite, testOptimizeDelete);
 
     return suite;
