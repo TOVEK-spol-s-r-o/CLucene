@@ -254,7 +254,7 @@ TokenStream::~TokenStream(){
 TokenStream::TokenStream() : fieldName(NULL) 
 {
 }
-TokenStream::TokenStream(const TCHAR* _fieldName)
+TokenStream::TokenStream(const TCHAR* _fieldName) : fieldName(NULL)
 {
     if (!_fieldName) return;
 
