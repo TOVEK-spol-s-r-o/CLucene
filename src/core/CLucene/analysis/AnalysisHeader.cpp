@@ -249,9 +249,26 @@ Token* TokenStream::next(){
 	return t;
 }
 TokenStream::~TokenStream(){
+    if(fieldName) free(fieldName);
+}
+TokenStream::TokenStream() : fieldName(NULL) 
+{
+}
+TokenStream::TokenStream(const TCHAR* _fieldName) : fieldName(NULL)
+{
+    if (!_fieldName) return;
+
+    int32_t l = _tcslen(_fieldName);
+    fieldName = (TCHAR*) malloc( (l+1) * sizeof(TCHAR));
+    _tcsncpy(fieldName, _fieldName, l);
+    fieldName[l] = 0;
+}
+const TCHAR* TokenStream::name() const {
+    return fieldName;
 }
 
 TokenFilter::TokenFilter(TokenStream* in, bool deleteTS):
+    TokenStream(in->name()),
 	input(in),
 	deleteTokenStream(deleteTS)
 {
@@ -276,7 +293,8 @@ Tokenizer::Tokenizer() : input(NULL)
 {
 }
 
-Tokenizer::Tokenizer(CL_NS(util)::Reader* _input):
+Tokenizer::Tokenizer(CL_NS(util)::Reader* _input, const TCHAR* _fieldName):
+    TokenStream(_fieldName),
     input(_input)
 {
 }
