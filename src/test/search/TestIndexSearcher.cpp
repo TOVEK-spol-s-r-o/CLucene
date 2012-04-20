@@ -4,6 +4,7 @@
 * Distributable under the terms of either the Apache License (Version 2.0) or
 * the GNU Lesser General Public License, as specified in the COPYING file.
 ------------------------------------------------------------------------------*/
+
 #include "test.h"
 
 DEFINE_MUTEX(searchMutex);
@@ -14,29 +15,23 @@ DEFINE_CONDITION(deleteCondition);
 
 _LUCENE_THREAD_FUNC(searchDocs, _searcher) {
 
-    {
-        WhitespaceAnalyzer an;
-        IndexSearcher * searcher = (IndexSearcher *)_searcher;
-        Query * query = QueryParser::parse(_T("one"), _T("content"), &an);
-        Hits * hits = searcher->search(query);
-    
+    WhitespaceAnalyzer an;
+    IndexSearcher * searcher = (IndexSearcher *)_searcher;
+    Query * query = QueryParser::parse(_T("one"), _T("content"), &an);
+    Hits * hits = searcher->search(query);
+
+#ifndef WIN32
     usleep(9999); //make sure that searchMutex is being waited on...
-
-        #else
-            usleep(9999); //make sure that searchMutex is being waited on...
-        #endif
+#endif
         
-        CONDITION_NOTIFYALL(searchCondition);
-        SCOPED_LOCK_MUTEX(deleteMutex);
+    CONDITION_NOTIFYALL(searchCondition);
+    SCOPED_LOCK_MUTEX(deleteMutex);
 
-        _CLLDELETE(hits);
-        _CLLDELETE(query);
+    _CLLDELETE(hits);
+    _CLLDELETE(query);
 
-        CONDITION_WAIT(deleteMutex, deleteCondition);        
-    _LUCENE_THREAD_FUNC_RETURN(0);
-    }
-
-    _LUCENE_THREAD_FUNC_RETURN(0);
+    CONDITION_WAIT(deleteMutex, deleteCondition);
+    //_LUCENE_THREAD_FUNC_RETURN(0); uncommenting this produces deadlock on win
 }
 
 void testEndThreadException(CuTest *tc) {
@@ -69,11 +64,9 @@ void testEndThreadException(CuTest *tc) {
 
         CONDITION_WAIT(searchMutex, searchCondition);
 
-        #if defined(_WIN32) || defined(_WIN64)
-            // No sleep needed
-        #else
-            usleep(9999); //make sure that searchMutex is being waited on...
-        #endif
+#ifndef WIN32
+        usleep(9999); //make sure that searchMutex is being waited on...
+#endif
 
         CONDITION_NOTIFYALL(deleteCondition);
 
@@ -91,11 +84,9 @@ void testEndThreadException(CuTest *tc) {
 
         CONDITION_WAIT(searchMutex, searchCondition);
 
-        #if defined(_WIN32) || defined(_WIN64)
-            // No sleep needed
-        #else
-            usleep(9999); //make sure that searchMutex is being waited on...
-        #endif
+#ifndef WIN32
+        usleep(9999); //make sure that searchMutex is being waited on...
+#endif
         
         searcher->close();
         _CLLDELETE(searcher);
