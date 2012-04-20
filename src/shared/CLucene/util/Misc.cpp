@@ -210,7 +210,7 @@ int64_t Misc::file_Size(const char* path){
 		return -1;
 }
 
-int Misc::file_Unlink(const char* path, int32_t maxAttempts )
+int32_t Misc::file_Unlink(const char* path, int32_t maxAttempts )
 {
     int32_t i;
 

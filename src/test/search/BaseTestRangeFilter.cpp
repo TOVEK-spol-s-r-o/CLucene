@@ -32,7 +32,7 @@ BaseTestRangeFilter::~BaseTestRangeFilter()
     _CLLDECDELETE(index);
 }
     
-std::tstring BaseTestRangeFilter::pad(int n)
+std::tstring BaseTestRangeFilter::pad(int32_t n)
 {
     std::tstring b;
     if (n < 0) {

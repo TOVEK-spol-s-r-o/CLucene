@@ -169,7 +169,7 @@ bool NearSpansOrdered::docSpansOrdered( Spans * spans1, Spans * spans2 )
     return ( start1 == start2 ) ? ( spans1->end() < spans2->end() ) : ( start1 < start2 );
 }
 
-bool NearSpansOrdered::docSpansOrdered(int start1, int end1, int start2, int end2) 
+bool NearSpansOrdered::docSpansOrdered(int32_t start1, int32_t end1, int32_t start2, int32_t end2) 
 {
     return ( start1 == start2 ) ? ( end1 < end2 ) : ( start1 < start2 );
 }
