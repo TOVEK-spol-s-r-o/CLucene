@@ -193,6 +193,18 @@ CL_NS_DEF(search)
       return _idf;
    }
 
+
+   float_t Similarity::idf(TermSet * terms, Searcher* searcher)
+   {
+      float_t _idf = 0.0f;
+      TermSet::iterator last = terms->end();
+      for( TermSet::iterator first = terms->begin(); first != last; first++ ) {
+         _idf += idf(*first, searcher);
+      }
+      return _idf;
+   }
+
+
    Similarity::~Similarity(){
   }
 

@@ -8,12 +8,14 @@
 #define _lucene_search_Similarity_
 
 #include "CLucene/util/VoidList.h"
+#include "CLucene/search/Query.h"
 CL_CLASS_DEF(index,Term)
 
 CL_NS_DEF(search)
 
 class Searcher;
 class DefaultSimilarity;
+    
 
 /** Expert: Scoring API.
 * <p>Subclasses implement search scoring.
@@ -104,20 +106,9 @@ public:
    * @param searcher the document collection being searched
    * @return a score factor for the phrase
    */
-   float_t idf(CL_NS(util)::CLVector<CL_NS(index)::Term*>* terms, Searcher* searcher);
-
-   template<class TermIterator>
-   float_t idf( TermIterator first, TermIterator last, Searcher* searcher )
-   {
-      float_t _idf = 0.0f;
-      for( ; first != last; first++ ) {
-         _idf += idf(*first, searcher);
-      }
-      return _idf;
-   }
-
-   //float_t idf(Term** terms, Searcher* searcher);
-
+   // JS - making this method virtual allows us to provide efficienter implementation
+   virtual float_t idf(CL_NS(util)::CLVector<CL_NS(index)::Term*>* terms, Searcher* searcher);
+   virtual float_t idf(TermSet * terms, Searcher* searcher);
    
    /** Computes a score factor for a simple term.
    *
@@ -134,7 +125,7 @@ public:
    * @param searcher the document collection being searched
    * @return a score factor for the term
    */
-   float_t idf(CL_NS(index)::Term* term, Searcher* searcher);
+   virtual float_t idf(CL_NS(index)::Term* term, Searcher* searcher);
 
    
    /** Computes a score factor based on a term or phrase's frequency in a

@@ -25,7 +25,7 @@ SpanWeight::SpanWeight( SpanQuery * query, CL_NS(search)::Searcher * searcher )
     
     terms = _CLNEW TermSet();
     query->extractTerms( terms );
-    idf = similarity->idf( terms->begin(), terms->end(), searcher );
+    idf = similarity->idf( terms, searcher );
 }
 
 SpanWeight::~SpanWeight()
