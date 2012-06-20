@@ -17,8 +17,8 @@ CL_NS_DEF(search)
     
 /** Expert: A <code>Scorer</code> for documents matching a <code>Term</code>.
 */
-class TermScorer: public Scorer {
-private:
+class CLUCENE_EXPORT TermScorer: public Scorer {
+protected:
 	CL_NS(index)::TermDocs* termDocs;
 	uint8_t* norms;
 	Weight* weight;

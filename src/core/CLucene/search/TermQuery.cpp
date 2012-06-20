@@ -7,7 +7,6 @@
 #include "CLucene/_ApiHeader.h"
 #include "TermQuery.h"
 
-#include "SearchHeader.h"
 #include "Scorer.h"
 #include "CLucene/index/Term.h"
 #include "Explanation.h"
@@ -23,33 +22,6 @@
 CL_NS_USE(index)
 CL_NS_DEF(search)
 
-
-
-	class TermWeight: public Weight {
-	private:
-		Similarity* similarity; // ISH: was Searcher*, for no apparent reason
-		float_t value;
-		float_t idf;
-		float_t queryNorm;
-		float_t queryWeight;
-
-		TermQuery* parentQuery;	// CLucene specific
-		CL_NS(index)::Term* _term;
-
-	public:
-		TermWeight(Searcher* searcher, TermQuery* parentQuery, CL_NS(index)::Term* _term);
-		virtual ~TermWeight();
-
-		// return a *new* string describing this object
-		TCHAR* toString();
-		Query* getQuery() { return (Query*)parentQuery; }
-		float_t getValue() { return value; }
-
-		float_t sumOfSquaredWeights();
-		void normalize(float_t queryNorm);
-		Scorer* scorer(CL_NS(index)::IndexReader* reader);
-		Explanation* explain(CL_NS(index)::IndexReader* reader, int32_t doc);
-	};
 
 
 	/** Constructs a query for the term <code>t</code>. */

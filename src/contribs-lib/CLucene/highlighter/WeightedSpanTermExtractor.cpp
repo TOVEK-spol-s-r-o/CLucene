@@ -474,6 +474,28 @@ void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& te
     }
 }
 
+void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum* termEnum, float_t fBoost )
+{
+    try 
+    {
+        do 
+        {
+            CL_NS(index)::Term * t = termEnum->term(false);
+            if( t != NULL )
+            {
+                CL_NS2(search,highlight)::WeightedSpanTerm * pWeightedSpanTerm = _CLNEW CL_NS2(search,highlight)::WeightedSpanTerm( fBoost, t->text() );
+                terms.put( pWeightedSpanTerm );
+            }
+        } 
+        while( termEnum->next() );
+    } 
+    _CLFINALLY 
+    ( 
+        termEnum->close(); 
+        _CLDELETE(termEnum) 
+    );
+}
+
 void WeightedSpanTermExtractor::clearTermSet( TermSet& termSet )
 {
     for( TermSet::iterator itTerms = termSet.begin(); itTerms != termSet.end(); itTerms++ )

@@ -18,6 +18,7 @@
 #define _lucene_search_highlight_weightedspantermextractor_
 
 #include "CLucene/search/Query.h"
+#include "CLucene/index/Terms.h"
 #include "CLucene/highlighter/SpanHighlightScorer.h"
 
 CL_CLASS_DEF(analysis,TokenStream);
@@ -41,7 +42,7 @@ public:
     /**
      * Map holding Weighted span terms
      */
-    class PositionCheckingMap
+    class CLUCENE_CONTRIBS_EXPORT PositionCheckingMap
     {
     public:
         WeightedSpanTermMap&    mapSpanTerms;
@@ -148,6 +149,7 @@ protected:
      */
     void extractWeightedTerms( CL_NS(search)::Query * pQuery, PositionCheckingMap& terms );
     void processNonWeightedTerms( PositionCheckingMap& terms, TermSet& nonWeightedTerms, float_t fBoost );
+    void processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum * termEnum, float_t fBoost );
 
     /**
      * Checks the field to match the current field
