@@ -1374,9 +1374,8 @@ void DocumentsWriter::balanceRAM() {
 DocumentsWriter::BufferedNorms::BufferedNorms(){
   this->upto = 0;
 }
-void DocumentsWriter::BufferedNorms::add(float_t norm){
-  uint8_t b = Similarity::encodeNormWithDefault(norm);
-  out.writeByte(b);
+void DocumentsWriter::BufferedNorms::add(uint8_t norm){
+  out.writeByte(norm);
   upto++;
 }
 void DocumentsWriter::BufferedNorms::reset(){

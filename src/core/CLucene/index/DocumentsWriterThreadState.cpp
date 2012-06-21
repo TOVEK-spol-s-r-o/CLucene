@@ -146,6 +146,7 @@ void DocumentsWriter::ThreadState::writeDocument() {
     }
 
     // Append norms for the fields we saw:
+    Similarity * sim = _parent->writer->getSimilarity();
     for(int32_t i=0;i<numFieldData;i++) {
       FieldData* fp = fieldDataArray[i];
       if (fp->doNorms) {
@@ -153,8 +154,7 @@ void DocumentsWriter::ThreadState::writeDocument() {
         assert ( bn != NULL );
         assert ( bn->upto <= docID );
         bn->fill(docID);
-        float_t norm = fp->boost * _parent->writer->getSimilarity()->lengthNorm(fp->fieldInfo->name, fp->length);
-        bn->add(norm);
+        bn->add(sim->encodeNorm( fp->boost * sim->lengthNorm(fp->fieldInfo->name, fp->length)));
       }
     }
   } catch (CLuceneError& t) {
