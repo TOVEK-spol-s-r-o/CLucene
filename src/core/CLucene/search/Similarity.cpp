@@ -59,7 +59,7 @@ CL_NS_DEF(search)
     }
 
    uint8_t Similarity::floatToByte(float_t f) {
-		return Similarity::encodeNorm(f);
+		return Similarity::encodeNormWithDefault(f);
    }
 
 #else

@@ -180,8 +180,7 @@ CL_NS_DEF(search)
 
 		Explanation* fieldNormExpl = _CLNEW Explanation();
 		uint8_t* fieldNorms = reader->norms(field);
-		float_t fieldNorm =
-			fieldNorms!=NULL ? Similarity::decodeNorm(fieldNorms[doc]) : 0.0f;
+		float_t fieldNorm = fieldNorms!=NULL ? similarity->decodeNorm(fieldNorms[doc]) : 0.0f;
 		fieldNormExpl->setValue(fieldNorm);
 
 		_sntprintf(buf,LUCENE_SEARCH_EXPLANATION_DESC_LEN,

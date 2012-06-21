@@ -16,10 +16,6 @@ Scorer::Scorer(Similarity* _similarity) : similarity(_similarity){
 Scorer::~Scorer(){
 }
 
-Similarity* Scorer::getSimilarity()  const{
-	return this->similarity;
-}
-
 void Scorer::score(HitCollector* hc) {
 	while (next()) {
 		hc->collect(doc(), score());

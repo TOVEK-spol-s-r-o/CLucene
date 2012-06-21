@@ -141,7 +141,7 @@ CL_NS(search)::Explanation * SpanWeight::explain( CL_NS(index)::IndexReader* rea
 
     Explanation * fieldNormExpl = _CLNEW Explanation();
     uint8_t * fieldNorms = reader->norms( field );
-    float_t fieldNorm = fieldNorms != NULL ? Similarity::decodeNorm( fieldNorms[ doc ] ) : 0.0f;
+    float_t fieldNorm = fieldNorms != NULL ? similarity->decodeNorm( fieldNorms[ doc ] ) : 0.0f;
     fieldNormExpl->setValue( fieldNorm );
     strBuf.clear();
     strBuf.append( _T( "fieldNorm(field=" ));

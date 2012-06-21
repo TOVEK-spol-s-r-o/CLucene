@@ -119,7 +119,7 @@ CL_NS_DEF(search)
       ? scoreCache[f]                             // cache hit
       : getSimilarity()->tf(f) * weightValue;        // cache miss
 
-      return raw * Similarity::decodeNorm(norms[_doc]); // normalize for field
+      return raw * getSimilarity()->decodeNorm(norms[_doc]); // normalize for field
   }
 
   int32_t TermScorer::doc() const { return _doc; }

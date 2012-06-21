@@ -18,6 +18,7 @@
 #include "CLucene/util/PriorityQueue.h"
 #include "_SegmentMerger.h"
 #include <assert.h>
+#include <sstream>
 
 CL_NS_USE(util)
 CL_NS_USE(store)
@@ -180,13 +181,14 @@ CL_NS_DEF(index)
 
         // Verify two sources of "maxDoc" agree:
         if (si->getDocStoreOffset() == -1 && fieldsReader->size() != si->docCount) {
-          string err = "doc counts differ for segment ";
-          err += si->name;
-          err += ": fieldsReader shows ";
-          err += fieldsReader->size();
-          err += " but segmentInfo shows ";
-          err += si->docCount;
-          _CLTHROWA(CL_ERR_CorruptIndex, err.c_str() );
+          stringstream err;
+          err << "doc counts differ for segment ";
+          err << si->name;
+          err << ": fieldsReader shows ";
+          err << fieldsReader->size();
+          err << " but segmentInfo shows ";
+          err << si->docCount;
+          _CLTHROWA(CL_ERR_CorruptIndex, err.str().c_str() );
         }
       }
 
@@ -660,7 +662,7 @@ bool SegmentReader::hasNorms(const TCHAR* field){
   uint8_t* SegmentReader::createFakeNorms(int32_t size) {
     uint8_t* ones = _CL_NEWARRAY(uint8_t,size);
     if ( size > 0 )
-      memset(ones, DefaultSimilarity::encodeNorm(1.0f), size);
+      memset(ones, Similarity::encodeNormWithDefault(1.0f), size);
     return ones;
   }
 
@@ -894,13 +896,14 @@ bool SegmentReader::hasNorms(const TCHAR* field){
 
       // Verify # deletes does not exceed maxDoc for this segment:
       if (deletedDocs->count() > maxDoc()) {
-        string err = "number of deletes (";
-        err += deletedDocs->count();
-        err += ") exceeds max doc (";
-        err += maxDoc();
-        err += ") for segment ";
-        err += si->name;
-        _CLTHROWA(CL_ERR_CorruptIndex, err.c_str());
+        stringstream err;
+        err << "number of deletes (";
+        err << deletedDocs->count();
+        err << ") exceeds max doc (";
+        err << maxDoc();
+        err << ") for segment ";
+        err << si->name;
+        _CLTHROWA(CL_ERR_CorruptIndex, err.str().c_str());
       }
     }
   }

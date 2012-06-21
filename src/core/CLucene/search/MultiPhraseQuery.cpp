@@ -172,8 +172,7 @@ public:
 
 		Explanation* fieldNormExpl = _CLNEW Explanation();
 		uint8_t* fieldNorms = reader->norms(parentQuery->field);
-		float_t fieldNorm =
-			fieldNorms!=NULL ? Similarity::decodeNorm(fieldNorms[doc]) : 0.0f;
+		float_t fieldNorm = fieldNorms!=NULL ? similarity->decodeNorm(fieldNorms[doc]) : 0.0f;
 		fieldNormExpl->setValue(fieldNorm);
 
 		buf.append(_T("fieldNorm(field="));

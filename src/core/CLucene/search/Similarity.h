@@ -72,9 +72,16 @@ public:
    */
    static Similarity* getDefault();
    
-	/** Cleanup static data */
-	static CLUCENE_LOCAL void _shutdown();
-   
+   /** Cleanup static data */
+   static CLUCENE_LOCAL void _shutdown();
+      
+   static uint8_t floatToByte(float_t f);
+   static float_t byteToFloat(uint8_t b);
+
+   static uint8_t encodeNormWithDefault(float_t f);
+   static float_t decodeNormWithDefault(uint8_t b);
+
+
    /** Encodes a normalization factor for storage in an index.
    *
    * <p>The encoding uses a five-bit exponent and three-bit mantissa, thus
@@ -87,16 +94,14 @@ public:
    *
    * @see Field#setBoost(float_t)
    */
-   static uint8_t encodeNorm(float_t f);
+   virtual uint8_t encodeNorm(float_t f);
    
    /** Decodes a normalization factor stored in an index.
    * @see #encodeNorm(float_t)
    */
-   static float_t decodeNorm(uint8_t b);
-   
-   static uint8_t floatToByte(float_t f);
-   static float_t byteToFloat(uint8_t b);
+   virtual float_t decodeNorm(uint8_t b);
 
+   
    /** Computes a score factor for a phrase.
    *
    * <p>The default implementation sums the {@link #idf(Term,Searcher)} factor
@@ -239,6 +244,12 @@ public:
    */
    virtual float_t coord(int32_t overlap, int32_t maxOverlap) = 0;
 };
+
+inline uint8_t Similarity::encodeNormWithDefault(float_t f)
+    { return getDefault()->encodeNorm(f); }
+
+inline float_t Similarity::decodeNormWithDefault(uint8_t b)
+    { return getDefault()->decodeNorm(b); }
 
 
 /** Expert: Default scoring implementation. */

@@ -102,7 +102,7 @@ CL_NS_DEF(search)
 	float_t PhraseScorer::score(){
 		//System.out.println("scoring " + first.doc);
 		float_t raw = getSimilarity()->tf(freq) * value; // raw score
-		return raw * Similarity::decodeNorm(norms[first->doc]); // normalize
+		return raw * getSimilarity()->decodeNorm(norms[first->doc]); // normalize
 	}
 
 	bool PhraseScorer::skipTo(int32_t target) {

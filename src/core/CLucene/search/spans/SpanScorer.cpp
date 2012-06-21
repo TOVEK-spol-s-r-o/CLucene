@@ -85,7 +85,7 @@ int32_t SpanScorer::doc() const
 float_t SpanScorer::score()
 {
     float_t raw = getSimilarity()->tf( freq ) * value; // raw score
-    return raw * Similarity::decodeNorm( norms[ doc_ ]); // normalize
+    return raw * getSimilarity()->decodeNorm( norms[ doc_ ]); // normalize
 }
 
 CL_NS(search)::Explanation * SpanScorer::explain( int32_t docIn )

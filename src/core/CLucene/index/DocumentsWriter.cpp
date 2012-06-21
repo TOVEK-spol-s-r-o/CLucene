@@ -46,7 +46,7 @@ CL_NS_DEF(index)
 
 
 const int32_t DocumentsWriter::MAX_THREAD_STATE = 5;
-const uint8_t DocumentsWriter::defaultNorm = Similarity::encodeNorm(1.0f);
+const uint8_t DocumentsWriter::defaultNorm = Similarity::encodeNormWithDefault(1.0f);
 const int32_t DocumentsWriter::nextLevelArray[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 9};
 const int32_t DocumentsWriter::levelSizeArray[10] = {5, 14, 20, 30, 40, 40, 80, 80, 120, 200};
 const int32_t DocumentsWriter::POSTING_NUM_BYTE = OBJECT_HEADER_BYTES + 9*INT_NUM_BYTE + 5*POINTER_NUM_BYTE;
@@ -1335,7 +1335,7 @@ void DocumentsWriter::balanceRAM() {
           numToFree = postingsFreeChunk;
         else
           numToFree = this->postingsFreeCountDW;
-        for ( size_t i = this->postingsFreeCountDW-numToFree;i< this->postingsFreeCountDW; i++ ){
+        for ( int32_t i = this->postingsFreeCountDW-numToFree;i< this->postingsFreeCountDW; i++ ){
           _CLDELETE(this->postingsFreeListDW.values[i]);
         }
         this->postingsFreeCountDW -= numToFree;
@@ -1375,7 +1375,7 @@ DocumentsWriter::BufferedNorms::BufferedNorms(){
   this->upto = 0;
 }
 void DocumentsWriter::BufferedNorms::add(float_t norm){
-  uint8_t b = Similarity::encodeNorm(norm);
+  uint8_t b = Similarity::encodeNormWithDefault(norm);
   out.writeByte(b);
   upto++;
 }

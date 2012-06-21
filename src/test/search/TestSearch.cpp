@@ -338,21 +338,21 @@ void testNormEncoding(CuTest *tc) {
     tmp = CL_NS(search)::Similarity::getDefault()->queryNorm(0);
 
 	//test that norm encoding is working properly
-	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNorm(-1)==0 );
-	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNorm(0)==0 );
-	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNorm(1)==124 );
-	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNorm(1)==124 );
-	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNorm(7516192768.0 )==255);
+	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNormWithDefault(-1)==0 );
+	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNormWithDefault(0)==0 );
+	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNormWithDefault(1)==124 );
+	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNormWithDefault(1)==124 );
+	CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNormWithDefault(7516192768.0 )==255);
 
 
-	CLUCENE_ASSERT( CL_NS(search)::Similarity::decodeNorm(124)==1 );
-	CLUCENE_ASSERT( CL_NS(search)::Similarity::decodeNorm(255)==7516192768.0 );
+	CLUCENE_ASSERT( CL_NS(search)::Similarity::decodeNormWithDefault(124)==1 );
+	CLUCENE_ASSERT( CL_NS(search)::Similarity::decodeNormWithDefault(255)==7516192768.0 );
 
     //well know value:
-    CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNorm(0.5f) == 120 );
+    CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNormWithDefault(0.5f) == 120 );
 
     //can decode self
-    CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNorm(CL_NS(search)::Similarity::decodeNorm(57)) == 57 );
+    CLUCENE_ASSERT( CL_NS(search)::Similarity::encodeNormWithDefault(CL_NS(search)::Similarity::decodeNormWithDefault(57)) == 57 );
 }
 
 void testSrchManyHits(CuTest* /*tc*/) {

@@ -130,5 +130,10 @@ public:
 
 	static bool sort(const Scorer* elem1, const Scorer* elem2);
 };
+
+inline Similarity* Scorer::getSimilarity()  const{
+	return this->similarity;
+}
+
 CL_NS_END
 #endif
