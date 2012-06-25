@@ -34,6 +34,12 @@ public:
     {
         return _CLNEW SpanWeight( this, searcher );
     }
+
+    /** Returns child queries or NULL */
+    virtual SpanQuery ** getClauses() const = 0;
+
+    /** Returns count of child queries */
+    virtual size_t getClausesCount() const = 0;
 };
 
 CL_NS_END2

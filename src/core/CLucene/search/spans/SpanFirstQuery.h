@@ -60,6 +60,12 @@ public:
     size_t hashCode() const;
 
     Spans * getSpans( CL_NS(index)::IndexReader * reader );
+
+    /** Returns child queries or NULL */
+    virtual SpanQuery ** getClauses() const { return (SpanQuery **) &match; }
+
+    /** Returns count of child queries */
+    virtual size_t getClausesCount() const  { return 1; }
 };
 
 CL_NS_END2

@@ -159,7 +159,8 @@ void WeightedSpanTermExtractor::extractWeightedSpanTerms( WeightedSpanTermMap& w
     m_nDocId       = nDocId;
 
     WeightedSpanTermExtractor::PositionCheckingMap terms( weightedSpanTerms );
-    extract( pQuery, terms );
+    WeightedSpanTerm::PositionSpans wholeDocSpan;
+    extract( pQuery, wholeDocSpan, terms );
     
     closeFieldReader();
     
@@ -191,52 +192,52 @@ bool WeightedSpanTermExtractor::matchesField( const TCHAR * tszFieldNameToCheck 
     return ( tszFieldNameToCheck == m_tszFieldName || 0 == _tcscmp( tszFieldNameToCheck, m_tszFieldName ));
 }
 
-void WeightedSpanTermExtractor::extract( Query * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms )
+void WeightedSpanTermExtractor::extract( Query * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
-    if( pQuery->instanceOf( TermQuery::getClassName() ))
+    if( pQuery->instanceOf( TermQuery::getClassName() )
+        || pQuery->instanceOf( SpanTermQuery::getClassName() ))
     {
-        extractWeightedTerms( pQuery, terms );
+        extractWeightedTerms( pQuery, spans, terms );
     }
     else if( pQuery->instanceOf( BooleanQuery::getClassName() ))
     {
-        extractFromBooleanQuery( (BooleanQuery *) pQuery, terms );
+        extractFromBooleanQuery( (BooleanQuery *) pQuery, spans, terms );
     }
     else if( pQuery->instanceOf( PhraseQuery::getClassName() )) 
     {
-        extractFromPhraseQuery( (PhraseQuery *) pQuery, terms );
+        extractFromPhraseQuery( (PhraseQuery *) pQuery, spans, terms );
     }
     else if( pQuery->instanceOf( SpanFirstQuery::getClassName() )
           || pQuery->instanceOf( SpanNearQuery::getClassName() )
           || pQuery->instanceOf( SpanNotQuery::getClassName() )
-          || pQuery->instanceOf( SpanOrQuery::getClassName() )
-          || pQuery->instanceOf( SpanTermQuery::getClassName() ))
+          || pQuery->instanceOf( SpanOrQuery::getClassName() ))
     {
-        extractWeightedSpanTerms( (SpanQuery *) pQuery, terms );
+        extractWeightedSpanTerms( (SpanQuery *) pQuery, spans, terms );
     } 
     else if( pQuery->instanceOf( MultiPhraseQuery::getClassName() )) 
     {
-        extractFromMultiPhraseQuery( (MultiPhraseQuery *) pQuery, terms );
+        extractFromMultiPhraseQuery( (MultiPhraseQuery *) pQuery, spans, terms );
     }
     else if( pQuery->instanceOf( ConstantScoreRangeQuery::getClassName() ))
     {
-        extractFromConstantScoreRangeQuery( (ConstantScoreRangeQuery *) pQuery, terms );
+        extractFromConstantScoreRangeQuery( (ConstantScoreRangeQuery *) pQuery, spans, terms );
     }
     else if( pQuery->instanceOf( FuzzyQuery::getClassName() )
           || pQuery->instanceOf( PrefixQuery::getClassName() )
           || pQuery->instanceOf( RangeQuery::getClassName() )
           || pQuery->instanceOf( WildcardQuery::getClassName() ))
     { 
-        rewriteAndExtract( pQuery, terms );
+        rewriteAndExtract( pQuery, spans, terms );
     }
     else if( ! pQuery->instanceOf( MatchAllDocsQuery::getClassName() )
           && ! pQuery->instanceOf( ConstantScoreQuery::getClassName() ))
     
     {
-        extractFromCustomQuery( pQuery, terms );
+        extractFromCustomQuery( pQuery, spans, terms );
     }
 }
 
-void WeightedSpanTermExtractor::extractFromBooleanQuery( BooleanQuery * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms )
+void WeightedSpanTermExtractor::extractFromBooleanQuery( BooleanQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
     int32_t nClauses = pQuery->getClauseCount();
     if( nClauses > 0 )
@@ -247,13 +248,13 @@ void WeightedSpanTermExtractor::extractFromBooleanQuery( BooleanQuery * pQuery, 
         for( int32_t i = 0; i < nClauses; i++ )
         {
             if( ! rgQueryClauses[ i ]->isProhibited() )
-                extract( rgQueryClauses[ i ]->getQuery(), terms );
+                extract( rgQueryClauses[ i ]->getQuery(), spans, terms );
         }
         _CLDELETE_ARRAY( rgQueryClauses );
     }
 } 
 
-void WeightedSpanTermExtractor::extractFromPhraseQuery( PhraseQuery * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms )
+void WeightedSpanTermExtractor::extractFromPhraseQuery( PhraseQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
     Term** rgPhraseQueryTerms = pQuery->getTerms();
     vector<SpanQuery *> vSpans;
@@ -266,13 +267,13 @@ void WeightedSpanTermExtractor::extractFromPhraseQuery( PhraseQuery * pQuery, We
     SpanNearQuery * pNearQuery = _CLNEW SpanNearQuery( vSpans.begin(), vSpans.end(), nSlop, bInOrder, true );
     pNearQuery->setBoost( pQuery->getBoost() );
     
-    extractWeightedSpanTerms( pNearQuery, terms );
+    extractWeightedSpanTerms( pNearQuery, spans, terms );
 
     _CLDELETE( pNearQuery );
     _CLDELETE_ARRAY( rgPhraseQueryTerms );
 } 
 
-void WeightedSpanTermExtractor::extractFromMultiPhraseQuery( MultiPhraseQuery * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms )
+void WeightedSpanTermExtractor::extractFromMultiPhraseQuery( MultiPhraseQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
     const CLArrayList<ArrayBase<Term*>*>* termArrays   = NULL;
     ValueArray<int32_t>                   positions;
@@ -322,7 +323,7 @@ void WeightedSpanTermExtractor::extractFromMultiPhraseQuery( MultiPhraseQuery * 
 
         SpanNearQuery * pNearQuery = _CLNEW SpanNearQuery( rgClauses, rgClauses + nDistinctPositions, nSlop + nPositionGaps, bInOrder, true );
         pNearQuery->setBoost( pQuery->getBoost() );
-        extractWeightedSpanTerms( pNearQuery, terms );
+        extractWeightedSpanTerms( pNearQuery, spans, terms );
 
         _CLDELETE( pNearQuery );
         _CLDELETE_ARRAY( rgClauses );
@@ -332,7 +333,7 @@ void WeightedSpanTermExtractor::extractFromMultiPhraseQuery( MultiPhraseQuery * 
     }
 } 
 
-void WeightedSpanTermExtractor::extractFromConstantScoreRangeQuery( ConstantScoreRangeQuery * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms )
+void WeightedSpanTermExtractor::extractFromConstantScoreRangeQuery( ConstantScoreRangeQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
     if( m_bAutoRewriteQueries && matchesField( pQuery->getField() ))
     {
@@ -357,7 +358,7 @@ void WeightedSpanTermExtractor::extractFromConstantScoreRangeQuery( ConstantScor
             }
             while( pTermEnum->next() );
 
-            processNonWeightedTerms( terms, setTerms, pQuery->getBoost() );
+            processNonWeightedTerms( terms, setTerms, pQuery->getBoost(), spans );
             clearTermSet( setTerms );
             _CLLDELETE( pTermEnum );
         }
@@ -372,7 +373,7 @@ void WeightedSpanTermExtractor::extractFromConstantScoreRangeQuery( ConstantScor
     }
 }
 
-void WeightedSpanTermExtractor::rewriteAndExtract( Query * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms )
+void WeightedSpanTermExtractor::rewriteAndExtract( Query * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
     if( m_bAutoRewriteQueries )
     {
@@ -382,7 +383,7 @@ void WeightedSpanTermExtractor::rewriteAndExtract( Query * pQuery, WeightedSpanT
         {
             try
             {
-                extract( pRewrittenQuery, terms );
+                extract( pRewrittenQuery, spans, terms );
                 _CLLDELETE( pRewrittenQuery );
             }
             catch( ... )
@@ -394,11 +395,32 @@ void WeightedSpanTermExtractor::rewriteAndExtract( Query * pQuery, WeightedSpanT
     }
 }
 
-void WeightedSpanTermExtractor::extractFromCustomQuery( Query * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms )
+void WeightedSpanTermExtractor::extractFromCustomQuery( Query * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
 }
 
-void WeightedSpanTermExtractor::extractWeightedSpanTerms( CL_NS2(search,spans)::SpanQuery * pSpanQuery, PositionCheckingMap& terms )
+bool WeightedSpanTermExtractor::spanMatchesPositionSpans(Spans * pSpans, WeightedSpanTerm::PositionSpans& spans )
+{
+    if( spans.empty() )
+        return true;
+
+    for( WeightedSpanTerm::PositionSpans::iterator iSP = spans.begin(); iSP != spans.end(); iSP++ )
+    {
+        WeightedSpanTerm::PositionSpan * span = *iSP;
+        if( span->start <= pSpans->start() )
+        {
+            if( pSpans->end() <= ( span->end + 1 ))
+                return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return false;
+}
+
+void WeightedSpanTermExtractor::extractWeightedSpanTerms( CL_NS2(search,spans)::SpanQuery * pSpanQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
     vector<WeightedSpanTerm::PositionSpan *>    spanPositions;
     IndexReader *                               pReader = getFieldReader();
@@ -408,73 +430,76 @@ void WeightedSpanTermExtractor::extractWeightedSpanTerms( CL_NS2(search,spans)::
     if( m_nDocId == -1 )
     {
         while( pSpans->next() )
-            spanPositions.push_back( _CLNEW WeightedSpanTerm::PositionSpan( pSpans->start(), pSpans->end() - 1 ));
+        {
+            if( spanMatchesPositionSpans( pSpans, spans ))
+                spanPositions.push_back( _CLNEW WeightedSpanTerm::PositionSpan( pSpans->start(), pSpans->end() - 1 ));
+        }
     }
     else
     {
         if( pSpans->skipTo( m_nDocId ) && pSpans->doc() == m_nDocId  )
         {
-            spanPositions.push_back( _CLNEW WeightedSpanTerm::PositionSpan( pSpans->start(), pSpans->end() - 1 ));
-            while( pSpans->next() && pSpans->doc() == m_nDocId )
+            if( spanMatchesPositionSpans( pSpans, spans ))
                 spanPositions.push_back( _CLNEW WeightedSpanTerm::PositionSpan( pSpans->start(), pSpans->end() - 1 ));
-        }
-    }
-   _CLDELETE( pSpans );
 
-    if( spanPositions.size() != 0 ) 
-    {
-        TermSet nonWeightedTerms;
-        pSpanQuery->extractTerms( &nonWeightedTerms );
-
-        for( TermSet::iterator iter = nonWeightedTerms.begin(); iter != nonWeightedTerms.end(); iter++ )
-        {
-            Term * pTerm = *iter;
-            if( matchesField( pTerm->field() )) 
+            while( pSpans->next() && pSpans->doc() == m_nDocId )
             {
-                WeightedSpanTerm * pWeightedSpanTerm = terms.get( pTerm->text() );
-                if( ! pWeightedSpanTerm ) 
-                {
-                    pWeightedSpanTerm = _CLNEW WeightedSpanTerm( pSpanQuery->getBoost(), pTerm->text() );
-                    pWeightedSpanTerm->addPositionSpans( spanPositions );
-                    pWeightedSpanTerm->setPositionSensitive( true );
-                    terms.put( pWeightedSpanTerm );
-                } 
-                else 
-                {
-                    if( spanPositions.size() > 0 )
-                        pWeightedSpanTerm->addPositionSpans( spanPositions );
-                }
+                if( spanMatchesPositionSpans( pSpans, spans ))
+                    spanPositions.push_back( _CLNEW WeightedSpanTerm::PositionSpan( pSpans->start(), pSpans->end() - 1 ));
             }
         }
+    }
+    _CLDELETE( pSpans );
 
-        clearTermSet( nonWeightedTerms );
+    if( spanPositions.size() > 0 ) 
+    {
+        SpanQuery ** rgClauses = pSpanQuery->getClauses();
+        for( size_t nClause = 0; nClause < pSpanQuery->getClausesCount(); nClause++ )
+            extract( rgClauses[ nClause ], spanPositions, terms );
+
         for( vector<WeightedSpanTerm::PositionSpan *>::iterator iPS = spanPositions.begin(); iPS != spanPositions.end(); iPS++ )
             _CLLDECDELETE( *iPS );
     }
 }
 
-void WeightedSpanTermExtractor::extractWeightedTerms( CL_NS(search)::Query * pQuery, PositionCheckingMap& terms )
+void WeightedSpanTermExtractor::extractWeightedTerms( CL_NS(search)::Query * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
     TermSet nonWeightedTerms;
     pQuery->extractTerms( &nonWeightedTerms );
-    processNonWeightedTerms( terms, nonWeightedTerms, pQuery->getBoost() );
+    processNonWeightedTerms( terms, nonWeightedTerms, pQuery->getBoost(), spans );
     clearTermSet( nonWeightedTerms );
 }
 
-void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& terms, TermSet& nonWeightedTerms, float_t fBoost )
+void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& terms, TermSet& nonWeightedTerms, float_t fBoost, WeightedSpanTerm::PositionSpans& spans )
 {
     for( TermSet::iterator iter = nonWeightedTerms.begin(); iter != nonWeightedTerms.end(); iter++ )
     {
         Term * pTerm = *iter;
         if( matchesField( pTerm->field() )) 
         {
-            WeightedSpanTerm * pWeightedSpanTerm = _CLNEW WeightedSpanTerm( fBoost, pTerm->text() );
-            terms.put( pWeightedSpanTerm );
+            WeightedSpanTerm * pWeightedSpanTerm = terms.get( pTerm->text() );
+            if( ! pWeightedSpanTerm )
+            {
+                WeightedSpanTerm * pWeightedSpanTerm = _CLNEW WeightedSpanTerm( fBoost, pTerm->text() );
+                if( ! spans.empty() )
+                {
+                    pWeightedSpanTerm->addPositionSpans( spans );
+                    pWeightedSpanTerm->setPositionSensitive( true );
+                }
+                terms.put( pWeightedSpanTerm );
+            }
+            else
+            {
+                if( spans.empty() )
+                    pWeightedSpanTerm->setPositionSensitive( false );
+                else
+                    pWeightedSpanTerm->addPositionSpans( spans );
+            }
         }
     }
 }
 
-void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum* termEnum, float_t fBoost )
+void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum* termEnum, float_t fBoost, WeightedSpanTerm::PositionSpans& spans )
 {
     try 
     {
@@ -483,8 +508,24 @@ void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& te
             CL_NS(index)::Term * t = termEnum->term(false);
             if( t != NULL )
             {
-                CL_NS2(search,highlight)::WeightedSpanTerm * pWeightedSpanTerm = _CLNEW CL_NS2(search,highlight)::WeightedSpanTerm( fBoost, t->text() );
-                terms.put( pWeightedSpanTerm );
+                WeightedSpanTerm * pWeightedSpanTerm = terms.get( t->text() );
+                if( ! pWeightedSpanTerm )
+                {
+                    WeightedSpanTerm * pWeightedSpanTerm = _CLNEW WeightedSpanTerm( fBoost, t->text() );
+                    if( ! spans.empty() )
+                    {
+                        pWeightedSpanTerm->addPositionSpans( spans );
+                        pWeightedSpanTerm->setPositionSensitive( true );
+                    }
+                    terms.put( pWeightedSpanTerm );
+                }
+                else
+                {
+                    if( spans.empty() )
+                        pWeightedSpanTerm->setPositionSensitive( false );
+                    else
+                        pWeightedSpanTerm->addPositionSpans( spans );
+                }
             }
         } 
         while( termEnum->next() );

@@ -74,8 +74,8 @@ public:
     /** Return the clauses whose spans are matched.
      * CLucene: pointer to the internal array
      */
-    SpanQuery ** getClauses() const;
-    size_t getClausesCount() const;
+    virtual SpanQuery ** getClauses() const;
+    virtual size_t getClausesCount() const;
 
     const TCHAR * getField() const;
 

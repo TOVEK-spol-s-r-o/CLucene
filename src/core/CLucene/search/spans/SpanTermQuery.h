@@ -53,6 +53,13 @@ public:
     size_t hashCode() const;
 
     TCHAR* toString( const TCHAR* field ) const;
+
+    /** Returns child queries or NULL */
+    virtual SpanQuery ** getClauses() const { return NULL; }
+
+    /** Returns count of child queries */
+    virtual size_t getClausesCount() const  { return 0; }
+
 };
 
 CL_NS_END2

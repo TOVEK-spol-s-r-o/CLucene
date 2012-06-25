@@ -20,6 +20,7 @@
 #include "CLucene/search/Query.h"
 #include "CLucene/index/Terms.h"
 #include "CLucene/highlighter/SpanHighlightScorer.h"
+#include "CLucene/highlighter/WeightedSpanTerm.h"
 
 CL_CLASS_DEF(analysis,TokenStream);
 CL_CLASS_DEF(index,IndexReader);
@@ -29,7 +30,7 @@ CL_CLASS_DEF(search,PhraseQuery);
 CL_CLASS_DEF(search,MultiPhraseQuery);
 CL_CLASS_DEF(search,ConstantScoreRangeQuery);
 CL_CLASS_DEF2(search,spans,SpanQuery);
-CL_CLASS_DEF2(search,highlight,WeightedSpanTerm);
+CL_CLASS_DEF2(search,spans,Spans);
 
 CL_NS_DEF2(search,highlight)
 
@@ -112,24 +113,25 @@ protected:
      * Fills a <code>Map</code> with <@link WeightedSpanTerm>s using the terms from the supplied <code>Query</code>.
      * 
      * @param query         Query to extract Terms from
+     * @param span          Current span - operate only within this span
      * @param terms         Map to place created WeightedSpanTerms in
      * @throws IOException
      */
-    void extract( CL_NS(search)::Query * pQuery, PositionCheckingMap& terms );
+    void extract( CL_NS(search)::Query * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
 
     /**
      * Methods for extracting info from different types of queries
      */
-    void rewriteAndExtract( Query * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms );
-    void extractFromBooleanQuery( BooleanQuery * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms );
-    void extractFromPhraseQuery( PhraseQuery * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms );
-    void extractFromMultiPhraseQuery( MultiPhraseQuery * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms );
-    void extractFromConstantScoreRangeQuery( ConstantScoreRangeQuery * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms );
+    void rewriteAndExtract( Query * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
+    void extractFromBooleanQuery( BooleanQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
+    void extractFromPhraseQuery( PhraseQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
+    void extractFromMultiPhraseQuery( MultiPhraseQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
+    void extractFromConstantScoreRangeQuery( ConstantScoreRangeQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
     
     /**
      * Overwrite this method to handle custom queries
      */
-    virtual void extractFromCustomQuery( CL_NS(search)::Query * pQuery, WeightedSpanTermExtractor::PositionCheckingMap& terms );
+    virtual void extractFromCustomQuery( CL_NS(search)::Query * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
 
     /**
      * Fills a <code>Map</code> with <@link WeightedSpanTerm>s using the terms from the supplied <code>SpanQuery</code>.
@@ -138,7 +140,7 @@ protected:
      * @param spanQuery     SpanQuery to extract Terms from
      * @throws IOException
      */
-    void extractWeightedSpanTerms( CL_NS2(search,spans)::SpanQuery * pSpanQuery, PositionCheckingMap& terms );
+    void extractWeightedSpanTerms( CL_NS2(search,spans)::SpanQuery * pSpanQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
 
     /**
      * Fills a <code>Map</code> with <@link WeightedSpanTerm>s using the terms from the supplied <code>Query</code>.
@@ -147,9 +149,9 @@ protected:
      * @param query         Query to extract Terms from
      * @throws IOException
      */
-    void extractWeightedTerms( CL_NS(search)::Query * pQuery, PositionCheckingMap& terms );
-    void processNonWeightedTerms( PositionCheckingMap& terms, TermSet& nonWeightedTerms, float_t fBoost );
-    void processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum * termEnum, float_t fBoost );
+    void extractWeightedTerms( CL_NS(search)::Query * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
+    void processNonWeightedTerms( PositionCheckingMap& terms, TermSet& nonWeightedTerms, float_t fBoost, WeightedSpanTerm::PositionSpans& spans );
+    void processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum * termEnum, float_t fBoost, WeightedSpanTerm::PositionSpans& spans );
 
     /**
      * Checks the field to match the current field
@@ -170,6 +172,11 @@ protected:
      * Clears given term set
      */
     void clearTermSet( TermSet& termSet );
+
+    /**
+     * Checks span match
+     */
+    bool spanMatchesPositionSpans( CL_NS2(search,spans)::Spans * pSpans, WeightedSpanTerm::PositionSpans& spans );
 };
 
 CL_NS_END2
