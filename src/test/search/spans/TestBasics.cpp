@@ -173,11 +173,11 @@ void TestBasics::testSpanNearExact()
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
 
     Explanation explanation1;
-    searcher->explain( query, 77, &explanation1 );
+    searcher->explain( query, NULL, 77, &explanation1 );
     assertTrue( explanation1.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     Explanation explanation2;
-    searcher->explain( query, 977, &explanation2 );
+    searcher->explain( query, NULL, 977, &explanation2 );
     assertTrue( explanation2.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     QueryUtils::check( tc, clauses[ 0 ] );
@@ -249,11 +249,11 @@ void TestBasics::testSpanNot()
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
 
     Explanation explanation1;
-    searcher->explain( query, 801, &explanation1 );
+    searcher->explain( query, NULL, 801, &explanation1 );
     assertTrue( explanation1.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     Explanation explanation2;
-    searcher->explain( query, 891, &explanation2 );
+    searcher->explain( query, NULL, 891, &explanation2 );
     assertTrue( explanation2.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     _CLLDELETE( query );
@@ -284,11 +284,11 @@ void TestBasics::testSpanWithMultipleNotSingle()
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
 
     Explanation explanation1;
-    searcher->explain( query, 801, &explanation1 );
+    searcher->explain( query, NULL, 801, &explanation1 );
     assertTrue( explanation1.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     Explanation explanation2;
-    searcher->explain( query, 891, &explanation2 );
+    searcher->explain( query, NULL, 891, &explanation2 );
     assertTrue( explanation2.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     _CLLDELETE( query );
@@ -325,11 +325,11 @@ void TestBasics::testSpanWithMultipleNotMany()
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
 
     Explanation explanation1;
-    searcher->explain( query, 801, &explanation1 );
+    searcher->explain( query, NULL, 801, &explanation1 );
     assertTrue( explanation1.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     Explanation explanation2;
-    searcher->explain( query, 891, &explanation2 );
+    searcher->explain( query, NULL, 891, &explanation2 );
     assertTrue( explanation2.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     _CLLDELETE( query );
@@ -363,11 +363,11 @@ void TestBasics::testNpeInSpanNearWithSpanNot()
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
 
     Explanation explanation1;
-    searcher->explain( query, 801, &explanation1 );
+    searcher->explain( query, NULL, 801, &explanation1 );
     assertTrue( explanation1.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     Explanation explanation2;
-    searcher->explain( query, 891, &explanation2 );
+    searcher->explain( query, NULL, 891, &explanation2 );
     assertTrue( explanation2.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     _CLLDELETE( query );
@@ -420,11 +420,11 @@ void TestBasics::testSpanFirst()
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
 
     Explanation explanation1;
-    searcher->explain( query, 5, &explanation1 );
+    searcher->explain( query, NULL, 5, &explanation1 );
     assertTrue( explanation1.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     Explanation explanation2;
-    searcher->explain( query, 599, &explanation2 );
+    searcher->explain( query, NULL, 599, &explanation2 );
     assertTrue( explanation2.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     _CLLDELETE( query );
@@ -460,11 +460,11 @@ void TestBasics::testSpanOr()
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
       
     Explanation explanation1;
-    searcher->explain( query, 33, &explanation1 );
+    searcher->explain( query, NULL, 33, &explanation1 );
     assertTrue( explanation1.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     Explanation explanation2;
-    searcher->explain( query, 947, &explanation2 );
+    searcher->explain( query, NULL, 947, &explanation2 );
     assertTrue( explanation2.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     _CLLDELETE( query );
@@ -498,7 +498,7 @@ void TestBasics::testSpanExactNested()
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
       
     Explanation explanation1;
-    searcher->explain( query, 333, &explanation1 );
+    searcher->explain( query, NULL, 333, &explanation1 );
     assertTrue( explanation1.getDetail( 0 )->getValue() > 0.0f );       // ToDo: Fix IndexSearcher::explain() method
 
     _CLLDELETE( query );

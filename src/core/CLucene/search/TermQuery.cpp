@@ -83,7 +83,7 @@ CL_NS_DEF(search)
 			&& this->term->equals(tq->term);
 	}
 
-   TermWeight::TermWeight(Searcher* _searcher, TermQuery* _parentQuery, Term* term):similarity(_searcher->getSimilarity()),
+   TermWeight::TermWeight(Searcher* _searcher, TermQuery* _parentQuery, Term* term, Similarity* _similarity):similarity(_similarity),
 	   value(0), queryNorm(0),queryWeight(0), parentQuery(_parentQuery),_term(term)
    {
 		   idf = similarity->idf(term, _searcher); // compute idf
@@ -207,8 +207,8 @@ CL_NS_DEF(search)
 		return result;
 	}
 
-	Weight* TermQuery::_createWeight(Searcher* _searcher) {
-        return _CLNEW TermWeight(_searcher,this,term);
+	Weight* TermQuery::_createWeight(Searcher* _searcher, Similarity* similarity) {
+        return _CLNEW TermWeight(_searcher, this, term, similarity);
     }
 
     void TermQuery::extractTerms( TermSet * termset ) const

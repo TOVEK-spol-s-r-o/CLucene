@@ -95,7 +95,7 @@ public:
     void extractTerms( TermSet * termset ) const;
 
 protected:
-	Weight* _createWeight(Searcher* searcher);
+	Weight* _createWeight(Searcher* searcher, Similarity* similarity);
 
 public:
 	/** Prints a user-readable version of this query. */

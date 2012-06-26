@@ -37,7 +37,7 @@ public:
 
     virtual Filter* clone() const;
 
-    virtual CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader * reader );
+    virtual CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader * reader, CL_NS(search)::Similarity* similarity );
 
     virtual SpanFilterResult * bitSpans( CL_NS(index)::IndexReader * reader );
 

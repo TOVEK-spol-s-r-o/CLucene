@@ -298,7 +298,7 @@ TCHAR* PrefixFilter::toString()
 
 /** Returns a BitSet with true for documents which should be permitted in
 search results, and false for those that should not. */
-BitSet* PrefixFilter::bits( IndexReader* reader )
+BitSet* PrefixFilter::bits( IndexReader* reader, Similarity* similarity )
 {
 	BitSet* bts = _CLNEW BitSet( reader->maxDoc() );
   DefaultPrefixGenerator gen(bts, prefix);

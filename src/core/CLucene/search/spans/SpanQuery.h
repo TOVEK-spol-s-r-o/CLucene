@@ -30,9 +30,9 @@ public:
     */
 //    public abstract Collection getTerms();
 
-    Weight * _createWeight( CL_NS(search)::Searcher * searcher )
+    Weight * _createWeight( CL_NS(search)::Searcher * searcher, CL_NS(search)::Similarity* similarity )
     {
-        return _CLNEW SpanWeight( this, searcher );
+        return _CLNEW SpanWeight( this, searcher, similarity );
     }
 
     /** Returns child queries or NULL */

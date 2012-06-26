@@ -123,7 +123,7 @@ TCHAR* WildcardFilter::toString()
 
 /** Returns a BitSet with true for documents which should be permitted in
 search results, and false for those that should not. */
-BitSet* WildcardFilter::bits( IndexReader* reader )
+BitSet* WildcardFilter::bits( IndexReader* reader, CL_NS(search)::Similarity* similarity )
 {
 	BitSet* bts = _CLNEW BitSet( reader->maxDoc() );
 

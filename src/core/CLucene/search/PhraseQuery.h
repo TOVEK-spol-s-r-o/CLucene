@@ -28,7 +28,7 @@ CL_NS_DEF(search)
 
     	friend class PhraseWeight;
 	protected:
-		Weight* _createWeight(Searcher* searcher);
+		Weight* _createWeight(Searcher* searcher, Similarity* similarity);
 		PhraseQuery(const PhraseQuery& clone);
 	public:
 		/** Constructs an empty phrase query. */

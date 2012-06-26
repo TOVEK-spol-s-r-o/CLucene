@@ -211,7 +211,7 @@ CL_NS_DEF(search)
   }
 
   //todo: find out why we are passing Query* and not Weight*, as Weight is being extracted anyway from Query*
-  TopDocs* IndexSearcher::_search(Query* query, Filter* filter, const int32_t nDocs){
+  TopDocs* IndexSearcher::_search(Query* query, Similarity* sim, Filter* filter, const int32_t nDocs){
   //Func -
   //Pre  - reader != NULL
   //Post -
@@ -219,7 +219,7 @@ CL_NS_DEF(search)
       CND_PRECONDITION(reader != NULL, "reader is NULL");
       CND_PRECONDITION(query != NULL, "query is NULL");
 
-      Weight* weight = query->weight(this);
+      Weight* weight = query->weight(this, sim == NULL ? getSimilarity() : sim);
       Scorer* scorer = weight->scorer(reader);
       if (scorer == NULL) {
         Query* wq = weight->getQuery();
@@ -229,7 +229,7 @@ CL_NS_DEF(search)
           return _CLNEW TopDocs(0, NULL, 0);
       }
 
-      BitSet* bits = filter != NULL ? filter->bits(reader) : NULL;
+      BitSet* bits = filter != NULL ? filter->bits(reader, sim == NULL ? getSimilarity() : sim) : NULL;
       HitQueue* hq = _CLNEW HitQueue(nDocs);
 
 		  //Check hq has been allocated properly
@@ -264,19 +264,19 @@ CL_NS_DEF(search)
   }
 
   // inherit javadoc
-  TopFieldDocs* IndexSearcher::_search(Query* query, Filter* filter, const int32_t nDocs,
+  TopFieldDocs* IndexSearcher::_search(Query* query, Similarity* sim, Filter* filter, const int32_t nDocs,
          const Sort* sort) {
              
       CND_PRECONDITION(reader != NULL, "reader is NULL");
       CND_PRECONDITION(query != NULL, "query is NULL");
 
-    Weight* weight = query->weight(this);
+    Weight* weight = query->weight(this, sim == NULL ? getSimilarity() : sim);
     Scorer* scorer = weight->scorer(reader);
     if (scorer == NULL){
 		return _CLNEW TopFieldDocs(0, NULL, 0, NULL );
 	}
 
-    BitSet* bits = filter != NULL ? filter->bits(reader) : NULL;
+    BitSet* bits = filter != NULL ? filter->bits(reader, sim == NULL ? getSimilarity() : sim) : NULL;
     FieldSortedHitQueue hq(reader, sort->getSort(), nDocs);
     int32_t* totalHits = _CL_NEWARRAY(int32_t,1);
 	totalHits[0]=0;
@@ -305,7 +305,7 @@ CL_NS_DEF(search)
     return _CLNEW TopFieldDocs(totalHits0, fieldDocs, hqLen, hqFields );
   }
 
-  void IndexSearcher::_search(Query* query, Filter* filter, HitCollector* results){
+  void IndexSearcher::_search(Query* query, Similarity* sim, Filter* filter, HitCollector* results){
   //Func - _search an index and fetch the results
   //       Applications should only use this if they need all of the
   //       matching documents.  The high-level search API (search(Query)) is usually more efficient, 
@@ -322,11 +322,11 @@ CL_NS_DEF(search)
       SimpleFilteredCollector* fc = NULL; 
 
       if (filter != NULL){
-          bits = filter->bits(reader);
+          bits = filter->bits(reader, sim == NULL ? getSimilarity() : sim);
           fc = _CLNEW SimpleFilteredCollector(bits, results);
        }
 
-      Weight* weight = query->weight(this);
+      Weight* weight = query->weight(this, sim == NULL ? getSimilarity() : sim);
       Scorer* scorer = weight->scorer(reader);
       if (scorer != NULL) {
 		  if (fc == NULL){
@@ -361,8 +361,8 @@ CL_NS_DEF(search)
         return query;
     }
 
-    void IndexSearcher::explain(Query* query, int32_t doc, Explanation* ret){
-        Weight* weight = query->weight(this);
+    void IndexSearcher::explain(Query* query, Similarity* similarity, int32_t doc, Explanation* ret){
+        Weight* weight = query->weight(this, similarity == NULL ? getSimilarity() : similarity);
         ret->addDetail(weight->explain(reader, doc)); // TODO: A hack until this function will return Explanation* as well
 
         Query* wq = weight->getQuery();

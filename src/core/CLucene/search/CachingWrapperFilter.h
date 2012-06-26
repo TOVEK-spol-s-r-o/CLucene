@@ -24,7 +24,7 @@ class CLUCENE_EXPORT AbstractCachingFilter: public Filter
 	void closeCallback(CL_NS(index)::IndexReader* reader, void* param);
 protected:
 	AbstractCachingFilter( const AbstractCachingFilter& copy );
-	virtual CL_NS(util)::BitSet* doBits( CL_NS(index)::IndexReader* reader ) = 0;
+	virtual CL_NS(util)::BitSet* doBits( CL_NS(index)::IndexReader* reader, CL_NS(search)::Similarity* similarity ) = 0;
 	virtual bool doShouldDeleteBitSet( CL_NS(util)::BitSet* /*bits*/ ){ return false; }
 	AbstractCachingFilter();
 public:
@@ -32,7 +32,7 @@ public:
 
 	/** Returns a BitSet with true for documents which should be permitted in
 	search results, and false for those that should not. */
-	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader );
+	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader, CL_NS(search)::Similarity* similarity );
 
 	virtual Filter *clone() const = 0;
 	virtual TCHAR *toString() = 0;
@@ -52,7 +52,7 @@ private:
 	bool deleteFilter;
 protected:
 	CachingWrapperFilter( const CachingWrapperFilter& copy );
-	CL_NS(util)::BitSet* doBits( CL_NS(index)::IndexReader* reader );
+	CL_NS(util)::BitSet* doBits( CL_NS(index)::IndexReader* reader, CL_NS(search)::Similarity* similarity );
 	bool doShouldDeleteBitSet( CL_NS(util)::BitSet* bits );
 public:
 	CachingWrapperFilter( Filter* filter, bool deleteFilter=true );

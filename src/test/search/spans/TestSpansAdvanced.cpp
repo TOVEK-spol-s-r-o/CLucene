@@ -100,7 +100,7 @@ void TestSpansAdvanced::assertHits( Query * query, const TCHAR * description, co
 
     // Hits hits = searcher.search(query);
     // hits normalizes and throws things off if one score is greater than 1.0
-    TopDocs * topdocs = searcher->_search( query, NULL, 10000 );
+    TopDocs * topdocs = searcher->_search( query, NULL, NULL, 10000 );
 
     /*****
     // display the hits
@@ -125,7 +125,7 @@ void TestSpansAdvanced::assertHits( Query * query, const TCHAR * description, co
         assertTrueMsg( _T( "score does not match" ), ( expectedScores[ i ] > score ? expectedScores[ i ] - score : score - expectedScores[ i ] ) < tolerance );
         
         Explanation exp;
-        searcher->explain( query, id, &exp );
+        searcher->explain( query, NULL, id, &exp );
         
         float_t sd = exp.getDetail( 0 )->getValue() - score;
         if ( sd < 0 ) sd *= -1;

@@ -21,17 +21,17 @@
 		try{
 			q = QueryParser::parse(qry , _T("contents"), analyzer);
 			if ( q != NULL ){
-			    h = search->search( q );
+			    h = search->search( q, NULL );
 
 			    if ( h->length() > 0 ){
 			    //check for explanation memory leaks...
           CL_NS(search)::Explanation expl1;
-					search->explain(q, h->id(0), &expl1);
+					search->explain(q, NULL, h->id(0), &expl1);
 					TCHAR* tmp = expl1.toString();
 					_CLDELETE_CARRAY(tmp);
 					if ( h->length() > 1 ){ //do a second one just in case
 						CL_NS(search)::Explanation expl2;
-						search->explain(q, h->id(1), &expl2);
+						search->explain(q, NULL, h->id(1), &expl2);
 						tmp = expl2.toString();
 						_CLDELETE_CARRAY(tmp);
 					}
@@ -127,7 +127,7 @@
 
 		Hits* h = NULL;
 		try{
-			h = s->search( bq );
+			h = s->search( bq, NULL );
 		}_CLFINALLY(
 		_CLDELETE(h);
 		_CLDELETE(bq);
@@ -283,7 +283,7 @@ void SearchTest(CuTest *tc, bool bram) {
 		Query* query = parser.parse(queries[k]);
 
 		TCHAR* qryInfo = query->toString(_T("contents"));
-		hits = searcher.search(query);
+		hits = searcher.search(query, NULL);
 		CLUCENE_ASSERT( hits->length() == shouldbe[k] );
 		_CLDELETE_CARRAY(qryInfo);
 		_CLDELETE(hits);
@@ -306,7 +306,7 @@ void SearchTest(CuTest *tc, bool bram) {
     terms.deleteValues();
 
 		TCHAR* qryInfo = query->toString(_T("contents"));
-		hits = searcher.search(query);
+		hits = searcher.search(query, NULL);
 		CLUCENE_ASSERT( hits->length() == 3 );
 		_CLDELETE_CARRAY(qryInfo);
 		_CLDELETE(hits);
@@ -386,7 +386,7 @@ void testSrchManyHits(CuTest* /*tc*/) {
 	Term* t = _CLNEW Term(_T("contents"), _T("a"));
 	query.add(_CLNEW TermQuery(t),true,false, false);
 	_CLDECDELETE(t);
-	Hits* hits = searcher.search(&query);
+	Hits* hits = searcher.search(&query, NULL);
 	for ( size_t x=0;x<hits->length();x++ ){
 	      hits->doc(x);
 	}
@@ -444,7 +444,7 @@ void testSrchMulti(CuTest *tc) {
   _CLDECDELETE(termC);
 
 	Query* rewritten = searcher.rewrite(&query);
-	Hits* hits = searcher.search(rewritten);
+	Hits* hits = searcher.search(rewritten, NULL);
 	for ( size_t x=0;x<hits->length();x++ ){
 	  hits->doc(x);
 	}
@@ -574,12 +574,12 @@ void runTest(CuTest *tc, int nSize)
         _CLDECDELETE( t1 );
 
         pAnalyzer = new SimpleAnalyzer();
-        pHits = searcher.search( pQry1 );
+        pHits = searcher.search( pQry1, NULL );
         CLUCENE_ASSERT( pHits->length() == 1 );
         _CLDELETE( pHits );
 
         _CLDELETE( pAnalyzer );
-        pHits = searcher.search( pQry1 );
+        pHits = searcher.search( pQry1, NULL );
         CLUCENE_ASSERT( pHits->length() == 1 );
         _CLDELETE( pHits );
 
@@ -644,12 +644,12 @@ void testReadPastEOF(CuTest *tc)
     _CLDECDELETE( t1 );
 
     pAnalyzer = new SimpleAnalyzer();
-    pHits = searcher.search( pQry1 );
+    pHits = searcher.search( pQry1, NULL );
     CLUCENE_ASSERT( pHits->length() == 1 );
     _CLDELETE( pHits );
 
     _CLDELETE( pAnalyzer );
-    pHits = searcher.search( pQry1 );
+    pHits = searcher.search( pQry1, NULL );
     CLUCENE_ASSERT( pHits->length() == 1 );
     _CLDELETE( pHits );
 

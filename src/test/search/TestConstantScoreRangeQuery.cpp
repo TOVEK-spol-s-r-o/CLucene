@@ -102,7 +102,7 @@ public:
 
         // some hits match more terms then others, score should be the same
         Query * q = csrq( _T( "data" ), _T( "1" ), _T( "6" ), true, true );
-        pResult = pSearch->search( q );
+        pResult = pSearch->search( q, NULL );
         size_t numHits = pResult->length();
         assertEqualsMsg( _T( "wrong number of results" ), 6, numHits );
         float_t score = pResult->score( 0 );
@@ -134,7 +134,7 @@ public:
         // must use a non score normalizing method for this.
         Query * q = csrq( _T( "data" ), _T( "1" ), _T( "6" ), true, true );
         q->setBoost( 100 );
-        pResult = pSearch->search( q );
+        pResult = pSearch->search( q, NULL );
         for( size_t i = 1; i < pResult->length(); i++ )
         {
             assertTrueMsg( _T( "score was not was not correct" ), 1.0f == pResult->score( i ));
@@ -154,7 +154,7 @@ public:
         bq->add( q1, true, BooleanClause::SHOULD );
         bq->add( q2, true, BooleanClause::SHOULD );
 
-        pResult = pSearch->search( bq );
+        pResult = pSearch->search( bq, NULL );
         assertEquals( 1, pResult->id( 0 ));
         assertEquals( 0, pResult->id( 1 ));
         assertTrue( pResult->score( 0 ) > pResult->score( 1 ));
@@ -168,7 +168,7 @@ public:
         bq->add( q1, true, BooleanClause::SHOULD );
         bq->add( q2, true, BooleanClause::SHOULD );
 
-        pResult = pSearch->search( bq );
+        pResult = pSearch->search( bq, NULL );
         assertEquals( 0, pResult->id( 0 ));
         assertEquals( 1, pResult->id( 1 ));
         assertTrue( pResult->score( 0 ) > pResult->score( 1 ));
@@ -199,7 +199,7 @@ public:
         _CLLDECDELETE( pUpper );
         _CLLDECDELETE( pLower );
 
-        Hits * pExpected = pSearch->search( rq );
+        Hits * pExpected = pSearch->search( rq, NULL );
         size_t numHits = pExpected->length();
  
         // now do a boolean where which also contains a
@@ -209,7 +209,7 @@ public:
         q->add( rq, true, BooleanClause::MUST );
         q->add( csrq( _T( "data" ), _T( "1" ), _T( "6" ), true, true ), true, BooleanClause::MUST );
  
-        Hits * pActual = pSearch->search( q );
+        Hits * pActual = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "wrong number of hits" ), numHits, pActual->length() );
         for( size_t i = 0; i < numHits; i++ )
         {
@@ -251,106 +251,106 @@ public:
         // test id, bounded on both ends
         
         q = csrq( _T( "id" ), minIP, maxIP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "find all" ), numDocs, pResult->length() );
         _CLDELETE( pResult ); _CLDELETE( q );
 
 	    q = csrq( _T( "id" ), minIP, maxIP, true, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "all but last" ), numDocs-1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
 	    q = csrq( _T( "id" ), minIP, maxIP, false, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "all but first" ), numDocs-1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
             
 	    q = csrq( _T( "id" ), minIP, maxIP, false,false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "all but ends" ), numDocs-2, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
     
         q = csrq( _T( "id" ), medIP, maxIP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "med and up" ), 1+maxId-medId, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
         
         q = csrq( _T( "id" ), minIP, medIP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "up to med" ), 1+medId-minId, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         // unbounded id
 
 	    q = csrq( _T( "id" ), minIP, NULL, true, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "min and up" ), numDocs, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
 	    q = csrq( _T( "id" ), NULL, maxIP, false, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "max and down" ), numDocs, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
 	    q = csrq( _T( "id" ), minIP, NULL, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "not min, but up" ), numDocs-1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
             
 	    q = csrq( _T( "id" ), NULL, maxIP, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "not max, but down" ), numDocs-1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
             
         q = csrq( _T( "id" ), medIP, maxIP, true, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "med and up, not max" ), maxId-medId, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
         
         q = csrq( _T( "id" ), minIP, medIP, false,true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "not min, up to med" ), medId-minId, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         // very small sets
 
 	    q = csrq( _T( "id" ), minIP, minIP, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "min,min,F,F" ), 0, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "id" ), medIP, medIP, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "med,med,F,F" ), 0, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "id") , maxIP, maxIP, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "max,max,F,F" ), 0, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
                          
 	    q = csrq( _T( "id" ), minIP, minIP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "min,min,T,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "id" ), NULL, minIP, false, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "nul,min,F,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
 	    q = csrq( _T( "id" ), maxIP, maxIP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "max,max,T,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "id" ), maxIP, NULL, true, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "max,nul,T,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
 	    q = csrq( _T( "id" ), medIP, medIP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
 	    assertEqualsMsg( _T( "med,med,T,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
             
@@ -384,76 +384,76 @@ public:
         // test extremes, bounded on both ends
         
         q = csrq( _T( "rand" ), minRP, maxRP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "find all" ), numDocs, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), minRP, maxRP, true, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "all but biggest" ), numDocs-1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), minRP, maxRP, false, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "all but smallest" ), numDocs-1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), minRP, maxRP, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "all but extremes" ), numDocs-2, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
     
         // unbounded
 
         q = csrq( _T( "rand" ), minRP, NULL, true, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "smallest and up" ), numDocs, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), NULL, maxRP, false, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "biggest and down" ), numDocs, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), minRP, NULL, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "not smallest, but up" ), numDocs-1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
             
         q = csrq( _T( "rand" ), NULL, maxRP, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "not biggest, but down" ), numDocs-1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
         
         // very small sets
 
         q = csrq( _T( "rand" ), minRP, minRP, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "min,min,F,F" ), 0, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), maxRP, maxRP, false, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "max,max,F,F" ), 0, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
                          
         q = csrq( _T( "rand" ), minRP, minRP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "min,min,T,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), NULL, minRP, false, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "nul,min,F,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), maxRP, maxRP, true, true );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "max,max,T,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
         q = csrq( _T( "rand" ), maxRP, NULL, true, false );
-	    pResult = pSearch->search( q );
+	    pResult = pSearch->search( q, NULL );
         assertEqualsMsg( _T( "max,nul,T,T" ), 1, pResult->length());
         _CLDELETE( pResult ); _CLDELETE( q );
 
@@ -482,7 +482,7 @@ public:
         bq->add( q1, true, BooleanClause::MUST );
         bq->add( q2, true, BooleanClause::MUST );
 
-        Hits * pResult = pSearch->search( bq );
+        Hits * pResult = pSearch->search( bq, NULL );
 
         _CLDELETE( pResult );
         _CLDELETE( bq );

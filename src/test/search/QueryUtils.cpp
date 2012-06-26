@@ -143,7 +143,7 @@ public:
     {
         for( int32_t i = lastDoc[ 0 ] + 1; i <= doc; i++ )
         {
-            Weight * w = q->weight( s );
+            Weight * w = q->weight( s, s->getSimilarity() );
             Scorer * scorer = w->scorer( s->getReader() );
 
             if( ! scorer->skipTo( i ) )
@@ -272,7 +272,7 @@ void QueryUtils::check( CuTest* tc, Query * q1, Searcher * s )
 
 void QueryUtils::checkSerialization( CuTest* tc, Query * q, Searcher * s )
 {
-    Weight * w = q->weight( s );
+    Weight * w = q->weight( s, s->getSimilarity() );
     // TODO: Port this test
 //     try {
 //       ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -315,7 +315,7 @@ void QueryUtils::checkSkipTo( CuTest* tc, Query * q, IndexSearcher * s )
         int32_t * order = orders[ k ];
         int32_t opidx[] = { 0 };
 
-        Weight * w = q->weight( s );
+        Weight * w = q->weight( s, s->getSimilarity() );
         Scorer * scorer = w->scorer( s->getReader() );
       
         // FUTURE: ensure scorer.doc()==-1
@@ -332,7 +332,7 @@ void QueryUtils::checkSkipTo( CuTest* tc, Query * q, IndexSearcher * s )
         hitCollector.q = q;
         hitCollector.tc = tc;
 
-        s->_search( q, NULL, &hitCollector );
+        s->_search( q, NULL, NULL, &hitCollector );
       
         // make sure next call to scorer is false.
         int32_t op = order[ (opidx[ 0 ]++ ) % ordersLength[ k ] ];
@@ -354,9 +354,9 @@ void QueryUtils::checkFirstSkipTo( CuTest* tc, Query * q, IndexSearcher * s )
     hitCollector.s = s;
     hitCollector.tc = tc;
 
-    s->_search( q, NULL, &hitCollector );
+    s->_search( q, NULL, NULL, &hitCollector );
 
-    Weight * w = q->weight( s );
+    Weight * w = q->weight( s, s->getSimilarity() );
     Scorer * scorer = w->scorer( s->getReader() );
     bool more = scorer->skipTo( lastDoc[ 0 ] + 1 );
     if( more )

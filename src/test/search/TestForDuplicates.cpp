@@ -58,7 +58,7 @@
 		//---
 		int32_t dupl = 0;
 		Query* query = QueryParser::parse(_T("test"), _T("body"), &an);
-		Hits* result = searcher.search(query);
+		Hits* result = searcher.search(query, NULL);
 
 		CLUCENE_ASSERT(result->length()==((int)MAX_DOCS/10));
 
@@ -118,7 +118,7 @@
       CuMessage(tc, _T("Query: %s\n"), tmp );
       _CLDELETE_CARRAY(tmp);
 
-      hits = searcher->search(query);
+      hits = searcher->search(query, NULL);
       print_tHits(tc, hits);
       _CLDELETE(hits);
       _CLDELETE(query);
@@ -139,7 +139,7 @@
       CuMessage(tc, _T("Query: %s\n"), tmp );
       _CLDELETE_CARRAY(tmp);
 
-      hits = searcher->search(query);
+      hits = searcher->search(query, NULL);
       print_tHits(tc, hits);
       _CLDELETE(hits);
       _CLDELETE(query);

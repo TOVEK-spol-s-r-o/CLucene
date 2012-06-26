@@ -16,6 +16,8 @@ CL_CLASS_DEF(search,Query)
 
 CL_NS_DEF(search)
 
+class Similarity;
+
 class CLUCENE_EXPORT QueryFilter: public Filter
 {
 private:
@@ -29,7 +31,7 @@ public:
 	
 	~QueryFilter();
 	
-	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader );
+	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader, Similarity* similarity );
 	
 	Filter *clone() const;
 	

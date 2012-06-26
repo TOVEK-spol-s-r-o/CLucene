@@ -22,7 +22,7 @@ CL_NS_DEF(search)
     private:
 		CL_NS(index)::Term* term;
     protected:
-        Weight* _createWeight(Searcher* searcher);
+        Weight* _createWeight(Searcher* searcher, Similarity* similarity);
         TermQuery(const TermQuery& clone);
 	public:
 		// Constructs a query for the term <code>t</code>.
@@ -63,7 +63,7 @@ CL_NS_DEF(search)
 		CL_NS(index)::Term* _term;
 
 	public:
-		TermWeight(Searcher* searcher, TermQuery* parentQuery, CL_NS(index)::Term* _term);
+		TermWeight(Searcher* _searcher, TermQuery* parentQuery, CL_NS(index)::Term* _term, Similarity* _similarity);
 		virtual ~TermWeight();
 
 		// return a *new* string describing this object

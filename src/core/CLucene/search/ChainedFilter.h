@@ -62,9 +62,9 @@ protected:
 	int		 logic;
 	
 	ChainedFilter( const ChainedFilter& copy );
-	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader, int logic );
-	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader, int* logicArray );
-	CL_NS(util)::BitSet* doChain( CL_NS(util)::BitSet* result, CL_NS(index)::IndexReader* reader, int logic, Filter* filter );
+	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader, CL_NS(search)::Similarity* similarity, int logic );
+	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader, CL_NS(search)::Similarity* similarity, int* logicArray );
+	CL_NS(util)::BitSet* doChain( CL_NS(util)::BitSet* result, CL_NS(index)::IndexReader* reader, CL_NS(search)::Similarity* similarity, int logic, Filter* filter );
 
 	virtual void doUserChain( CL_NS(util)::BitSet* chain, CL_NS(util)::BitSet* filter, int logic );
 	virtual const TCHAR* getLogicString(int logic);
@@ -75,7 +75,7 @@ public:
 	
 	/** Returns a BitSet with true for documents which should be permitted in
 	search results, and false for those that should not. */
-	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader );
+	CL_NS(util)::BitSet* bits( CL_NS(index)::IndexReader* reader, CL_NS(search)::Similarity* similarity );
 
 	virtual Filter* clone() const;
 	

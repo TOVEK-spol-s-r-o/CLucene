@@ -24,7 +24,7 @@ private:
     MatchAllDocsQuery* parentQuery;
 
 public:
-    MatchAllDocsWeight(MatchAllDocsQuery* enclosingInstance, Searcher* searcher);
+    MatchAllDocsWeight(MatchAllDocsQuery* enclosingInstance, Similarity* similarity);
     virtual ~MatchAllDocsWeight(){}
 
     virtual TCHAR* toString();
@@ -104,9 +104,10 @@ TCHAR* MatchAllDocsQuery::MatchAllScorer::toString(){
 	return stringDuplicate(_T("MatchAllScorer"));
 }
 
-MatchAllDocsQuery::MatchAllDocsWeight::MatchAllDocsWeight(MatchAllDocsQuery* enclosingInstance, Searcher* searcher):
-		parentQuery(enclosingInstance){
-	this->similarity = searcher->getSimilarity();
+MatchAllDocsQuery::MatchAllDocsWeight::MatchAllDocsWeight(MatchAllDocsQuery* enclosingInstance, Similarity* similarity)
+{
+    this->parentQuery = enclosingInstance;
+	this->similarity = similarity;
 }
 
 TCHAR* MatchAllDocsQuery::MatchAllDocsWeight::toString() {
@@ -156,8 +157,8 @@ Explanation* MatchAllDocsQuery::MatchAllDocsWeight::explain(CL_NS(index)::IndexR
 MatchAllDocsQuery::MatchAllDocsQuery(){}
 MatchAllDocsQuery::~MatchAllDocsQuery(){}
 
-Weight* MatchAllDocsQuery::_createWeight(Searcher* searcher){
-	return _CLNEW MatchAllDocsWeight(this, searcher);
+Weight* MatchAllDocsQuery::_createWeight(Searcher* searcher, Similarity* similarity){
+	return _CLNEW MatchAllDocsWeight(this, similarity);
 }
 
 const char* MatchAllDocsQuery::getClassName() {

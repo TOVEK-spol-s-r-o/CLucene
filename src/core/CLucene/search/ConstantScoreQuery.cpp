@@ -28,7 +28,7 @@ class ConstantScorer : public Scorer {
 
 public:
     ConstantScorer(Similarity* similarity, IndexReader* reader, Weight* w, Filter* filter) : Scorer(similarity),
-        bits(filter->bits(reader)), theScore(w->getValue()), _doc(-1)
+        bits(filter->bits(reader, similarity)), theScore(w->getValue()), _doc(-1)
     {
     }
     virtual ~ConstantScorer() {
@@ -72,8 +72,8 @@ private:
     const ConstantScoreQuery* parentQuery;
 
 public:
-    ConstantWeight(ConstantScoreQuery* enclosingInstance, Searcher* searcher) :
-          similarity(enclosingInstance->getSimilarity(searcher)),
+    ConstantWeight(ConstantScoreQuery* enclosingInstance, Similarity* similarity) :
+          similarity(similarity),
           queryNorm(0), queryWeight(0),
           parentQuery(enclosingInstance)
     {
@@ -166,8 +166,8 @@ void ConstantScoreQuery::extractTerms( TermSet * termset ) const
     // but may not be OK for highlighting
 }
 
-Weight* ConstantScoreQuery::_createWeight(Searcher* searcher) {
-    return _CLNEW /*ConstantScoreQuery::*/ConstantWeight(this, searcher);
+Weight* ConstantScoreQuery::_createWeight(Searcher* /*searcher*/ , Similarity* similarity) {
+    return _CLNEW ConstantWeight(this, similarity);
 }
 
 TCHAR* ConstantScoreQuery::toString(const TCHAR* /*field*/) const

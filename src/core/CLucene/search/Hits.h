@@ -18,6 +18,7 @@ CL_NS_DEF(search)
 	class Filter;
 	class HitDoc;
 	class Sort;
+    class Similarity;
 
 	/** A ranked list of documents, used to hold search results.
 	* <p>
@@ -39,6 +40,7 @@ CL_NS_DEF(search)
 		Searcher* searcher;
 		Filter* filter;
 		const Sort* sort;
+        Similarity* similarity;
 
 		size_t _length;				  // the total number of hits
 		CL_NS(util)::CLVector<HitDoc*, CL_NS(util)::Deletor::Object<HitDoc> >* hitDocs;	  // cache of hits retrieved
@@ -68,7 +70,7 @@ CL_NS_DEF(search)
 		void remove(const HitDoc* hitDoc);
 
     public:
-		Hits(Searcher* s, Query* q, Filter* f, const Sort* sort=NULL);
+		Hits(Searcher* s, Query* q, Similarity* sim, Filter* f, const Sort* sort=NULL);
 		virtual ~Hits();
 
 		/** Returns the total number of hits available in this set. */

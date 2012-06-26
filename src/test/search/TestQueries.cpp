@@ -26,7 +26,7 @@ void testPrefixQuery(CuTest *tc){
 	Term* t = _CLNEW Term(_T("category"), _T("/Computers"));
 	PrefixQuery *query = _CLNEW PrefixQuery(t);
 	IndexSearcher searcher(&directory);
-	Hits *hits = searcher.search(query);
+	Hits *hits = searcher.search(query, NULL);
 	CLUCENE_ASSERT(3 == hits->length()); // All documents in /Computers category and below
 	_CLDELETE(query);
 	_CLDELETE(t);
@@ -34,7 +34,7 @@ void testPrefixQuery(CuTest *tc){
 
 	t = _CLNEW Term(_T("category"), _T("/Computers/Mac"));
 	query = _CLNEW PrefixQuery(t);
-	hits = searcher.search(query);
+	hits = searcher.search(query, NULL);
 	CLUCENE_ASSERT(1 == hits->length()); // One in /Computers/Mac
 	_CLDELETE(query);
 	_CLDELETE(t);
@@ -60,7 +60,7 @@ private:
 
 		Term* t = _CLNEW Term(field, text);
 		FuzzyQuery* query = _CLNEW FuzzyQuery(t, minSimilarity, prefixLen);
-		Hits* hits = searcher->search(query);
+		Hits* hits = searcher->search(query, NULL);
 		_CLLDELETE(query);
 		_CLLDECDELETE(t);
 		return hits;
@@ -319,7 +319,7 @@ void testFuzzyQuery(CuTest *tc){
 	//---
 	Term* term = _CLNEW Term(_T("body"), _T("test~"));
 	Query* query = _CLNEW FuzzyQuery(term);
-	Hits* result = searcher.search(query);
+	Hits* result = searcher.search(query, NULL);
 
 	CLUCENE_ASSERT(result && result->length() > 0);
 

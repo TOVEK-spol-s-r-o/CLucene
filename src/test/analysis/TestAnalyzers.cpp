@@ -307,7 +307,7 @@
 
        IndexSearcher searcher(&ram);
        Query* q = QueryParser::parse(_T("blah"), _T("First"), &a);
-       Hits* h = searcher.search(q);
+       Hits* h = searcher.search(q, NULL);
        _CLLDELETE(h);
        _CLLDELETE(q);
    }

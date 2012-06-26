@@ -55,7 +55,7 @@ CL_NS_DEF(search)
       * @param filter if non-null, a bitset used to eliminate some documents
       * @param results to receive hits
       */
-      virtual void _search(Query* query, Filter* filter, HitCollector* results) = 0;
+      virtual void _search(Query* query, Similarity* similarity, Filter* filter, HitCollector* results) = 0;
 
       /** Frees resources associated with this Searcher.
       * Be careful not to call this method while you are still using objects
@@ -83,7 +83,7 @@ CL_NS_DEF(search)
       * <p>Applications should usually call {@link Searcher#search(Query*)} or
       * {@link Searcher#search(Query*,Filter*)} instead.
       */
-      virtual TopDocs* _search(Query* query, Filter* filter, const int32_t n) = 0;
+      virtual TopDocs* _search(Query* query, Similarity* similarity, Filter* filter, const int32_t n) = 0;
 
       /** Expert: Returns the stored fields of document <code>i</code>.
       * Called by {@link HitCollector} implementations.
@@ -103,7 +103,7 @@ CL_NS_DEF(search)
       * Computing an explanation is as expensive as executing the query over the
       * entire index.
       */
-      virtual void explain(Query* query, int32_t doc, Explanation* ret) = 0;
+      virtual void explain(Query* query, Similarity* similarity, int32_t doc, Explanation* ret) = 0;
 
       /** Expert: Low-level search implementation with arbitrary sorting.  Finds
       * the top <code>n</code> hits for <code>query</code>, applying
@@ -113,7 +113,7 @@ CL_NS_DEF(search)
       * <p>Applications should usually call {@link
       * Searcher#search(Query,Filter,Sort)} instead.
       */
-	  	virtual TopFieldDocs* _search(Query* query, Filter* filter, const int32_t n, const Sort* sort) = 0;
+	  	virtual TopFieldDocs* _search(Query* query, Similarity* similarity, Filter* filter, const int32_t n, const Sort* sort) = 0;
    };
 
 
@@ -130,21 +130,21 @@ CL_NS_DEF(search)
 		virtual ~Searcher();
 
 		// Returns the documents matching <code>query</code>.
-		Hits* search(Query* query);
+		Hits* search(Query* query, Similarity* sim);
 
 		// Returns the documents matching <code>query</code> and
 		//	<code>filter</code>. 
-		Hits* search(Query* query, Filter* filter);
+		Hits* search(Query* query, Similarity* sim, Filter* filter);
 
 		/** Returns documents matching <code>query</code> sorted by
 		* <code>sort</code>.
 		*/
-		Hits* search(Query* query, const Sort* sort);
+		Hits* search(Query* query, Similarity* sim, const Sort* sort);
 
 		/** Returns documents matching <code>query</code> and <code>filter</code>,
 			* sorted by <code>sort</code>.
 			*/
-		Hits* search(Query* query, Filter* filter, const Sort* sort);
+		Hits* search(Query* query, Similarity* sim, Filter* filter, const Sort* sort);
 
 		/** Lower-level search API.
 		*
@@ -159,7 +159,7 @@ CL_NS_DEF(search)
 		* In other words, the score will not necessarily be a float whose value is
 		* between 0 and 1.
 		*/
-		void _search(Query* query, HitCollector* results);
+		void _search(Query* query, Similarity* sim, HitCollector* results);
 
 		/** Expert: Set the Similarity implementation used by this Searcher.
 		*
@@ -176,7 +176,7 @@ CL_NS_DEF(search)
 		virtual const char* getObjectName() const;
 		static const char* getClassName();
 
-	    virtual void _search(Query* query, Filter* filter, HitCollector* results) = 0;
+	    virtual void _search(Query* query, Similarity* sim, Filter* filter, HitCollector* results) = 0;
 	};
 
 CL_NS_END

@@ -18,9 +18,9 @@
 CL_NS_USE(util)
 CL_NS_DEF2(search, spans)
 
-SpanWeight::SpanWeight( SpanQuery * query, CL_NS(search)::Searcher * searcher )
+SpanWeight::SpanWeight( SpanQuery * query, CL_NS(search)::Searcher * searcher, CL_NS(search)::Similarity* similarity )
 {
-    this->similarity = query->getSimilarity( searcher );
+    this->similarity = similarity;
     this->query = query;
     
     terms = _CLNEW TermSet();

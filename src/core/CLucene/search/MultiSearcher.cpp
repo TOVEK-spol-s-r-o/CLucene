@@ -119,14 +119,14 @@ CL_NS_DEF(search)
     return _maxDoc;
   }
 
-  TopDocs* MultiSearcher::_search(Query* query, Filter* filter, const int32_t nDocs) {
+  TopDocs* MultiSearcher::_search(Query* query, Similarity* similarity, Filter* filter, const int32_t nDocs) {
     HitQueue* hq = _CLNEW HitQueue(nDocs);
     int32_t totalHits = 0;
 	TopDocs* docs;
 	int32_t j;
 	ScoreDoc* scoreDocs;
     for (int32_t i = 0; i < searchablesLen; i++) {  // search each searcher
-		docs = searchables[i]->_search(query, filter, nDocs);
+		docs = searchables[i]->_search(query, similarity, filter, nDocs);
 		totalHits += docs->totalHits;		  // update totalHits
 		scoreDocs = docs->scoreDocs;
 		for ( j = 0; j <docs->scoreDocsLength; ++j) { // merge scoreDocs int_to hq
@@ -165,7 +165,7 @@ CL_NS_DEF(search)
    * @param filter if non-null, a bitset used to eliminate some documents
    * @param results to receive hits
    */
-  void MultiSearcher::_search(Query* query, Filter* filter, HitCollector* results){
+  void MultiSearcher::_search(Query* query, Similarity* similarity, Filter* filter, HitCollector* results){
 	for (int32_t i = 0; i < searchablesLen; ++i) {
       /* DSR:CL_BUG: Old implementation leaked and was misconceived.  We need
       ** to have the original HitCollector ($results) collect *all* hits;
@@ -175,12 +175,12 @@ CL_NS_DEF(search)
       ** MultiHitCollectors that applied the adjustments in $starts
       ** cumulatively (and was never deleted). */
       HitCollector *docNoAdjuster = _CLNEW MultiHitCollector(results, starts[i]);
-      searchables[i]->_search(query, filter, docNoAdjuster);
+      searchables[i]->_search(query, similarity, filter, docNoAdjuster);
       _CLDELETE(docNoAdjuster);
     }
   }
 
-  TopFieldDocs* MultiSearcher::_search (Query* query, Filter* filter, const int32_t n, const Sort* sort){
+  TopFieldDocs* MultiSearcher::_search (Query* query, Similarity* similarity, Filter* filter, const int32_t n, const Sort* sort){
     FieldDocSortedHitQueue* hq = NULL;
     int32_t totalHits = 0;
 	TopFieldDocs* docs;
@@ -188,7 +188,7 @@ CL_NS_DEF(search)
 	FieldDoc** fieldDocs;
 
 	for (int32_t i = 0; i < searchablesLen; ++i) { // search each searcher
-		docs = searchables[i]->_search (query, filter, n, sort);
+		docs = searchables[i]->_search (query, similarity, filter, n, sort);
 		if (hq == NULL){
 			hq = _CLNEW FieldDocSortedHitQueue (docs->fields, n);
 			docs->fields = NULL; //hit queue takes fields memory
@@ -227,9 +227,9 @@ CL_NS_DEF(search)
     return query;
   }
 
-  void MultiSearcher::explain(Query* query, int32_t doc, Explanation* ret) {
+  void MultiSearcher::explain(Query* query, Similarity* similarity, int32_t doc, Explanation* ret) {
     int32_t i = subSearcher(doc);			  // find searcher index
-    searchables[i]->explain(query,doc-starts[i], ret); // dispatch to searcher
+    searchables[i]->explain(query, similarity, doc-starts[i], ret); // dispatch to searcher
   }
 
   MultiHitCollector::MultiHitCollector(HitCollector* _results, int32_t _start):

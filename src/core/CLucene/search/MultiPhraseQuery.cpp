@@ -43,14 +43,14 @@ private:
 	MultiPhraseQuery* parentQuery;
 
 public:
-	MultiPhraseWeight(Searcher* searcher, MultiPhraseQuery* _parentQuery) : similarity(_parentQuery->getSimilarity(searcher)),
+	MultiPhraseWeight(Searcher* searcher, MultiPhraseQuery* _parentQuery, Similarity* _similarity) : similarity(_similarity),
 		value(0), idf(0), queryNorm(0), queryWeight(0), parentQuery(_parentQuery) {
 
 		// compute idf
 		for (size_t i = 0; i < parentQuery->termArrays->size(); i++){
 			ArrayBase<Term*>* terms = parentQuery->termArrays->at(i);
       for ( size_t j=0;j<terms->length;j++ ){
-        idf += parentQuery->getSimilarity(searcher)->idf(terms->values[j], searcher);
+        idf += similarity->idf(terms->values[j], searcher);
 			}
 		}
 	}
@@ -331,8 +331,8 @@ void MultiPhraseQuery::getPositions(ValueArray<int32_t>& result) const {
 		result.values[i] = (*positions)[i];
 }
 
-Weight* MultiPhraseQuery::_createWeight(Searcher* searcher) {
-	return _CLNEW MultiPhraseWeight(searcher, this);
+Weight* MultiPhraseQuery::_createWeight(Searcher* searcher, Similarity* similarity) {
+	return _CLNEW MultiPhraseWeight(searcher, this, similarity);
 }
 
 TCHAR* MultiPhraseQuery::toString(const TCHAR* f) const {

@@ -44,7 +44,7 @@ Filter* SpanQueryFilter::clone() const
 	return _CLNEW SpanQueryFilter( *this );
 }
 
-CL_NS(util)::BitSet * SpanQueryFilter::bits( CL_NS(index)::IndexReader * reader )
+CL_NS(util)::BitSet * SpanQueryFilter::bits( CL_NS(index)::IndexReader * reader, CL_NS(search)::Similarity* similarity )
 {
     SpanFilterResult *    result = bitSpans( reader );
     CL_NS(util)::BitSet * bits   = result->getBits();

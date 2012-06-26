@@ -63,7 +63,7 @@ RangeFilter* RangeFilter::More( const TCHAR* _fieldName, const TCHAR* _lowerTerm
 	return _CLNEW RangeFilter( _fieldName, _lowerTerm, NULL, true, false );
 }
 
-BitSet* RangeFilter::bits( IndexReader* reader )
+BitSet* RangeFilter::bits( IndexReader* reader, CL_NS(search)::Similarity* similarity )
 {
 	BitSet* bts = _CLNEW BitSet( reader->maxDoc() );
 	Term* term = NULL;

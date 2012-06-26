@@ -192,7 +192,7 @@ void TestNearSpansOrdered::testNearSpansSkipTo1()
 void TestNearSpansOrdered::testSpanNearScorerSkipTo1()
 {
     SpanNearQuery * q = makeQuery();
-    Weight * w = q->_createWeight( searcher );
+    Weight * w = q->_createWeight( searcher, searcher->getSimilarity() );
     Scorer * s = w->scorer( searcher->getReader() );
     assertTrue( s->skipTo( 1 ));
     assertTrue( 1 == s->doc());
@@ -208,7 +208,7 @@ void TestNearSpansOrdered::testSpanNearScorerSkipTo1()
 void TestNearSpansOrdered::testSpanNearScorerExplain()
 {
     SpanNearQuery * q = makeQuery();
-    Weight * w = q->_createWeight( searcher );
+    Weight * w = q->_createWeight( searcher, searcher->getSimilarity() );
     Scorer * s = w->scorer( searcher->getReader() );
     Explanation * e = s->explain( 1 );
     

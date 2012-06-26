@@ -64,7 +64,7 @@ CL_NS_DEF(search)
 		float_t getBoost() const;
 
         /** Expert: Constructs an initializes a Weight for a top-level query. */
-        Weight* weight(Searcher* searcher);
+        Weight* weight(Searcher* searcher, Similarity* similarity);
 
         /** Expert: called to re-write queries into primitive queries.
         *
@@ -105,11 +105,12 @@ CL_NS_DEF(search)
         */
         static Query* mergeBooleanQueries(CL_NS(util)::ArrayBase<Query*>* queries);
 
-        /** Expert: Returns the Similarity implementation to be used for this query.
-        * Subclasses may override this method to specify their own Similarity
-        * implementation, perhaps one that delegates through that of the Searcher.
-        * By default the Searcher's Similarity implementation is returned.*/
-        Similarity* getSimilarity(Searcher* searcher);
+// Queries should use similarity suplied when calling createweight
+//         /** Expert: Returns the Similarity implementation to be used for this query.
+//         * Subclasses may override this method to specify their own Similarity
+//         * implementation, perhaps one that delegates through that of the Searcher.
+//         * By default the Searcher's Similarity implementation is returned.*/
+//         Similarity* getSimilarity(Searcher* searcher);
 
         /** Returns a clone of this query. */
         virtual Query* clone() const = 0;
@@ -147,7 +148,7 @@ CL_NS_DEF(search)
         * <p>Only implemented by primitive queries, which re-write to themselves.
         * <i>This is an Internal function</i>
         */
-        virtual Weight* _createWeight(Searcher* searcher);
+        virtual Weight* _createWeight(Searcher* searcher, Similarity* similarity);
   };
 
 CL_NS_END

@@ -16,7 +16,7 @@ void testTermPositionVectors(CuTest *tc) {
     TermQuery query(term);
     _CLDECDELETE(term);
     try {
-      Hits* hits = tv_searcher->search(&query);
+      Hits* hits = tv_searcher->search(&query, NULL);
       CuAssert (tc,_T("hits.length != 100"), 100 == hits->length());
 
       for (size_t i = 0; i < hits->length(); i++)
@@ -44,7 +44,7 @@ void testTermVectors(CuTest *tc) {
     _CLDECDELETE(term);
 
     try {
-      Hits* hits = tv_searcher->search(&query);
+      Hits* hits = tv_searcher->search(&query, NULL);
       CuAssertIntEquals(tc,_T("hits!=100"), 100, hits->length());
 
       for (size_t i = 0; i < hits->length(); i++)
@@ -58,7 +58,7 @@ void testTermVectors(CuTest *tc) {
 
 	  //test mem leaks with vectors
       CL_NS(search)::Explanation expl;
-	    tv_searcher->explain(&query, hits->id(50), &expl);
+	    tv_searcher->explain(&query, NULL, hits->id(50), &expl);
       TCHAR* tmp = expl.toString();
       _CLDELETE_CARRAY(tmp);
 
@@ -218,7 +218,7 @@ void testKnownSetOfDocuments(CuTest *tc) {
       TermQuery query(tqTerm);
       _CLDECDELETE(tqTerm);
 
-      Hits* hits = knownSearcher.search(&query);
+      Hits* hits = knownSearcher.search(&query, NULL);
       //doc 3 should be the first hit b/c it is the shortest match
       CLUCENE_ASSERT(hits->length() == 3);
       float_t score = hits->score(0);

@@ -54,9 +54,9 @@ CL_NS_DEF(search)
 
       int32_t maxDoc() const;
     
-      TopDocs* _search(Query* query, Filter* filter, const int32_t nDocs) ;
+      TopDocs* _search(Query* query, Similarity* similarity, Filter* filter, const int32_t nDocs) ;
       
-      TopFieldDocs* _search (Query* query, Filter* filter, const int32_t n, const Sort* sort);
+      TopFieldDocs* _search (Query* query, Similarity* similarity, Filter* filter, const int32_t n, const Sort* sort);
      
       /** Lower-level search API.
        *
@@ -72,10 +72,10 @@ CL_NS_DEF(search)
        * @param filter if non-null, a bitset used to eliminate some documents
        * @param results to receive hits
        */
-        void _search(Query* query, Filter* filter, HitCollector* results);
+        void _search(Query* query, Similarity* similarity, Filter* filter, HitCollector* results);
 
 		Query* rewrite(Query* original);
-		void explain(Query* query, int32_t doc, Explanation* ret);
+		void explain(Query* query, Similarity* similarity, int32_t doc, Explanation* ret);
     };
 
 CL_NS_END
