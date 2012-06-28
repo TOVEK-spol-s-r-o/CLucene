@@ -42,6 +42,13 @@ public:
 
     void testSpanNearOrderedOverlap();
 
+    void testSpanNearUnorderedComplete();
+    void testSpanNearUnorderedComplete1();
+    void testSpanNearUnorderedComplete2();
+    void testSpanNearUnorderedComplete3();
+    void testSpanNearOrderedComplete();
+    void testSpanNearOrderedComplete1();
+
     void testSpanOrEmpty();
     void testSpanOrSingle();
     void testSpanOrDouble();
@@ -55,6 +62,8 @@ private:
 
     void orSpans( const TCHAR ** terms, size_t termsCount, Spans *& spans, Query *& query );
     void tstNextSpans( Spans * spans, int32_t doc, int32_t start, int32_t end );
+
+    void printSpans( Spans * spans );
 };
 #endif
 

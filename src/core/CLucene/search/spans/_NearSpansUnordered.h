@@ -14,6 +14,49 @@ CL_CLASS_DEF2(search, spans, SpanNearQuery)
 
 CL_NS_DEF2( search, spans )
 
+/////////////////////////////////////////////////////////////////////////////
+class Int32Cache
+{
+private:
+    int32_t *   pTop;
+    int32_t *   pPush;
+
+    int32_t *   pBuffer;
+    int32_t *   pBufferEnd;
+
+public:
+    Int32Cache()                        { pTop = pPush = pBuffer = _CL_NEWARRAY( int32_t, 8 ); pBufferEnd = pBuffer+8; }
+    virtual ~Int32Cache()               { _CLDELETE_LARRAY( pBuffer ); }
+
+    void push2( int32_t value1, int32_t value2 );
+    void pop2()                         { pTop+=2; if( pTop >= pBufferEnd ) pTop = pBuffer + (pTop - pBufferEnd); }
+
+    /// Returns top elements of random elements
+    int32_t top() const                 { return *pTop; }
+    int32_t top2() const                { return *(pTop+1); }
+    int32_t get( int32_t pos ) const    { int32_t * pValue = pTop + pos; if( pValue < pBufferEnd ) return *pValue; else return *( pBuffer + (pValue - pBufferEnd)); }
+
+    /// Clear cache and check its size
+    void clear()                        { pTop = pPush = pBuffer; }
+    bool empty() const                  { return pTop == pPush; }
+    size_t size() const                 { if( pPush >= pTop ) return pPush - pTop; else return pBufferEnd - pBuffer - (pTop - pPush); }
+
+protected:
+    void resizeAfterPush();
+};
+
+inline void Int32Cache::push2( int32_t value1, int32_t value2 )
+{ 
+    *(pPush++) = value1; 
+    *(pPush++) = value2; 
+    if( pPush == pBufferEnd ) 
+        pPush = pBuffer; 
+    if( pPush == pTop ) 
+        resizeAfterPush(); 
+};
+
+
+/////////////////////////////////////////////////////////////////////////////
 class NearSpansUnordered : public Spans 
 {
 private:
@@ -25,6 +68,9 @@ private:
         Spans *                 spans;
         int32_t                 length;
         int32_t                 index;
+        
+        Int32Cache              cache;
+        bool                    cachedNext;
 
     public:
         SpansCell *             nextCell;
@@ -33,12 +79,15 @@ private:
         SpansCell( NearSpansUnordered * parentSpans, Spans * spans, int32_t index );
         virtual ~SpansCell();
 
-        bool next()                     { return adjust( spans->next() ); }
-        bool skipTo( int32_t target )   { return adjust( spans->skipTo( target )); }
+        bool next();
+        bool skipTo( int32_t target );
 
-        int32_t doc() const             { return spans->doc(); }
-        int32_t start() const           { return spans->start(); }
-        int32_t end() const             { return spans->end(); }
+        int32_t doc() const             { return cache.empty() ? spans->doc() : parentSpans->cachedDoc; }
+        int32_t start() const           { return cache.empty() ? spans->start() : cache.top(); }
+        int32_t end() const             { return cache.empty() ? spans->end() : cache.top2(); }
+
+        void addEnds( int32_t endMin, int32_t endMax, set<int32_t>& ends );
+        void clearCache()               { cache.clear(); }
 
         TCHAR* toString() const;
         
@@ -75,6 +124,11 @@ private:
     bool                more;                   // true iff not done
     bool                firstTime;              // true before first next()
 
+    int32_t             cachedDoc;
+    int32_t             cachedStart;
+    set<int32_t>        cachedEnds;
+    set<int32_t>::iterator  iCachedEnds;
+
 public:
     NearSpansUnordered( SpanNearQuery * query, CL_NS(index)::IndexReader * reader );
     virtual ~NearSpansUnordered();
@@ -82,9 +136,9 @@ public:
     bool next();
     bool skipTo( int32_t target );
 
-    int32_t doc() const     { return min()->doc(); }
-    int32_t start() const   { return min()->start(); }
-    int32_t end() const     { return max->end(); }
+    int32_t doc() const     { return cachedEnds.empty() ? min()->doc() : cachedDoc; }
+    int32_t start() const   { return cachedEnds.empty() ? min()->start() : cachedStart; }
+    int32_t end() const     { return cachedEnds.empty() ? max->end() : *iCachedEnds; }
 
     TCHAR* toString() const;
 
@@ -97,6 +151,10 @@ private:
     void queueToList();
     void listToQueue();
     bool atMatch();
+
+    void prepareSpans();
+    
+    bool _next();
 };
 
 CL_NS_END2
