@@ -97,7 +97,7 @@ public:
     /** This returns some kind of lazy spans. The set will be evaluated with the first call
      *  and this query and the given reader must exists at this time
      */
-    Spans * getSpans( CL_NS(index)::IndexReader * reader );
+    Spans * getSpans( CL_NS(index)::IndexReader * reader, bool complete );
 
 protected:
     void setField( const TCHAR * field );

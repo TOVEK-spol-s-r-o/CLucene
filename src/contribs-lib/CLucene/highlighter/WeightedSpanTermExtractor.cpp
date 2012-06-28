@@ -424,7 +424,7 @@ void WeightedSpanTermExtractor::extractWeightedSpanTerms( CL_NS2(search,spans)::
 {
     vector<WeightedSpanTerm::PositionSpan *>    spanPositions;
     IndexReader *                               pReader = getFieldReader();
-    Spans *                                     pSpans  = pSpanQuery->getSpans( pReader );
+    Spans *                                     pSpans  = pSpanQuery->getSpans( pReader, true );
 
 
     if( m_nDocId == -1 )

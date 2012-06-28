@@ -55,7 +55,7 @@ CL_NS(util)::BitSet * SpanQueryFilter::bits( CL_NS(index)::IndexReader * reader,
 SpanFilterResult * SpanQueryFilter::bitSpans( CL_NS(index)::IndexReader * reader )
 {
     CL_NS(util)::BitSet *                                   bits        = _CLNEW CL_NS(util)::BitSet( reader->maxDoc() );
-    CL_NS2(search,spans)::Spans *                           spans       = query->getSpans( reader );
+    CL_NS2(search,spans)::Spans *                           spans       = query->getSpans( reader, false );
     CL_NS(util)::CLList<SpanFilterResult::PositionInfo*> *  tmp         = new CL_NS(util)::CLList<SpanFilterResult::PositionInfo*>();
     int32_t                                                 currentDoc  = -1;
     SpanFilterResult::PositionInfo *                        currentInfo = NULL;
