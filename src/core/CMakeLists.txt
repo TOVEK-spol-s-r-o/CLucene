@@ -226,11 +226,12 @@ FOREACH(file ${HEADERS})
 	get_filename_component(apath ${file} PATH)
 	get_filename_component(aname ${file} NAME)
 	file(RELATIVE_PATH relpath ${CMAKE_SOURCE_DIR}/src/core ${apath})
-	IF ( NOT aname MATCHES "^_.*" )
+    # HT: Some _ headres are user in tlcore
+	#IF ( NOT aname MATCHES "^_.*" )
 		install(FILES ${file} 
 		        DESTINATION include/${relpath}
 		        COMPONENT development)
-	ENDIF ( NOT aname MATCHES "^_.*" )
+	#ENDIF ( NOT aname MATCHES "^_.*" )
 ENDFOREACH(file)
 
 #install clucene-shared headers.
