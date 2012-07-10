@@ -105,7 +105,7 @@ public:
     bool equals( Query* other ) const;
     size_t hashCode() const;
 
-    Spans * getSpans( CL_NS(index)::IndexReader * reader );
+    Spans * getSpans( CL_NS(index)::IndexReader * reader, bool complete );
 
 protected:
     void setField( const TCHAR * field );

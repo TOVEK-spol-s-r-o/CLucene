@@ -19,7 +19,7 @@ class CLUCENE_EXPORT SpanQuery : public CL_NS(search)::Query
 public:
     /** Expert: Returns the matches for this query in an index.  Used internally
      * to search for spans. */
-    virtual Spans * getSpans( CL_NS(index)::IndexReader * reader ) = 0;
+    virtual Spans * getSpans( CL_NS(index)::IndexReader * reader, bool complete ) = 0;
 
     /** Returns the name of the field matched by this query.*/
     virtual const TCHAR* getField() const = 0;

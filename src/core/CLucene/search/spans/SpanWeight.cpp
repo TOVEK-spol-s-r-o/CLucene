@@ -61,7 +61,7 @@ void SpanWeight::normalize( float_t norm )
 
 CL_NS(search)::Scorer * SpanWeight::scorer( CL_NS(index)::IndexReader* reader )
 {
-    return _CLNEW SpanScorer( query->getSpans( reader ), 
+    return _CLNEW SpanScorer( query->getSpans( reader, false ), 
                               this,
                               similarity,
                               reader->norms( query->getField() ));

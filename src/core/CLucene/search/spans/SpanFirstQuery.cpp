@@ -24,7 +24,7 @@ private:
     SpanFirstQuery * parentQuery;
 
 public:
-    SpanFirstQuerySpans( SpanFirstQuery * parentQuery, CL_NS(index)::IndexReader * reader );
+    SpanFirstQuerySpans( SpanFirstQuery * parentQuery, CL_NS(index)::IndexReader * reader, bool complete );
     virtual ~SpanFirstQuerySpans();
 
     bool next();
@@ -37,11 +37,11 @@ public:
     TCHAR* toString() const;
 };
 
-SpanFirstQuery::SpanFirstQuerySpans::SpanFirstQuerySpans( SpanFirstQuery * parentQuery, CL_NS(index)::IndexReader * reader )
+SpanFirstQuery::SpanFirstQuerySpans::SpanFirstQuerySpans( SpanFirstQuery * parentQuery, CL_NS(index)::IndexReader * reader, bool complete )
 {
     this->parentQuery = parentQuery;
     this->end_ = parentQuery->end;
-    this->spans = parentQuery->match->getSpans( reader );
+    this->spans = parentQuery->match->getSpans( reader, complete );
 }
 
 SpanFirstQuery::SpanFirstQuerySpans::~SpanFirstQuerySpans()
@@ -197,9 +197,9 @@ size_t SpanFirstQuery::hashCode() const
     return h;
 }
 
-Spans * SpanFirstQuery::getSpans( CL_NS(index)::IndexReader * reader )
+Spans * SpanFirstQuery::getSpans( CL_NS(index)::IndexReader * reader, bool complete )
 {
-    return _CLNEW SpanFirstQuerySpans( this, reader );
+    return _CLNEW SpanFirstQuerySpans( this, reader, complete );
 }
 
 CL_NS_END2

@@ -104,7 +104,7 @@ void TestNearSpansOrdered::testSpanNearQuery()
 void TestNearSpansOrdered::testNearSpansNext()
 {
     SpanNearQuery * q = makeQuery();
-    Spans * spans = q->getSpans( searcher->getReader() );
+    Spans * spans = q->getSpans( searcher->getReader(), false );
     assertTrue( spans->next());
     assertTrue( checkSpans( spans, 0, 0 ,3 ));
     assertTrue( spans->next() );
@@ -122,7 +122,7 @@ void TestNearSpansOrdered::testNearSpansNext()
 void TestNearSpansOrdered::testNearSpansSkipToLikeNext()
 {
     SpanNearQuery * q = makeQuery();
-    Spans * spans = q->getSpans( searcher->getReader() );
+    Spans * spans = q->getSpans( searcher->getReader(), false );
     assertTrue( spans->skipTo(0) );
     assertTrue( checkSpans( spans, 0, 0, 3 ));
     assertTrue( spans->skipTo(1) );
@@ -135,7 +135,7 @@ void TestNearSpansOrdered::testNearSpansSkipToLikeNext()
 void TestNearSpansOrdered::testNearSpansNextThenSkipTo()
 {
     SpanNearQuery * q = makeQuery();
-    Spans * spans = q->getSpans( searcher->getReader() );
+    Spans * spans = q->getSpans( searcher->getReader(), false );
     assertTrue( spans->next() );
     assertTrue( checkSpans( spans, 0, 0, 3 ));
     assertTrue( spans->skipTo( 1 ));
@@ -148,7 +148,7 @@ void TestNearSpansOrdered::testNearSpansNextThenSkipTo()
 void TestNearSpansOrdered::testNearSpansNextThenSkipPast()
 {
     SpanNearQuery * q = makeQuery();
-    Spans * spans = q->getSpans( searcher->getReader() );
+    Spans * spans = q->getSpans( searcher->getReader(), false );
     assertTrue( spans->next() );
     assertTrue( checkSpans( spans, 0, 0, 3 ));
     assertTrue( ! spans->skipTo( 2 ));
@@ -159,7 +159,7 @@ void TestNearSpansOrdered::testNearSpansNextThenSkipPast()
 void TestNearSpansOrdered::testNearSpansSkipPast()
 {
     SpanNearQuery * q = makeQuery();
-    Spans * spans = q->getSpans( searcher->getReader() );
+    Spans * spans = q->getSpans( searcher->getReader(), false );
     assertTrue( ! spans->skipTo( 2 ));
     _CLLDELETE( spans );
     _CLLDELETE( q );
@@ -168,7 +168,7 @@ void TestNearSpansOrdered::testNearSpansSkipPast()
 void TestNearSpansOrdered::testNearSpansSkipTo0()
 {
     SpanNearQuery * q = makeQuery();
-    Spans * spans = q->getSpans( searcher->getReader() );
+    Spans * spans = q->getSpans( searcher->getReader(), false );
     assertTrue( spans->skipTo( 0 ));
     assertTrue( checkSpans( spans, 0, 0, 3 ));
     _CLLDELETE( spans );
@@ -178,7 +178,7 @@ void TestNearSpansOrdered::testNearSpansSkipTo0()
 void TestNearSpansOrdered::testNearSpansSkipTo1()
 {
     SpanNearQuery * q = makeQuery();
-    Spans * spans = q->getSpans( searcher->getReader() );
+    Spans * spans = q->getSpans( searcher->getReader(), false );
     assertTrue( spans->skipTo(1) );
     assertTrue( checkSpans( spans, 1, 0, 4 ));
     _CLLDELETE( spans );

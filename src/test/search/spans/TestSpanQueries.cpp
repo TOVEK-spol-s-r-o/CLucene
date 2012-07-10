@@ -74,6 +74,20 @@ void testNearSpansOrdered( CuTest * tc )
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void testSpansAdvanced1( CuTest * tc )
+{
+    TestSpans test( tc );
+    test.setUp();
+    test.testSpanNearUnorderedComplete();
+    test.testSpanNearUnorderedComplete1();
+    test.testSpanNearUnorderedComplete2();
+    test.testSpanNearUnorderedComplete3();
+//     test.testSpanNearOrderedComplete();
+//     test.testSpanNearOrderedComplete1();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 void testSpansAdvanced( CuTest * tc )
 {
     TestSpansAdvanced test( tc );
@@ -177,6 +191,7 @@ CuSuite *testSpanQueries(void)
     SUITE_ADD_TEST( suite, testSpans );
     SUITE_ADD_TEST( suite, testNearSpansOrdered );
     SUITE_ADD_TEST( suite, testSpansAdvanced );
+    SUITE_ADD_TEST( suite, testSpansAdvanced1 );
     SUITE_ADD_TEST( suite, testSpansAdvanced2 );
     SUITE_ADD_TEST( suite, testSpanExplanations );
     SUITE_ADD_TEST( suite, testSpanExplanationsOfNonMatches );

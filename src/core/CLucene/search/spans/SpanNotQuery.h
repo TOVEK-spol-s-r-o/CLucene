@@ -60,7 +60,7 @@ public:
     bool equals( Query* other ) const;
     size_t hashCode() const;
 
-    Spans * getSpans( CL_NS(index)::IndexReader * reader );
+    Spans * getSpans( CL_NS(index)::IndexReader * reader, bool complete );
 
     /** Returns child queries or NULL */
     virtual SpanQuery ** getClauses() const { return (SpanQuery **) &include; }

@@ -153,9 +153,11 @@ SET(clucene_core_Files
 	./CLucene/search/spans/_EmptySpans.h
 	./CLucene/search/spans/_NearSpansOrdered.h
 	./CLucene/search/spans/_NearSpansUnordered.h
+	./CLucene/search/spans/_NearSpansUnorderedComplete.h
 	./CLucene/search/spans/_TermSpans.h
 	./CLucene/search/spans/NearSpansOrdered.cpp
 	./CLucene/search/spans/NearSpansUnordered.cpp
+	./CLucene/search/spans/NearSpansUnorderedComplete.cpp
 	./CLucene/search/spans/SpanFirstQuery.cpp
 	./CLucene/search/spans/SpanFirstQuery.h
 	./CLucene/search/spans/SpanNearQuery.cpp
@@ -226,11 +228,12 @@ FOREACH(file ${HEADERS})
 	get_filename_component(apath ${file} PATH)
 	get_filename_component(aname ${file} NAME)
 	file(RELATIVE_PATH relpath ${CMAKE_SOURCE_DIR}/src/core ${apath})
-	IF ( NOT aname MATCHES "^_.*" )
+    # HT: Some _ headres are user in tlcore
+	#IF ( NOT aname MATCHES "^_.*" )
 		install(FILES ${file} 
 		        DESTINATION include/${relpath}
 		        COMPONENT development)
-	ENDIF ( NOT aname MATCHES "^_.*" )
+	#ENDIF ( NOT aname MATCHES "^_.*" )
 ENDFOREACH(file)
 
 #tempoarary
