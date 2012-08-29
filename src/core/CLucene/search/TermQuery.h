@@ -11,6 +11,8 @@ CL_CLASS_DEF(index,Term)
 CL_CLASS_DEF(util,StringBuffer)
 
 #include "Query.h"
+#include "SearchHeader.h"
+
 
 CL_NS_DEF(search)
     /** A Query that matches documents containing a term.
@@ -20,7 +22,7 @@ CL_NS_DEF(search)
     private:
 		CL_NS(index)::Term* term;
     protected:
-        Weight* _createWeight(Searcher* searcher);
+        Weight* _createWeight(Searcher* searcher, Similarity* similarity);
         TermQuery(const TermQuery& clone);
 	public:
 		// Constructs a query for the term <code>t</code>.
@@ -47,6 +49,34 @@ CL_NS_DEF(search)
         void extractTerms( TermSet * termset ) const;
 
     };
+
+
+	class CLUCENE_EXPORT TermWeight: public Weight {
+	protected:
+		Similarity* similarity; // ISH: was Searcher*, for no apparent reason
+		float_t value;
+		float_t idf;
+		float_t queryNorm;
+		float_t queryWeight;
+
+		TermQuery* parentQuery;	// CLucene specific
+		CL_NS(index)::Term* _term;
+
+	public:
+		TermWeight(Searcher* _searcher, TermQuery* parentQuery, CL_NS(index)::Term* _term, Similarity* _similarity);
+		virtual ~TermWeight();
+
+		// return a *new* string describing this object
+		TCHAR* toString();
+		Query* getQuery() { return (Query*)parentQuery; }
+		float_t getValue() { return value; }
+
+		float_t sumOfSquaredWeights();
+		void normalize(float_t queryNorm);
+		Scorer* scorer(CL_NS(index)::IndexReader* reader);
+		Explanation* explain(CL_NS(index)::IndexReader* reader, int32_t doc);
+	};
+
 CL_NS_END
 #endif
 

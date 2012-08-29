@@ -57,12 +57,12 @@ AbstractCachingFilter::~AbstractCachingFilter(){
 	delete _internal;
 }
 
-BitSet* AbstractCachingFilter::bits(IndexReader* reader){
+BitSet* AbstractCachingFilter::bits(IndexReader* reader, CL_NS(search)::Similarity* similarity){
 	SCOPED_LOCK_MUTEX(_internal->cache_LOCK)
 	BitSetHolder* cached = _internal->cache.get(reader);
 	if ( cached != NULL )
 		return cached->bits;
-	BitSet* bs = doBits(reader);
+	BitSet* bs = doBits(reader, similarity);
 	BitSetHolder* bsh = _CLNEW BitSetHolder(bs, doShouldDeleteBitSet(bs));
 	_internal->cache.put(reader,bsh);
 	return bs;
@@ -98,8 +98,8 @@ TCHAR* CachingWrapperFilter::toString(){
 	_CLDELETE_CARRAY(fs);
 	return ret;
 }
-BitSet* CachingWrapperFilter::doBits(IndexReader* reader){
-	return filter->bits(reader);
+BitSet* CachingWrapperFilter::doBits(IndexReader* reader, CL_NS(search)::Similarity* similarity){
+	return filter->bits(reader, similarity);
 }
 bool CachingWrapperFilter::doShouldDeleteBitSet( CL_NS(util)::BitSet* bits ){
 	return filter->shouldDeleteBitSet(bits);

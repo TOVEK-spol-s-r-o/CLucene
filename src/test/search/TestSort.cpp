@@ -108,7 +108,7 @@ void testSortCleanup(CuTest* /*tc*/) {
 
 // make sure the documents returned by the search match the expected list
 void sortMatches (CuTest *tc, Searcher* searcher, Query* query, Sort* sort, const TCHAR* expectedResult){
-	Hits* result = searcher->search (query, sort);
+	Hits* result = searcher->search (query, NULL, sort);
 	StringBuffer buff(10);
 	int32_t n = result->length();
 	for (int i=0; i<n; ++i) {
@@ -151,7 +151,7 @@ void sortSameValues (CuTest* tc, sortScores* m1, sortScores* m2, bool deleteM1=f
 }
 // make sure the documents returned by the search match the expected list pattern
 void sortMatchesPattern (CuTest* tc, Searcher* searcher, Query* query, Sort* sort, const TCHAR* pattern){
-	Hits* result = searcher->search (query, sort);
+	Hits* result = searcher->search (query, NULL, sort);
 	int32_t n = result->length();
 	StringBuffer buff;
 	for (int i=0; i<n; ++i) {
@@ -437,9 +437,9 @@ void testMultiSort(CuTest *tc) {
 void testNormalizedScores(CuTest *tc) {
 
 	// capture relevancy scores
-	sortScores* scoresX = sort_getScores (tc, sort_full->search (sort_queryX));
-	sortScores* scoresY = sort_getScores (tc, sort_full->search (sort_queryY));
-	sortScores* scoresA = sort_getScores (tc, sort_full->search (sort_queryA));
+	sortScores* scoresX = sort_getScores (tc, sort_full->search (sort_queryX, NULL));
+	sortScores* scoresY = sort_getScores (tc, sort_full->search (sort_queryY, NULL));
+	sortScores* scoresA = sort_getScores (tc, sort_full->search (sort_queryA, NULL));
 
 	// we'll test searching locally, remote and multi
 	// note: the multi test depends on each separate index containing
@@ -454,71 +454,71 @@ void testNormalizedScores(CuTest *tc) {
 
 	_CLDELETE(_sort);
 	_sort = _CLNEW Sort();
-	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA, NULL,_sort)));
 
 	_sort->setSort(SortField::FIELD_DOC());
-	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA, NULL,_sort)));
 
 	_sort->setSort (_T("int"));
-	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA, NULL,_sort)));
 
 	_sort->setSort (_T("float"));
-	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA, NULL,_sort)));
 
 	_sort->setSort (_T("string"));
-	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA, NULL,_sort)));
 
 	const TCHAR* sorts1[3] = { _T("int"),_T("float"),NULL};
 	_sort->setSort ( sorts1 );
-	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA, NULL,_sort)));
 
 	SortField* sorts2[3] = {  _CLNEW SortField (_T("int"), SortField::AUTO, true), _CLNEW SortField (NULL, SortField::DOC, true), NULL };
 	_sort->setSort ( sorts2 );
-	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA, NULL,_sort)));
 
 	const TCHAR* sorts3[3] = { _T("float"),_T("string"),NULL};
 	_sort->setSort (sorts3);
-	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA,_sort)));
-	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, sort_full->search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresX, sort_getScores(tc, multi.search(sort_queryX, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, sort_full->search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresY, sort_getScores(tc, multi.search(sort_queryY, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, sort_full->search(sort_queryA, NULL,_sort)));
+	sortSameValues (tc, scoresA, sort_getScores(tc, multi.search(sort_queryA, NULL,_sort)));
 
 	_CLDELETE(scoresX);
 	_CLDELETE(scoresY);

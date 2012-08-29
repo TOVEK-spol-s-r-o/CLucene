@@ -49,9 +49,10 @@ private:
     SpanQueue *                 queue;
     SpanOrQuery *               parentQuery;
     CL_NS(index)::IndexReader * reader;
+    bool                        complete;
 
 public:
-    SpanOrQuerySpans( SpanOrQuery * parentQuery, CL_NS(index)::IndexReader * reader );
+    SpanOrQuerySpans( SpanOrQuery * parentQuery, CL_NS(index)::IndexReader * reader, bool complete);
     virtual ~SpanOrQuerySpans();
 
     bool next();
@@ -69,11 +70,12 @@ private:
 };
 
 
-SpanOrQuery::SpanOrQuerySpans::SpanOrQuerySpans( SpanOrQuery * parentQuery, CL_NS(index)::IndexReader * reader )
+SpanOrQuery::SpanOrQuerySpans::SpanOrQuerySpans( SpanOrQuery * parentQuery, CL_NS(index)::IndexReader * reader, bool complete )
 {
     this->parentQuery = parentQuery;
     this->reader = reader;
     this->queue = NULL;
+    this->complete = complete;
 }
 
 SpanOrQuery::SpanOrQuerySpans::~SpanOrQuerySpans()
@@ -134,7 +136,7 @@ bool SpanOrQuery::SpanOrQuerySpans::initSpanQueue( int32_t target )
 
     for( size_t i = 0; i < parentQuery->clausesCount; i++ )
     {
-        Spans * spans = parentQuery->clauses[ i ]->getSpans( reader );
+        Spans * spans = parentQuery->clauses[ i ]->getSpans( reader, complete );
         if(( target == -1 && spans->next()) || ( target != -1 && spans->skipTo( target )))
             queue->put( spans );
         else
@@ -293,15 +295,15 @@ size_t SpanOrQuery::hashCode() const
     return h;
 }
 
-Spans * SpanOrQuery::getSpans( CL_NS(index)::IndexReader * reader )
+Spans * SpanOrQuery::getSpans( CL_NS(index)::IndexReader * reader, bool complete )
 {
     if( clausesCount == 0 )
         return _CLNEW EmptySpans();              // CLucene: 0-clause case
 
     if( clausesCount == 1 )                      // optimize 1-clause case
-        return clauses[ 0 ]->getSpans( reader );
+        return clauses[ 0 ]->getSpans( reader, complete );
 
-    return _CLNEW SpanOrQuerySpans( this, reader );
+    return _CLNEW SpanOrQuerySpans( this, reader, complete );
 }
 
 CL_NS_END2

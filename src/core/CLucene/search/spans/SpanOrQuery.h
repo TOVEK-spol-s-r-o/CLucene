@@ -74,8 +74,8 @@ public:
     /** Return the clauses whose spans are matched.
      * CLucene: pointer to the internal array
      */
-    SpanQuery ** getClauses() const;
-    size_t getClausesCount() const;
+    virtual SpanQuery ** getClauses() const;
+    virtual size_t getClausesCount() const;
 
     const TCHAR * getField() const;
 
@@ -97,7 +97,7 @@ public:
     /** This returns some kind of lazy spans. The set will be evaluated with the first call
      *  and this query and the given reader must exists at this time
      */
-    Spans * getSpans( CL_NS(index)::IndexReader * reader );
+    Spans * getSpans( CL_NS(index)::IndexReader * reader, bool complete );
 
 protected:
     void setField( const TCHAR * field );

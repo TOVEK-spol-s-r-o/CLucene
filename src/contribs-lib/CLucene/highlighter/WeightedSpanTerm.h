@@ -43,6 +43,8 @@ public:
         virtual ~PositionSpan() {}
     };
 
+    typedef vector<WeightedSpanTerm::PositionSpan *> PositionSpans;
+
 protected:
     bool                      m_bPositionSensitive;
     vector<PositionSpan *>    m_vPositionSpans;

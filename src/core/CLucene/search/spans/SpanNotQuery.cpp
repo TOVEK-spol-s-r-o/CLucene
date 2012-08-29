@@ -27,7 +27,7 @@ private:
     bool            moreExclude;
 
 public:
-    SpanNotQuerySpans( SpanNotQuery * parentQuery, CL_NS(index)::IndexReader * reader );
+    SpanNotQuerySpans( SpanNotQuery * parentQuery, CL_NS(index)::IndexReader * reader, bool complete );
     virtual ~SpanNotQuerySpans();
 
     bool next();
@@ -40,14 +40,14 @@ public:
     TCHAR* toString() const;
 };
 
-SpanNotQuery::SpanNotQuerySpans::SpanNotQuerySpans( SpanNotQuery * parentQuery, CL_NS(index)::IndexReader * reader )
+SpanNotQuery::SpanNotQuerySpans::SpanNotQuerySpans( SpanNotQuery * parentQuery, CL_NS(index)::IndexReader * reader, bool complete )
 {
     this->parentQuery = parentQuery;
 
-    includeSpans = parentQuery->include->getSpans( reader );
+    includeSpans = parentQuery->include->getSpans( reader, complete );
     moreInclude = true;
 
-    excludeSpans = parentQuery->exclude->getSpans( reader );
+    excludeSpans = parentQuery->exclude->getSpans( reader, complete );
     moreExclude = excludeSpans->next();
 }
 
@@ -266,9 +266,9 @@ size_t SpanNotQuery::hashCode() const
     return h;
 }
 
-Spans * SpanNotQuery::getSpans( CL_NS(index)::IndexReader * reader )
+Spans * SpanNotQuery::getSpans( CL_NS(index)::IndexReader * reader, bool complete )
 {
-   return _CLNEW SpanNotQuerySpans( this, reader );
+   return _CLNEW SpanNotQuerySpans( this, reader, complete );
 }
 
 CL_NS_END2

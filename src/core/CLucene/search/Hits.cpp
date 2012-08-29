@@ -43,8 +43,8 @@ CL_NS_DEF(search)
 	}
 
 
-	Hits::Hits(Searcher* s, Query* q, Filter* f, const Sort* _sort):
-		query(q), searcher(s), filter(f), sort(_sort) , _length(0), first(NULL), last(NULL),
+	Hits::Hits(Searcher* s, Query* q, Similarity* sim, Filter* f, const Sort* _sort):
+		query(q), searcher(s), similarity(sim), filter(f), sort(_sort) , _length(0), first(NULL), last(NULL),
 			numDocs(0), maxDocs(200), nDeletedHits(0), debugCheckedForDeletions(false)
 	{
 	//Func - Constructor
@@ -117,9 +117,9 @@ CL_NS_DEF(search)
 		size_t n = _min * 2;				  // double # retrieved
 		TopDocs* topDocs = NULL;
 		if ( sort==NULL )
-			topDocs = (TopDocs*)((Searchable*)searcher)->_search(query, filter, n);
+			topDocs = (TopDocs*)((Searchable*)searcher)->_search(query, similarity, filter, n);
 		else
-			topDocs = (TopDocs*)((Searchable*)searcher)->_search(query, filter, n, sort);
+			topDocs = (TopDocs*)((Searchable*)searcher)->_search(query, similarity, filter, n, sort);
 
 		_length = topDocs->totalHits;
 		ScoreDoc* scoreDocs = topDocs->scoreDocs;

@@ -160,17 +160,17 @@ void threadSearch(IndexSearcher* searcher, const TCHAR* qry, StandardAnalyzer* t
   try{
     q = QueryParser::parse(qry , _T("contents"), threadAnalyzer);
     if ( q != NULL ){
-      h = searcher->search( q );
+      h = searcher->search( q, NULL );
 
       if ( h->length() > 0 ){
         //check for explanation memory leaks...
         CL_NS(search)::Explanation expl1;
-        searcher->explain(q, h->id(0), &expl1);
+        searcher->explain(q, NULL, h->id(0), &expl1);
         TCHAR* tmp = expl1.toString();
         _CLDELETE_CARRAY(tmp);
         if ( h->length() > 1 ){ //do a second one just in case
           CL_NS(search)::Explanation expl2;
-          searcher->explain(q, h->id(1), &expl2);
+          searcher->explain(q, NULL, h->id(1), &expl2);
           tmp = expl2.toString();
           _CLDELETE_CARRAY(tmp);
         }

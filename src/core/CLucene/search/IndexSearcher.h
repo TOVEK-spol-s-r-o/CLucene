@@ -70,15 +70,15 @@ public:
 
 	int32_t maxDoc() const;
 
-	TopDocs* _search(Query* query, Filter* filter, const int32_t nDocs);
-	TopFieldDocs* _search(Query* query, Filter* filter, const int32_t nDocs, const Sort* sort);
+	TopDocs* _search(Query* query, Similarity* similarity, Filter* filter, const int32_t nDocs);
+	TopFieldDocs* _search(Query* query, Similarity* similarity, Filter* filter, const int32_t nDocs, const Sort* sort);
 
-	void _search(Query* query, Filter* filter, HitCollector* results);
+	void _search(Query* query, Similarity* similarity, Filter* filter, HitCollector* results);
 
 	CL_NS(index)::IndexReader* getReader();
 
 	Query* rewrite(Query* original);
-	void explain(Query* query, int32_t doc, Explanation* ret);
+	void explain(Query* query, Similarity* similarity, int32_t doc, Explanation* ret);
 
    virtual const char* getObjectName() const;
    static const char* getClassName();

@@ -74,13 +74,13 @@ TCHAR* QueryFilter::toString()
 
 /** Returns a BitSet with true for documents which should be permitted in
 search results, and false for those that should not. */
-BitSet* QueryFilter::bits( IndexReader* reader )
+BitSet* QueryFilter::bits( IndexReader* reader, Similarity* similarity )
 {
     BitSet* bits = _CLNEW BitSet(reader->maxDoc());
 
 	IndexSearcher s(reader);
 	QFHitCollector hc(bits);
-	s._search(query, NULL, &hc);
+	s._search(query, similarity, NULL, &hc);
     return bits;
 }
 

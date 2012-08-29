@@ -80,7 +80,7 @@ Filter* CachingSpanFilter::clone() const
 	return _CLNEW CachingSpanFilter( *this );
 }
 
-CL_NS(util)::BitSet* CachingSpanFilter::bits( CL_NS(index)::IndexReader * reader )
+CL_NS(util)::BitSet* CachingSpanFilter::bits( CL_NS(index)::IndexReader * reader, CL_NS(search)::Similarity* similarity )
 {
     SpanFilterResult * result = getCachedResult( reader );
     return result != NULL ? result->getBits() : NULL;

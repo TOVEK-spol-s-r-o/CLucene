@@ -51,7 +51,7 @@ Query* Query::mergeBooleanQueries(CL_NS(util)::ArrayBase<Query*>* queries) {
 
 Query::Query(const Query& clone):boost(clone.boost){
 }
-Weight* Query::_createWeight(Searcher* /*searcher*/){
+Weight* Query::_createWeight(Searcher* /*searcher*/, Similarity* /*similarity*/){
 	_CLTHROWA(CL_ERR_UnsupportedOperation,"UnsupportedOperationException: Query::_createWeight");
 }
 
@@ -105,9 +105,11 @@ Query* Query::combine(CL_NS(util)::ArrayBase<Query*>* queries){
   }
   return result;
 }
-Similarity* Query::getSimilarity(Searcher* searcher) {
-   return searcher->getSimilarity();
-}
+
+// Similarity* Query::getSimilarity(Searcher* searcher) {
+//    return searcher->getSimilarity();
+// }
+
 TCHAR* Query::toString() const{
    return toString(LUCENE_BLANK_STRING);
 }
@@ -116,11 +118,11 @@ void Query::setBoost(float_t b) { boost = b; }
 
 float_t Query::getBoost() const { return boost; }
 
-Weight* Query::weight(Searcher* searcher){
+Weight* Query::weight(Searcher* searcher, Similarity* similarity){
     Query* query = searcher->rewrite(this);
-    Weight* weight = query->_createWeight(searcher);
+    Weight* weight = query->_createWeight(searcher, similarity);
     float_t sum = weight->sumOfSquaredWeights();
-    float_t norm = getSimilarity(searcher)->queryNorm(sum);
+    float_t norm = similarity->queryNorm(sum);
     weight->normalize(norm);
     return weight;
 }
@@ -180,24 +182,24 @@ Searcher::Searcher(){
 Searcher::~Searcher(){
 }
 
-Hits* Searcher::search(Query* query) {
-	return search(query, (Filter*)NULL );
+Hits* Searcher::search(Query* query, Similarity* sim) {
+    return search(query, sim == NULL ? similarity : sim, (Filter*)NULL );
 }
 
-Hits* Searcher::search(Query* query, Filter* filter) {
-	return _CLNEW Hits(this, query, filter);
+Hits* Searcher::search(Query* query, Similarity* sim, Filter* filter) {
+	return _CLNEW Hits(this, query, sim == NULL ? similarity : sim, filter);
 }
 
-Hits* Searcher::search(Query* query, const Sort* sort){
-	return _CLNEW Hits(this, query, NULL, sort);
+Hits* Searcher::search(Query* query, Similarity* sim, const Sort* sort){
+	return _CLNEW Hits(this, query, sim == NULL ? similarity : sim, NULL, sort);
 }
 
-Hits* Searcher::search(Query* query, Filter* filter, const Sort* sort){
-	return _CLNEW Hits(this, query, filter, sort);
+Hits* Searcher::search(Query* query, Similarity* sim, Filter* filter, const Sort* sort){
+	return _CLNEW Hits(this, query, sim == NULL ? similarity : sim, filter, sort);
 }
 
-void Searcher::_search(Query* query, HitCollector* results) {
-	_search(query, NULL, results);
+void Searcher::_search(Query* query, Similarity* sim, HitCollector* results) {
+	_search(query, sim == NULL ? similarity : sim, NULL, results);
 }
 
 void Searcher::setSimilarity(Similarity* similarity) {

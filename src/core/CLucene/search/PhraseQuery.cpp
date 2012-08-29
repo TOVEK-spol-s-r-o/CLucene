@@ -44,8 +44,10 @@ CL_NS_DEF(search)
 		float_t queryWeight;
 
 		PhraseQuery* parentQuery;
+        Similarity*  similarity;
+
 	public:
-		PhraseWeight(Searcher* searcher, PhraseQuery* parentQuery);
+		PhraseWeight(Searcher* searcher, PhraseQuery* parentQuery, Similarity* similarity);
 		virtual ~PhraseWeight();
 		TCHAR* toString();
 
@@ -198,16 +200,16 @@ CL_NS_DEF(search)
 		}
 	}
 
-	Weight* PhraseQuery::_createWeight(Searcher* searcher) {
+	Weight* PhraseQuery::_createWeight(Searcher* searcher, Similarity* similarity) {
 		if (terms->size() == 1) {			  // optimize one-term case
 			Term* term = (*terms)[0];
 			Query* termQuery = _CLNEW TermQuery(term);
 			termQuery->setBoost(getBoost());
-			Weight* ret = termQuery->_createWeight(searcher);
+			Weight* ret = termQuery->_createWeight(searcher, similarity);
 			_CLLDELETE(termQuery);
 			return ret;
 		}
-		return _CLNEW PhraseWeight(searcher,this);
+		return _CLNEW PhraseWeight(searcher, this, similarity);
 	}
 
 
@@ -280,13 +282,14 @@ void PhraseQuery::extractTerms( TermSet * termset ) const
 }
 
 
- PhraseWeight::PhraseWeight(Searcher* searcher, PhraseQuery* _parentQuery) {
+ PhraseWeight::PhraseWeight(Searcher* searcher, PhraseQuery* _parentQuery, Similarity* similarity) {
    this->parentQuery=_parentQuery;
    this->value = 0;
    this->idf = 0;
    this->queryNorm = 0;
    this->queryWeight = 0;
    this->searcher = searcher;
+   this->similarity = similarity;
  }
 
  TCHAR* PhraseWeight::toString() {
@@ -300,7 +303,7 @@ void PhraseQuery::extractTerms( TermSet * termset ) const
  float_t PhraseWeight::getValue() { return value; }
 
  float_t PhraseWeight::sumOfSquaredWeights(){
-   idf = parentQuery->getSimilarity(searcher)->idf(parentQuery->terms, searcher);
+   idf = similarity->idf(parentQuery->terms, searcher);
    queryWeight = idf * parentQuery->getBoost();    // compute query weight
    return queryWeight * queryWeight;         // square it
  }
@@ -359,11 +362,11 @@ void PhraseQuery::extractTerms( TermSet * termset ) const
 		 // optimize exact case
 		 //todo: need to pass these: this, tps,
          ret = _CLNEW SloppyPhraseScorer(this,tps,positions.values,
-								parentQuery->getSimilarity(searcher),
+								similarity,
 								slop, reader->norms(parentQuery->field));
 	else
 	    ret = _CLNEW ExactPhraseScorer(this, tps, positions.values,
-									parentQuery->getSimilarity(searcher),
+									similarity,
                                     reader->norms(parentQuery->field));
 	positions.deleteArray();
 
@@ -454,8 +457,7 @@ void PhraseQuery::extractTerms( TermSet * termset ) const
 
 	  Explanation* fieldNormExpl = _CLNEW Explanation();
 	  uint8_t* fieldNorms = reader->norms(parentQuery->field);
-	  float_t fieldNorm =
-		  fieldNorms!=NULL ? Similarity::decodeNorm(fieldNorms[doc]) : 0.0f;
+	  float_t fieldNorm = fieldNorms!=NULL ? similarity->decodeNorm(fieldNorms[doc]) : 0.0f;
 	  fieldNormExpl->setValue(fieldNorm);
 
 

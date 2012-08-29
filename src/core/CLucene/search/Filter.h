@@ -11,6 +11,9 @@ CL_CLASS_DEF(util,BitSet)
 CL_CLASS_DEF(index,IndexReader)
 
 CL_NS_DEF(search)
+
+class Similarity;
+
   // Abstract base class providing a mechanism to restrict searches to a subset
   // of an index.
   class CLUCENE_EXPORT Filter: LUCENE_BASE {
@@ -25,7 +28,7 @@ CL_NS_DEF(search)
     * search results, and false for those that should not.
     * @memory see {@link #shouldDeleteBitSet}
     */
-    virtual CL_NS(util)::BitSet* bits(CL_NS(index)::IndexReader* reader)=0;
+    virtual CL_NS(util)::BitSet* bits(CL_NS(index)::IndexReader* reader, Similarity* similarity)=0;
     
     /**
     * Because of the problem of cached bitsets with the CachingWrapperFilter,

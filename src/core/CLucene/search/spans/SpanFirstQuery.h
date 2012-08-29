@@ -59,7 +59,13 @@ public:
     bool equals( Query* other ) const;
     size_t hashCode() const;
 
-    Spans * getSpans( CL_NS(index)::IndexReader * reader );
+    Spans * getSpans( CL_NS(index)::IndexReader * reader, bool complete );
+
+    /** Returns child queries or NULL */
+    virtual SpanQuery ** getClauses() const { return (SpanQuery **) &match; }
+
+    /** Returns count of child queries */
+    virtual size_t getClausesCount() const  { return 1; }
 };
 
 CL_NS_END2

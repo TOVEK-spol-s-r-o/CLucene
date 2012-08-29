@@ -31,7 +31,7 @@ CL_NS_DEF(search)
 		bool disableCoord;
     protected:
 		int32_t minNrShouldMatch;
-		Weight* _createWeight(Searcher* searcher);
+		Weight* _createWeight(Searcher* searcher, Similarity* similarity);
 		BooleanQuery(const BooleanQuery& clone);
 
 	public:
@@ -104,14 +104,13 @@ CL_NS_DEF(search)
     /** Expert: adds all terms occurring in this query to the termset set. */
     void extractTerms( TermSet * termset ) const;
 
-	  bool equals(Query* o) const;
-	  Similarity* getSimilarity( Searcher* searcher );
+    bool equals(Query* o) const;
 
-	  bool isCoordDisabled();
-	  void setCoordDisabled( bool disableCoord );
+    bool isCoordDisabled();
+    void setCoordDisabled( bool disableCoord );
 
-	  static bool getUseScorer14();
-	  static void setUseScorer14( bool use14 );
+    static bool getUseScorer14();
+    static void setUseScorer14( bool use14 );
 
     /**
      * Expert: Indicates whether hit docs may be collected out of docid

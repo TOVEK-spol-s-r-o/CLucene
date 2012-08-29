@@ -12,6 +12,7 @@
 #include "_EmptySpans.h"
 #include "_NearSpansOrdered.h"
 #include "_NearSpansUnordered.h"
+#include "_NearSpansUnorderedComplete.h"
 
 CL_NS_DEF2( search, spans )
 
@@ -192,17 +193,17 @@ size_t SpanNearQuery::hashCode() const
     return result;
 }
 
-Spans * SpanNearQuery::getSpans( CL_NS(index)::IndexReader * reader )
+Spans * SpanNearQuery::getSpans( CL_NS(index)::IndexReader * reader, bool complete )
 {
     if( clausesCount == 0 )
         return _CLNEW EmptySpans();               // CLucene: 0-clause case - different to java version, because java creates SpanOrQuery to call its function to create empty spans
 
     if( clausesCount == 1 )                       // optimize 1-clause case
-      return clauses[ 0 ]->getSpans( reader );
+      return clauses[ 0 ]->getSpans( reader, complete );
 
     return inOrder
-            ? (Spans *) _CLNEW NearSpansOrdered( this, reader )
-            : (Spans *) _CLNEW NearSpansUnordered( this, reader );
+            ? (Spans *) _CLNEW NearSpansOrdered( this, reader, complete )
+            : ( complete ?  (Spans *) _CLNEW NearSpansUnorderedComplete( this, reader ) : (Spans *) _CLNEW NearSpansUnordered( this, reader ));
 }
 
 CL_NS_END2

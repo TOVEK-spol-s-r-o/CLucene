@@ -31,7 +31,7 @@ protected:
     SpanQuery *                 query;
 
 public:
-    SpanWeight( SpanQuery * query, CL_NS(search)::Searcher * searcher );
+    SpanWeight( SpanQuery * query, CL_NS(search)::Searcher * searcher, CL_NS(search)::Similarity* similarity );
     virtual ~SpanWeight();
 
     CL_NS(search)::Scorer * scorer( CL_NS(index)::IndexReader* reader );

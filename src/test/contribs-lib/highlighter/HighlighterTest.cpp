@@ -178,7 +178,7 @@ void HighlighterTest::doSearching( Query * unReWrittenQuery, bool bRememberRewri
     _CLDELETE( query );
     query = unReWrittenQuery->rewrite( reader );
     _CLDELETE( hits );
-    hits = searcher->search( query );
+    hits = searcher->search( query, NULL );
 
     // remember query for highlighting
     if( unReWrittenQuery != query )

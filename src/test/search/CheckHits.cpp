@@ -59,7 +59,7 @@ public:
     void collect( const int32_t doc, const float_t score )
     {
         Explanation exp;
-        s->explain( q, doc, &exp );
+        s->explain( q, NULL, doc, &exp );
   
         if( exp.getDetailsLength() == 0 )                                                   // ToDo: Fix IndexSearcher::explain() method
         {
@@ -94,29 +94,29 @@ public:
     virtual ~ExplanationAssertingSearcher() {}
     
     Hits * search( Query * query, Filter * filter )              
-        { checkExplanations( query ); return IndexSearcher::search( query, filter ); }
+        { checkExplanations( query ); return IndexSearcher::search( query, NULL, filter ); }
 
     Hits * search( Query * query, Sort * sort )                  
-        { checkExplanations( query ); return IndexSearcher::search( query, sort ); }
+        { checkExplanations( query ); return IndexSearcher::search( query, NULL, sort ); }
 
     Hits * search( Query * query, Filter * filter, Sort * sort ) 
-        { checkExplanations( query );  return IndexSearcher::search( query, filter, sort ); }
+        { checkExplanations( query );  return IndexSearcher::search( query, NULL, filter, sort ); }
 
     TopFieldDocs * _search( Query * query, Filter * filter, int32_t n, Sort * sort )
-        { checkExplanations( query ); return IndexSearcher::_search( query, filter, n, sort ); }
+        { checkExplanations( query ); return IndexSearcher::_search( query, NULL, filter, n, sort ); }
 
     void _search( Query * query, HitCollector * results )
-        { checkExplanations( query ); IndexSearcher::_search( query, NULL, results ); }
+        { checkExplanations( query ); IndexSearcher::_search( query, NULL, NULL, results ); }
 
     void _search( Query * query, Filter * filter, HitCollector * results )
-        { checkExplanations( query ); IndexSearcher::_search( query, filter, results ); }
+        { checkExplanations( query ); IndexSearcher::_search( query, NULL, filter, results ); }
 
     TopDocs * search_( Query * query, Filter * filter, int32_t n )
-        { checkExplanations( query ); return IndexSearcher::_search( query, filter, n ); }
+        { checkExplanations( query ); return IndexSearcher::_search( query, NULL, filter, n ); }
 
 protected:
     void checkExplanations( Query * q ) 
-        { IndexSearcher::_search( q, NULL, _CLNEW ExplanationAsserter( q, NULL, this, tc )); }
+        { IndexSearcher::_search( q, NULL, NULL, _CLNEW ExplanationAsserter( q, NULL, this, tc )); }
 };
     
 /////////////////////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ void CheckHits::checkNoMatchExplanations( CuTest* tc, Query * q, const TCHAR * d
             continue;
 
         Explanation exp;
-        searcher->explain( q, doc, &exp );
+        searcher->explain( q, NULL, doc, &exp );
         
         if( 0.0f != exp.getValue() )
         {
@@ -212,7 +212,7 @@ void CheckHits::checkHitCollector( CuTest* tc, Query * query, const TCHAR * defa
         correct.insert( results[ i ] );
     
     HitSetCollector hitSet;
-    searcher->_search( query, &hitSet );
+    searcher->_search( query, NULL, &hitSet );
 
     if( ! setEquals( correct, hitSet.actual ))
     {
@@ -407,7 +407,7 @@ void CheckHits::checkExplanations( CuTest* tc, Query * query, const TCHAR * defa
 void CheckHits::checkExplanations( CuTest* tc, Query * query, const TCHAR * defaultFieldName, Searcher * searcher, bool deep )
 {
     ExplanationAsserter asserter( query, defaultFieldName, searcher, deep, tc );
-    searcher->_search( query, &asserter );
+    searcher->_search( query, NULL, &asserter );
 }
 
 

@@ -48,28 +48,28 @@
     	Hits* result = NULL;
 	
     	// ensure that queries return expected results without DateFilter first
-    	result = searcher->search(query1);
+    	result = searcher->search(query1, NULL);
     	CLUCENE_ASSERT(0 == result->length());
 		_CLDELETE(result);
 	
-    	result = searcher->search(query2);
+    	result = searcher->search(query2, NULL);
    		CLUCENE_ASSERT(1 == result->length());
 		_CLDELETE(result);
 	
     	// run queries with DateFilter
-    	result = searcher->search(query1, df1);
+    	result = searcher->search(query1, NULL, df1);
     	CLUCENE_ASSERT(0 == result->length());
 		_CLDELETE(result);
 
-    	result = searcher->search(query1, df2);
+    	result = searcher->search(query1, NULL, df2);
     	CLUCENE_ASSERT(0 == result->length());
 		_CLDELETE(result);
 
-     	result = searcher->search(query2, df1);
+     	result = searcher->search(query2, NULL, df1);
      	CLUCENE_ASSERT(1 == result->length());
 		_CLDELETE(result);
 
-    	result = searcher->search(query2, df2);
+    	result = searcher->search(query2, NULL, df2);
     	CLUCENE_ASSERT(0 == result->length());
 		_CLDELETE(result);
 
@@ -131,28 +131,28 @@
     	Hits* result = NULL;
 
 		// ensure that queries return expected results without DateFilter first
-    	result = searcher->search(query1);
+    	result = searcher->search(query1, NULL);
     	CLUCENE_ASSERT(0 == result->length());
 		_CLDELETE(result);
 
-    	result = searcher->search(query2);
+    	result = searcher->search(query2, NULL);
     	CLUCENE_ASSERT(1 == result->length());
 		_CLDELETE(result);
 
 		// run queries with DateFilter
-    	result = searcher->search(query1, df1);
+    	result = searcher->search(query1, NULL, df1);
     	CLUCENE_ASSERT(0 == result->length());
 		_CLDELETE(result);
 
-		result = searcher->search(query1, df2);
+		result = searcher->search(query1, NULL, df2);
     	CLUCENE_ASSERT(0 == result->length());
 		_CLDELETE(result);
 
-     	result = searcher->search(query2, df1);
+     	result = searcher->search(query2, NULL, df1);
      	CLUCENE_ASSERT(1 == result->length());
 		_CLDELETE(result);
 		
-    	result = searcher->search(query2, df2);
+    	result = searcher->search(query2, NULL, df2);
     	CLUCENE_ASSERT(0 == result->length());
 		_CLDELETE(result);
 
@@ -179,7 +179,7 @@
 		IndexReader* reader = IndexReader::open(loc);
 		int64_t now = Misc::currentTimeMillis()/1000;
     	DateFilter* df1 = DateFilter::After(_T("datefield"), now);
-		BitSet* bs = df1->bits(reader);
+		BitSet* bs = df1->bits(reader, NULL);
 		_CLDELETE(bs);
 		_CLDELETE(df1);
 

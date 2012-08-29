@@ -18,14 +18,14 @@
 CL_NS_USE(util)
 CL_NS_DEF2(search, spans)
 
-SpanWeight::SpanWeight( SpanQuery * query, CL_NS(search)::Searcher * searcher )
+SpanWeight::SpanWeight( SpanQuery * query, CL_NS(search)::Searcher * searcher, CL_NS(search)::Similarity* similarity )
 {
-    this->similarity = query->getSimilarity( searcher );
+    this->similarity = similarity;
     this->query = query;
     
     terms = _CLNEW TermSet();
     query->extractTerms( terms );
-    idf = similarity->idf( terms->begin(), terms->end(), searcher );
+    idf = similarity->idf( terms, searcher );
 }
 
 SpanWeight::~SpanWeight()
@@ -61,7 +61,7 @@ void SpanWeight::normalize( float_t norm )
 
 CL_NS(search)::Scorer * SpanWeight::scorer( CL_NS(index)::IndexReader* reader )
 {
-    return _CLNEW SpanScorer( query->getSpans( reader ), 
+    return _CLNEW SpanScorer( query->getSpans( reader, false ), 
                               this,
                               similarity,
                               reader->norms( query->getField() ));
@@ -141,7 +141,7 @@ CL_NS(search)::Explanation * SpanWeight::explain( CL_NS(index)::IndexReader* rea
 
     Explanation * fieldNormExpl = _CLNEW Explanation();
     uint8_t * fieldNorms = reader->norms( field );
-    float_t fieldNorm = fieldNorms != NULL ? Similarity::decodeNorm( fieldNorms[ doc ] ) : 0.0f;
+    float_t fieldNorm = fieldNorms != NULL ? similarity->decodeNorm( fieldNorms[ doc ] ) : 0.0f;
     fieldNormExpl->setValue( fieldNorm );
     strBuf.clear();
     strBuf.append( _T( "fieldNorm(field=" ));

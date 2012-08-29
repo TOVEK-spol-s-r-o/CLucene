@@ -8,12 +8,14 @@
 #define _lucene_search_Similarity_
 
 #include "CLucene/util/VoidList.h"
+#include "CLucene/search/Query.h"
 CL_CLASS_DEF(index,Term)
 
 CL_NS_DEF(search)
 
 class Searcher;
 class DefaultSimilarity;
+    
 
 /** Expert: Scoring API.
 * <p>Subclasses implement search scoring.
@@ -70,9 +72,16 @@ public:
    */
    static Similarity* getDefault();
    
-	/** Cleanup static data */
-	static CLUCENE_LOCAL void _shutdown();
-   
+   /** Cleanup static data */
+   static CLUCENE_LOCAL void _shutdown();
+      
+   static uint8_t floatToByte(float_t f);
+   static float_t byteToFloat(uint8_t b);
+
+   static uint8_t encodeNormWithDefault(float_t f);
+   static float_t decodeNormWithDefault(uint8_t b);
+
+
    /** Encodes a normalization factor for storage in an index.
    *
    * <p>The encoding uses a five-bit exponent and three-bit mantissa, thus
@@ -85,16 +94,14 @@ public:
    *
    * @see Field#setBoost(float_t)
    */
-   static uint8_t encodeNorm(float_t f);
+   virtual uint8_t encodeNorm(float_t f);
    
    /** Decodes a normalization factor stored in an index.
    * @see #encodeNorm(float_t)
    */
-   static float_t decodeNorm(uint8_t b);
-   
-   static uint8_t floatToByte(float_t f);
-   static float_t byteToFloat(uint8_t b);
+   virtual float_t decodeNorm(uint8_t b);
 
+   
    /** Computes a score factor for a phrase.
    *
    * <p>The default implementation sums the {@link #idf(Term,Searcher)} factor
@@ -104,20 +111,9 @@ public:
    * @param searcher the document collection being searched
    * @return a score factor for the phrase
    */
-   float_t idf(CL_NS(util)::CLVector<CL_NS(index)::Term*>* terms, Searcher* searcher);
-
-   template<class TermIterator>
-   float_t idf( TermIterator first, TermIterator last, Searcher* searcher )
-   {
-      float_t _idf = 0.0f;
-      for( ; first != last; first++ ) {
-         _idf += idf(*first, searcher);
-      }
-      return _idf;
-   }
-
-   //float_t idf(Term** terms, Searcher* searcher);
-
+   // JS - making this method virtual allows us to provide efficienter implementation
+   virtual float_t idf(CL_NS(util)::CLVector<CL_NS(index)::Term*>* terms, Searcher* searcher);
+   virtual float_t idf(TermSet * terms, Searcher* searcher);
    
    /** Computes a score factor for a simple term.
    *
@@ -134,7 +130,7 @@ public:
    * @param searcher the document collection being searched
    * @return a score factor for the term
    */
-   float_t idf(CL_NS(index)::Term* term, Searcher* searcher);
+   virtual float_t idf(CL_NS(index)::Term* term, Searcher* searcher);
 
    
    /** Computes a score factor based on a term or phrase's frequency in a
@@ -248,6 +244,12 @@ public:
    */
    virtual float_t coord(int32_t overlap, int32_t maxOverlap) = 0;
 };
+
+inline uint8_t Similarity::encodeNormWithDefault(float_t f)
+    { return getDefault()->encodeNorm(f); }
+
+inline float_t Similarity::decodeNormWithDefault(uint8_t b)
+    { return getDefault()->decodeNorm(b); }
 
 
 /** Expert: Default scoring implementation. */

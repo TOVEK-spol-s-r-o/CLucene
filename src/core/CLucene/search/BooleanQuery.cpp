@@ -42,9 +42,10 @@ CL_NS_DEF(search)
 		BooleanQuery::ClausesType* clauses;
 		BooleanQuery* parentQuery;
 	public:
-		BooleanWeight(Searcher* searcher,
-			CL_NS(util)::CLVector<BooleanClause*,CL_NS(util)::Deletor::Object<BooleanClause> >* clauses,
-			BooleanQuery* parentQuery);
+		BooleanWeight(Searcher* searcher, 
+                      Similarity* similarity,
+			          CL_NS(util)::CLVector<BooleanClause*,CL_NS(util)::Deletor::Object<BooleanClause> >* clauses,
+			          BooleanQuery* parentQuery);
 		virtual ~BooleanWeight();
 		Query* getQuery();
 		float_t getValue();
@@ -62,8 +63,8 @@ CL_NS_DEF(search)
 		this->disableCoord = disableCoord;
 	}
 
-  Weight* BooleanQuery::_createWeight(Searcher* searcher) {
-		return _CLNEW BooleanWeight(searcher, clauses,this);
+  Weight* BooleanQuery::_createWeight(Searcher* searcher, Similarity* similarity) {
+		return _CLNEW BooleanWeight(searcher, similarity, clauses, this);
 	}
 
 	BooleanQuery::BooleanQuery(const BooleanQuery& clone):
@@ -115,13 +116,6 @@ CL_NS_DEF(search)
        if (maxClauseCount < 1)
            _CLTHROWA(CL_ERR_IllegalArgument, "maxClauseCount must be >= 1");
 	   BooleanQuery::maxClauseCount = maxClauseCount;
-   }
-
-   Similarity* BooleanQuery::getSimilarity( Searcher* searcher ) {
-
-	   Similarity* result = Query::getSimilarity( searcher );
-	   return result;
-
    }
 
   void BooleanQuery::add(Query* query, const bool deleteQuery, const bool required, const bool prohibited) {
@@ -304,15 +298,17 @@ CL_NS_DEF(search)
 	float_t BooleanWeight::getValue() { return parentQuery->getBoost(); }
 	Query* BooleanWeight::getQuery() { return (Query*)parentQuery; }
 
-	BooleanWeight::BooleanWeight(Searcher* searcher,
-		CLVector<BooleanClause*,Deletor::Object<BooleanClause> >* clauses, BooleanQuery* parentQuery)
+	BooleanWeight::BooleanWeight(Searcher* searcher, 
+                                 Similarity* similarity,
+		                         CLVector<BooleanClause*,Deletor::Object<BooleanClause> >* clauses, 
+                                 BooleanQuery* parentQuery)
 	{
 		this->searcher = searcher;
-		this->similarity = parentQuery->getSimilarity( searcher );
+		this->similarity = similarity;
 		this->parentQuery = parentQuery;
 		this->clauses = clauses;
 		for (uint32_t i = 0 ; i < clauses->size(); i++) {
-			weights.push_back((*clauses)[i]->getQuery()->_createWeight(searcher));
+			weights.push_back((*clauses)[i]->getQuery()->_createWeight(searcher, similarity));
 		}
 	}
 	BooleanWeight::~BooleanWeight(){

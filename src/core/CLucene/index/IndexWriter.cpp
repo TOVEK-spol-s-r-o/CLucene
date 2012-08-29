@@ -1181,7 +1181,7 @@ void IndexWriter::addIndexes(CL_NS(util)::ArrayBase<CL_NS(store)::Directory*>& d
     try {
 
       { SCOPED_LOCK_MUTEX(this->THIS_LOCK)
-        for (int32_t i = 0; i< dirs.length; i++) {
+        for (size_t i = 0; i< dirs.length; i++) {
           SegmentInfos sis;	  // read infos from dir
           sis.read(dirs[i]);
           segmentInfos->insert(&sis,true);	  // add each info
@@ -1231,7 +1231,7 @@ void IndexWriter::addIndexesNoOptimize(CL_NS(util)::ArrayBase<CL_NS(store)::Dire
     try {
 
       { SCOPED_LOCK_MUTEX(this->THIS_LOCK)
-        for (int32_t i = 0; i< dirs.length; i++) {
+        for (size_t i = 0; i< dirs.length; i++) {
           if (directory == dirs[i]) {
             // cannot add this index: segments may be deleted in merge before added
             _CLTHROWA(CL_ERR_IllegalArgument,"Cannot add this index to itself");

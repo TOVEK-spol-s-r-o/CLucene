@@ -51,7 +51,7 @@ CL_NS_DEF(search)
 
     /** Returns a BitSet with true for documents which should be permitted in
       search results, and false for those that should not. */
-	  CL_NS(util)::BitSet* bits(CL_NS(index)::IndexReader* reader) ;
+	  CL_NS(util)::BitSet* bits(CL_NS(index)::IndexReader* reader, CL_NS(search)::Similarity* similarity);
 
 	Filter* clone() const;
 	

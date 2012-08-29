@@ -7,7 +7,6 @@
 #include "CLucene/_ApiHeader.h"
 #include "TermQuery.h"
 
-#include "SearchHeader.h"
 #include "Scorer.h"
 #include "CLucene/index/Term.h"
 #include "Explanation.h"
@@ -23,33 +22,6 @@
 CL_NS_USE(index)
 CL_NS_DEF(search)
 
-
-
-	class TermWeight: public Weight {
-	private:
-		Similarity* similarity; // ISH: was Searcher*, for no apparent reason
-		float_t value;
-		float_t idf;
-		float_t queryNorm;
-		float_t queryWeight;
-
-		TermQuery* parentQuery;	// CLucene specific
-		CL_NS(index)::Term* _term;
-
-	public:
-		TermWeight(Searcher* searcher, TermQuery* parentQuery, CL_NS(index)::Term* _term);
-		virtual ~TermWeight();
-
-		// return a *new* string describing this object
-		TCHAR* toString();
-		Query* getQuery() { return (Query*)parentQuery; }
-		float_t getValue() { return value; }
-
-		float_t sumOfSquaredWeights();
-		void normalize(float_t queryNorm);
-		Scorer* scorer(CL_NS(index)::IndexReader* reader);
-		Explanation* explain(CL_NS(index)::IndexReader* reader, int32_t doc);
-	};
 
 
 	/** Constructs a query for the term <code>t</code>. */
@@ -111,7 +83,7 @@ CL_NS_DEF(search)
 			&& this->term->equals(tq->term);
 	}
 
-   TermWeight::TermWeight(Searcher* _searcher, TermQuery* _parentQuery, Term* term):similarity(_searcher->getSimilarity()),
+   TermWeight::TermWeight(Searcher* _searcher, TermQuery* _parentQuery, Term* term, Similarity* _similarity):similarity(_similarity),
 	   value(0), queryNorm(0),queryWeight(0), parentQuery(_parentQuery),_term(term)
    {
 		   idf = similarity->idf(term, _searcher); // compute idf
@@ -208,8 +180,7 @@ CL_NS_DEF(search)
 
 		Explanation* fieldNormExpl = _CLNEW Explanation();
 		uint8_t* fieldNorms = reader->norms(field);
-		float_t fieldNorm =
-			fieldNorms!=NULL ? Similarity::decodeNorm(fieldNorms[doc]) : 0.0f;
+		float_t fieldNorm = fieldNorms!=NULL ? similarity->decodeNorm(fieldNorms[doc]) : 0.0f;
 		fieldNormExpl->setValue(fieldNorm);
 
 		_sntprintf(buf,LUCENE_SEARCH_EXPLANATION_DESC_LEN,
@@ -236,8 +207,8 @@ CL_NS_DEF(search)
 		return result;
 	}
 
-	Weight* TermQuery::_createWeight(Searcher* _searcher) {
-        return _CLNEW TermWeight(_searcher,this,term);
+	Weight* TermQuery::_createWeight(Searcher* _searcher, Similarity* similarity) {
+        return _CLNEW TermWeight(_searcher, this, term, similarity);
     }
 
     void TermQuery::extractTerms( TermSet * termset ) const

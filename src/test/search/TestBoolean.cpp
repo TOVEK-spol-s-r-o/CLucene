@@ -92,7 +92,7 @@ void testBooleanScorer(CuTest *tc) {
         _CLDECDELETE(t);
 
         IndexSearcher *indexSearcher = _CLNEW IndexSearcher(&directory);
-        Hits *hits = indexSearcher->search(query);
+        Hits *hits = indexSearcher->search(query, NULL);
         CLUCENE_ASSERT(2 == hits->length()); // Number of matched documents
         _CLLDELETE(hits);
         _CLLDELETE(indexSearcher);

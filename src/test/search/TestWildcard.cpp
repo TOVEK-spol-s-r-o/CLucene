@@ -13,7 +13,7 @@ void _testWildcard(CuTest* tc, IndexSearcher* searcher, const TCHAR* qt, int exp
 	Query* query = _CLNEW WildcardQuery(term);
 
 	//test the wildcardquery
-	Hits* result = searcher->search(query);
+	Hits* result = searcher->search(query, NULL);
 	CLUCENE_ASSERT(expectedLen == result->length());
 	_CLDELETE(result);
 	_CLDELETE(query);
@@ -21,7 +21,7 @@ void _testWildcard(CuTest* tc, IndexSearcher* searcher, const TCHAR* qt, int exp
 
 	//now test wildcardfilter
 	Filter* filter = _CLNEW WildcardFilter(term);
-	BitSet* bits = filter->bits(searcher->getReader());
+	BitSet* bits = filter->bits(searcher->getReader(), searcher->getSimilarity());
 	CLUCENE_ASSERT(expectedLen == bits->count());
 	_CLDELETE(filter);
 	_CLDELETE(bits);
@@ -59,7 +59,7 @@ void _testWildcard(CuTest* tc, IndexSearcher* searcher, const TCHAR* qt, int exp
 		Query* query1 = _CLNEW TermQuery(term);
 		_CLDECDELETE(term);
 
-    	Hits* result = searcher->search(query1);
+    	Hits* result = searcher->search(query1, NULL);
     	CLUCENE_ASSERT(1 == result->length());
 		_CLDELETE(result);
 		_CLDELETE(query1);

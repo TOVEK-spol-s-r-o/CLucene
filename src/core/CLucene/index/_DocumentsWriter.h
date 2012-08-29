@@ -289,7 +289,7 @@ private:
     int32_t upto;
 
     BufferedNorms();
-    void add(float_t norm);
+    void add(uint8_t norm);
     void reset();
     void fill(int32_t docID);
   };

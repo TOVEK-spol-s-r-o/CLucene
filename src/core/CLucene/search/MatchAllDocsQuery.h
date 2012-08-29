@@ -54,7 +54,7 @@ CL_NS_DEF(search)
 		* <p>Only implemented by primitive queries, which re-write to themselves.
 		* <i>This is an Internal function</i>
 		*/
-		virtual Weight* _createWeight(Searcher* searcher);
+		virtual Weight* _createWeight(Searcher* searcher, Similarity* similarity);
 
 	public:
         /** Returns a clone of this query. */

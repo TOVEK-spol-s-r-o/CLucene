@@ -50,14 +50,14 @@ void testIWmergePhraseSegments(CuTest *tc){
 		_T("field0"),
 		&a
 	);
-	Hits* hits0 = searcher.search(query0);
+	Hits* hits0 = searcher.search(query0, NULL);
 	CLUCENE_ASSERT(hits0->length() > 0);
 	Query* query1 = QueryParser::parse(
 		_T("\"value1 value0\""),
 		_T("field0"),
 		&a
 	);
-	Hits* hits1 = searcher.search(query1);
+	Hits* hits1 = searcher.search(query1, NULL);
 	CLUCENE_ASSERT(hits1->length() > 0);
 	_CLDELETE(query0);
 	_CLDELETE(query1);
@@ -144,11 +144,11 @@ void testIWmergeSegments2(CuTest *tc){
 	IndexSearcher searcher(fsdir);
 	Term* term0 = _CLNEW Term(_T("field0"),_T("value1"));
 	Query* query0 = QueryParser::parse(_T("value0"),_T("field0"),&a);
-	Hits* hits0 = searcher.search(query0);
+	Hits* hits0 = searcher.search(query0, NULL);
 	CLUCENE_ASSERT(hits0->length() > 0);
 	Term* term1 = _CLNEW Term(_T("field0"),_T("value0"));
 	Query* query1 = QueryParser::parse(_T("value1"),_T("field0"),&a);
-	Hits* hits1 = searcher.search(query1);
+	Hits* hits1 = searcher.search(query1, NULL);
 	CLUCENE_ASSERT(hits1->length() > 0);
 	_CLDELETE(query0);
 	_CLDELETE(query1);
@@ -337,12 +337,12 @@ void IWlargeScaleCorrectness_tester::invoke(
 			true
 		)
 	);
-	Hits* hits0 = searcher.search(query0, &by_value1);
+	Hits* hits0 = searcher.search(query0, NULL, &by_value1);
 	long last = 0;
-	for (long i = 0; i < hits0->length(); i++) {
+	for (size_t i = 0; i < hits0->length(); i++) {
 		Document& retrieved = hits0->doc(i);
 		TCHAR const* value = retrieved.get(_T("field0"));
-		long current = NumberTools::stringToLong(value);
+		long current = (long)NumberTools::stringToLong(value);
 		long delta = (current + documents - last) % documents;
 		if (0 == (i % repetitions)) {
 			CLUCENE_ASSERT(inverted_step == delta);

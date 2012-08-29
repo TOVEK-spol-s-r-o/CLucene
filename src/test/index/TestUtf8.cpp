@@ -40,7 +40,7 @@ CL_NS_USE(util)
 	  lucene_utf8towcs(tquery,query,80);
 
   	Query* q = QueryParser::parse(tquery,_T("contents"), analyzer);
-  	Hits* h = srch->search(q);
+  	Hits* h = srch->search(q, NULL);
   	CLUCENE_ASSERT( h->length() == 1 );
   	
     Document& doc = h->doc(0);

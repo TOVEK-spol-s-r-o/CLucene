@@ -94,18 +94,18 @@ TCHAR* ChainedFilter::toString()
 
 /** Returns a BitSet with true for documents which should be permitted in
 search results, and false for those that should not. */
-BitSet* ChainedFilter::bits( IndexReader* reader )
+BitSet* ChainedFilter::bits( IndexReader* reader, CL_NS(search)::Similarity* similarity )
 {
 	if( logic != -1 )
-		return bits( reader, logic );
+		return bits( reader, similarity, logic );
 	else if( logicArray != NULL )
-		return bits( reader, logicArray );
+		return bits( reader, similarity, logicArray );
 	else
-		return bits( reader, DEFAULT );
+		return bits( reader, similarity, DEFAULT );
 }
 
 
-BitSet* ChainedFilter::bits( IndexReader* reader, int logic )
+BitSet* ChainedFilter::bits( IndexReader* reader, CL_NS(search)::Similarity* similarity, int logic )
 {
 	BitSet* bts = NULL;
 
@@ -113,7 +113,7 @@ BitSet* ChainedFilter::bits( IndexReader* reader, int logic )
 
 	// see discussion at top of file
 	if( *filter ) {
-		BitSet* tmp = (*filter)->bits( reader );
+		BitSet* tmp = (*filter)->bits( reader, similarity );
 		if ( (*filter)->shouldDeleteBitSet(tmp) ) //if we are supposed to delete this BitSet, then
 			bts = tmp; //we can safely call it our own
 		else if ( tmp == NULL ){
@@ -130,7 +130,7 @@ BitSet* ChainedFilter::bits( IndexReader* reader, int logic )
 		bts = _CLNEW BitSet( reader->maxDoc() );
 
 	while( *filter ) {
-		doChain( bts, reader, logic, *filter );
+		doChain( bts, reader, similarity, logic, *filter );
 		filter++;
 	}
 
@@ -138,7 +138,7 @@ BitSet* ChainedFilter::bits( IndexReader* reader, int logic )
 }
 
 
-BitSet* ChainedFilter::bits( IndexReader* reader, int* _logicArray )
+BitSet* ChainedFilter::bits( IndexReader* reader, CL_NS(search)::Similarity* similarity, int* _logicArray )
 {
 	BitSet* bts = NULL;
 
@@ -147,7 +147,7 @@ BitSet* ChainedFilter::bits( IndexReader* reader, int* _logicArray )
 
 	// see discussion at top of file
 	if( *filter ) {
-		BitSet* tmp = (*filter)->bits( reader );
+		BitSet* tmp = (*filter)->bits( reader, similarity );
 		if ( (*filter)->shouldDeleteBitSet(tmp) ) //if we are supposed to delete this BitSet, then
 			bts = tmp; //we can safely call it our own
 		else if ( tmp == NULL ){
@@ -167,7 +167,7 @@ BitSet* ChainedFilter::bits( IndexReader* reader, int* _logicArray )
 		bts = _CLNEW BitSet( reader->maxDoc() );
 
 	while( *filter ) {
-		doChain( bts, reader, *logic, *filter );
+		doChain( bts, reader, similarity, *logic, *filter );
 		filter++;
 		logic++;
 	}
@@ -179,9 +179,9 @@ void ChainedFilter::doUserChain( CL_NS(util)::BitSet* /*chain*/, CL_NS(util)::Bi
 	_CLTHROWA(CL_ERR_Runtime,"User chain logic not implemented by superclass");
 }
 
-BitSet* ChainedFilter::doChain( BitSet* resultset, IndexReader* reader, int logic, Filter* filter )
+BitSet* ChainedFilter::doChain( BitSet* resultset, IndexReader* reader, CL_NS(search)::Similarity* similarity, int logic, Filter* filter )
 {
-	BitSet* filterbits = filter->bits( reader );
+	BitSet* filterbits = filter->bits( reader, similarity );
 	int32_t maxDoc = reader->maxDoc();
 	int32_t i=0;
 	if ( logic >= ChainedFilter::USER ){
@@ -206,7 +206,7 @@ BitSet* ChainedFilter::doChain( BitSet* resultset, IndexReader* reader, int logi
 				resultset->set( i, resultset->get(i) ^ ((filterbits==NULL || filterbits->get(i) )?1:0) );
 			break;
 		default:
-			doChain( resultset, reader, DEFAULT, filter );
+			doChain( resultset, reader, similarity, DEFAULT, filter );
 		}
 	}
 

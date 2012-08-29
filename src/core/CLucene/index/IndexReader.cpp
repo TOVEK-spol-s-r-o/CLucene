@@ -216,7 +216,7 @@ CL_NS_DEF(index)
 
   void IndexReader::setNorm(int32_t doc, const TCHAR* field, float_t value){
      ensureOpen();
-     setNorm(doc, field, CL_NS(search)::Similarity::encodeNorm(value));
+     setNorm(doc, field, CL_NS(search)::Similarity::encodeNormWithDefault(value));
   }
 
   bool IndexReader::indexExists(const char* directory){
