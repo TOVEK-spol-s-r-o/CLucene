@@ -78,7 +78,9 @@ Query* WildcardQuery::rewrite(CL_NS(index)::IndexReader* reader) {
 	if (termContainsWildcard)
 		return MultiTermQuery::rewrite(reader);
 
-	return _CLNEW TermQuery( getTerm(false) );
+	Query q = _CLNEW TermQuery( getTerm(false) );
+    q.setBoost( getBoost() );
+    return q;
 }
 
 
