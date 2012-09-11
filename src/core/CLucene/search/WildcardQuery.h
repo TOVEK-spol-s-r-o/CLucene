@@ -40,7 +40,7 @@ public:
   Query* clone() const;
 
   Query* rewrite(CL_NS(index)::IndexReader* reader);
-private:
+protected:
   bool termContainsWildcard;
 };
   
