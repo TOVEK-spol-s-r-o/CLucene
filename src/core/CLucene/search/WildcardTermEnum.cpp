@@ -41,11 +41,14 @@ CL_NS_DEF(search)
 			tidx = cidx;
 		else if ( cidx && cidx > pre) 
 			tidx = cl_min(sidx, cidx);
-		CND_PRECONDITION(tidx != NULL, "tidx==NULL");
-		int32_t idx = (int32_t)(tidx - pre);
-		preLen = idx;
-		CND_PRECONDITION(preLen<term->textLength(), "preLen >= term->textLength()");
-		pre[preLen]=0; //trim end
+
+        if ( tidx != NULL )
+        {
+		    int32_t idx = (int32_t)(tidx - pre);
+		    preLen = idx;
+		    CND_PRECONDITION(preLen<term->textLength(), "preLen >= term->textLength()");
+		    pre[preLen]=0; //trim end
+        }
 
 		Term* t = _CLNEW Term(__term, pre);
 		setEnum( reader->terms(t) );
