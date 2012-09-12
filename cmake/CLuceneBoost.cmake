@@ -4,7 +4,7 @@
 MACRO (GET_BOOST_INCLUDE_PATH path)
   #todo: allow this to fall back on a local distributed copy, so user doesn't have to d/l Boost seperately
   SET(Boost_USE_MULTITHREAD ON)
-  FIND_PACKAGE( Boost )
+  FIND_PACKAGE( Boost 1.44.0 EXACT)
   
   #todo: limit Boost version?
   #todo: use COMPONENTS threads to locate boost_threads without breaking the current support
