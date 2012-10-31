@@ -22,7 +22,7 @@ IF ( BUILD_CONTRIBS_LIB )
 	./contribs-lib/highlighter/HighlighterTest.cpp)
     SET(EXTRA_LIBS ${EXTRA_LIBS} clucene-contribs-lib)
     ADD_DEFINITIONS(-DTEST_CONTRIB_LIBS)
-    INCLUDE_DIRECTORIES(${clucene-test_SOURCE_DIR} ${clucene-contribs-lib_SOURCE_DIR})
+    INCLUDE_DIRECTORIES(${clucene-contribs-lib_SOURCE_DIR})
 	
     SOURCE_GROUP("contribs-lib" FILES ${test_contribs_lib_files})
 ENDIF ( BUILD_CONTRIBS_LIB )
