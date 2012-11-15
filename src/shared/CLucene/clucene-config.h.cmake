@@ -17,6 +17,7 @@
 #cmakedefine _CL_HAVE_ERRNO_H  1 
 #cmakedefine _CL_HAVE_WCHAR_H  1 
 #cmakedefine _CL_HAVE_WCTYPE_H   
+#cmakedefine _CL_HAVE_HASH_MAP
 #cmakedefine _CL_HAVE_CTYPE_H  1 
 #cmakedefine _CL_HAVE_WINDOWS_H  1 
 #cmakedefine _CL_HAVE_WINDEF_H  1 
@@ -136,6 +137,9 @@ ${SYMBOL__T}
 
 /* Disable multithreading */
 #cmakedefine _CL_DISABLE_MULTITHREADING
+
+/* Large files support */
+#define _FILE_OFFSET_BITS 64
 
 
 #ifdef __BORLANDC__ //borland compiler
