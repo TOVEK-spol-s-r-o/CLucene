@@ -27,7 +27,7 @@ CL_NS_DEF(util)
 class CLUCENE_EXPORT BitSet:LUCENE_BASE {
 	int32_t _size;
 	int32_t _count;
-	uint8_t *bits;
+	uint32_t *bits;
 
   void readBits(CL_NS(store)::IndexInput* input);
   /** read as a d-gaps list */
@@ -42,6 +42,8 @@ class CLUCENE_EXPORT BitSet:LUCENE_BASE {
   static const uint8_t BYTE_OFFSETS[256];
 protected:
 	BitSet( const BitSet& copy );
+    int32_t itemCount(uint32_t val);
+    int32_t itemOffset(uint32_t val) const;
 
 public:
 	///Create a bitset with the specified size
@@ -58,7 +60,7 @@ public:
         if (bit >= _size) {
             _CLTHROWA(CL_ERR_IndexOutOfBounds, "bit out of range");
         }
-        return (bits[bit >> 3] & (1 << (bit & 7))) != 0;
+        return (bits[bit >> 5] & (1 << (bit & 0x1F))) != 0;
     }
 
     /**
