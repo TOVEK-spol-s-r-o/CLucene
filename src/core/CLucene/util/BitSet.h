@@ -33,6 +33,10 @@ class CLUCENE_EXPORT BitSet:LUCENE_BASE {
   /** read as a d-gaps list */
   void readDgaps(CL_NS(store)::IndexInput* input);
   /** Write as a bit set */
+  void readBitsCompat(CL_NS(store)::IndexInput* input);
+  /** read as a d-gaps list */
+  void readDgapsCompat(CL_NS(store)::IndexInput* input);
+  /** Write as a bit set */
   void writeBits(CL_NS(store)::IndexOutput* output);
   /** Write as a d-gaps list */
   void writeDgaps(CL_NS(store)::IndexOutput* output);
@@ -44,6 +48,7 @@ protected:
 	BitSet( const BitSet& copy );
     int32_t itemCount(uint32_t val);
     int32_t itemOffset(uint32_t val) const;
+    void shuffleBytes();
 
 public:
 	///Create a bitset with the specified size
