@@ -48,7 +48,7 @@ protected:
 	BitSet( const BitSet& copy );
     int32_t itemCount(uint32_t val);
     int32_t itemOffset(uint32_t val) const;
-    void shuffleBytes();
+//    void shuffleBytes();
 
 public:
 	///Create a bitset with the specified size

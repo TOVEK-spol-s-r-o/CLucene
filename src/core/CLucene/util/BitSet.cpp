@@ -82,15 +82,15 @@ BitSet::BitSet(CL_NS(store)::Directory* d, const char* name)
         }
         else if (_size == -2) 
         {
-            readBits(input);
+            readBitsCompat(input);
         } 
         else if (_size == -1) 
         {
-            readDgapsCompat(input);
+            readDgaps(input);
         } 
         else 
         {
-            readBitsCompat(input);
+            readBits(input);
         }
 
 	} _CLFINALLY (
@@ -178,21 +178,22 @@ int32_t BitSet::itemOffset( uint32_t val ) const
     return 32;
 }
 
-void BitSet::shuffleBytes()
-{
-    int32_t m = (_size >> 5) + 1;
-    for ( int32_t i = 0; i < m; i++ ) 
-    {
-        if ( bits[i] != 0 ) 
-        {
-            bits[i] = (bits[i] >> 24) | (bits[i] >> 8 & 0x0000FF00) | (bits[i] << 8 & 0x00FF0000) | (bits[i] << 24);
-        }
-    }
-}
+// BK: We don't need to shuffle bytes on little endian, I'm stupid
+// void BitSet::shuffleBytes()
+// {
+//     int32_t m = (_size >> 5) + 1;
+//     for ( int32_t i = 0; i < m; i++ ) 
+//     {
+//         if ( bits[i] != 0 ) 
+//         {
+//             bits[i] = (bits[i] >> 24) | (bits[i] >> 8 & 0x0000FF00) | (bits[i] << 8 & 0x00FF0000) | (bits[i] << 24);
+//         }
+//     }
+// }
 
 
-/** Read as a bit set */
-void BitSet::readBits(IndexInput* input) 
+/** Read as a bit set stored with previous (wrong-sized) version */
+void BitSet::readBitsCompat(IndexInput* input) 
 {
     _size = input->readInt();       // (re)read size
     _count = input->readInt();        // read count
@@ -200,19 +201,18 @@ void BitSet::readBits(IndexInput* input)
     input->readBytes((uint8_t*)bits, 4 * ((_size >> 5) + 1));   // read bits
 }
 
-/** Read as a bit set stored with previous version (uint8_t based bit set */
-void BitSet::readBitsCompat(IndexInput* input) 
+/** Read as a bit set  */
+void BitSet::readBits(IndexInput* input) 
 {
     _count = input->readInt();        // read count
     bits = _CL_NEWARRAY(uint32_t,(_size >> 5) + 1);      // allocate bits
     input->readBytes((uint8_t*)bits, ((_size >> 3) + 1));   // read bits
-    shuffleBytes();
 }
 
 /** read as a d-gaps list */
 void BitSet::readDgaps(IndexInput* input) 
 {
-    _size = input->readInt();       // (re)read size
+    _size = input->readInt();         // (re)read size
     _count = input->readInt();        // read count
     bits = _CL_NEWARRAY(uint32_t,(_size >> 5) + 1);     // allocate bits
     int32_t last=0;
@@ -226,25 +226,18 @@ void BitSet::readDgaps(IndexInput* input)
     }
 }
 
-void BitSet::readDgapsCompat(IndexInput* input) 
-{
-    readDgaps( input );
-    shuffleBytes();
-}
-
   /** Write as a bit set */
 void BitSet::writeBits(IndexOutput* output) 
 {
-    output->writeInt(-2);            // mark using d-gaps
     output->writeInt(size());       // write size
     output->writeInt(count());        // write count
-    output->writeBytes((uint8_t*)bits, 4 * ((_size >> 5) + 1));   // write bits
+    output->writeBytes((uint8_t*)bits, ((_size >> 3) + 1));   // write bits
 }
 
   /** Write as a d-gaps list */
 void BitSet::writeDgaps(IndexOutput* output) 
 {
-    output->writeInt(-3);            // mark using d-gaps
+    output->writeInt(-1);            // mark using d-gaps
     output->writeInt(size());        // write size
     output->writeInt(count());       // write count
     int32_t last=0;
