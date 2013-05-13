@@ -244,10 +244,10 @@ void FieldsReader::addFieldForMerge(CL_NS(document)::Document& doc, const FieldI
 
 	if ( binary || compressed) {
 		int32_t toRead = fieldsStream->readVInt();
-    CL_NS(util)::ValueArray<uint8_t> b(toRead);
-    fieldsStream->readBytes(b.values,toRead);
+        CL_NS(util)::ValueArray<uint8_t> * b = new CL_NS(util)::ValueArray<uint8_t>(toRead);
+        fieldsStream->readBytes(b->values,toRead);
 		v = Field::VALUE_BINARY;
-    data = b.takeArray();
+        data = b; //.takeArray();
 	} else {
 		data = fieldsStream->readString();
 		v = Field::VALUE_STRING;
