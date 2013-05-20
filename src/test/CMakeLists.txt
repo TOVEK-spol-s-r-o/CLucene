@@ -18,12 +18,12 @@ SOURCE_GROUP("store" ./store/*)
 SOURCE_GROUP("util" ./util/*)
 
 IF ( BUILD_CONTRIBS_LIB )
-    SET(test_contribs_lib_files ./contribs-lib/analysis/de/TestGermanStemFilter.cpp
-	./contribs-lib/highlighter/HighlighterTest.cpp)
+    SET(test_contribs_lib_files ./contribs-lib/analysis/de/TestGermanStemFilter.cpp ./contribs-lib/highlighter/HighlighterTest.cpp)
     SET(EXTRA_LIBS ${EXTRA_LIBS} clucene-contribs-lib)
-    ADD_DEFINITIONS(-DTEST_CONTRIB_LIBS)
-    INCLUDE_DIRECTORIES(${clucene-contribs-lib_SOURCE_DIR})
-	
+
+    INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/src/contribs-lib )
+
+    ADD_DEFINITIONS(-DTEST_CONTRIB_LIBS)    	
     SOURCE_GROUP("contribs-lib" FILES ${test_contribs_lib_files})
 ENDIF ( BUILD_CONTRIBS_LIB )
 
@@ -103,7 +103,7 @@ IF ( USE_SHARED_OBJECT_FILES )
 ENDIF ( USE_SHARED_OBJECT_FILES )
 
 #todo: do glob header and include header files for IDE.
-ADD_EXECUTABLE(cl_test EXCLUDE_FROM_ALL ${clucene_shared_Files} ${test_files} ${test_contribs_lib_files})
+ADD_EXECUTABLE(cl_test ${clucene_shared_Files} ${test_files} ${test_contribs_lib_files})
 
 #link the executable against the releavent clucene-shared library (if we aren't using the object files)
 IF ( NOT USE_SHARED_OBJECT_FILES )

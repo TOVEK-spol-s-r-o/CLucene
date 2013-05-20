@@ -230,9 +230,12 @@ CL_NS_USE(util)
 					// markup the cached token group info
 					 startOffset = tokenGroup->getStartOffset();
 					 endOffset = tokenGroup->getEndOffset();
+                     int len = endOffset-startOffset;
+                     if (len > LUCENE_MAX_FIELD_LEN)
+                         len = LUCENE_MAX_FIELD_LEN;
 
-					 _tcsncpy(substringBuffer,text+startOffset,endOffset-startOffset);
-					 substringBuffer[endOffset-startOffset]=_T('\0');
+					 _tcsncpy(substringBuffer,text+startOffset, len);
+					 substringBuffer[len]=_T('\0');
 
 					 TCHAR* encoded = _encoder->encodeText(substringBuffer);
 					 TCHAR* markedUpText=_formatter->highlightTerm(encoded, tokenGroup);

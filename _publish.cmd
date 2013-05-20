@@ -7,8 +7,6 @@ copy /Y build\bin\debug\clucene-cored.* \Build\win32\winD\
 copy /Y build\bin\release\clucene-core.* \Build\win32\winR\
 copy /Y build\bin\debug\clucene-sharedd.* \Build\win32\winD\
 copy /Y build\bin\release\clucene-shared.* \Build\win32\winR\
-copy /Y build\bin\debug\cl_test.* \Build\win32\winD\
-copy /Y build\bin\release\cl_test.* \Build\win32\winR\
 @echo off
 
 PATH=%PATH%;"c:\Program Files (x86)\Microsoft Visual Studio 8\Common7\Tools\Bin\"
@@ -21,8 +19,5 @@ mt.exe -manifest d:\DevLibs\manifest\msVC80.manifest -outputresource:d:\Build\wi
 
 echo Patching manifest of clucene-shared.dll 
 mt.exe -manifest d:\DevLibs\manifest\msVC80.manifest -outputresource:d:\Build\win32\winR\clucene-shared.dll;2
-
-echo Patching manifest of cl_test.exe
-mt.exe -manifest d:\DevLibs\manifest\msVC80.manifest -outputresource:d:\Build\win32\winR\cl_test.exe;1
 
 pause

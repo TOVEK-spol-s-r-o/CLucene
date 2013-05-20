@@ -22,7 +22,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <string.h>
-#include <stdio.h>
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 using namespace std;
 
