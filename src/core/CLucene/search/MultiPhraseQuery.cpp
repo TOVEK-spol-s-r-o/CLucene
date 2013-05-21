@@ -168,7 +168,7 @@ public:
 
 		Explanation* tfExpl = scorer(reader)->explain(doc);
 		fieldExpl->addDetail(tfExpl);
-		fieldExpl->addDetail(idfExpl);
+		fieldExpl->addDetail(_CLNEW Explanation(idfExpl));
 
 		Explanation* fieldNormExpl = _CLNEW Explanation();
 		uint8_t* fieldNorms = reader->norms(parentQuery->field);
