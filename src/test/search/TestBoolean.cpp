@@ -170,12 +170,12 @@ void testBooleanPrefixQuery(CuTest* tc) {
 void testBooleanScorer2WithProhibitedScorer(CuTest* tc) {
     CL_NS(search)::DefaultSimilarity similarity;
     BooleanScorer2 scorer(&similarity, 0, true);
-    MockScorer prohibitedScorer(&similarity);
-    scorer.add(&prohibitedScorer, false, true);
+    MockScorer * pProhibitedScorer = new MockScorer(&similarity);
+    scorer.add(pProhibitedScorer, false, true);
     CL_NS(search)::MockHitCollector collector;
     scorer.score(&collector);
 
-    CuAssertIntEquals(tc, _T("Unexpected calls of next()!"), 1, prohibitedScorer.getNextCalls());
+    CuAssertIntEquals(tc, _T("Unexpected calls of next()!"), 1, pProhibitedScorer->getNextCalls());
 }
 
 CuSuite *testBoolean(void)
@@ -184,12 +184,12 @@ CuSuite *testBoolean(void)
 
     SUITE_ADD_TEST(suite, testEquality);
     SUITE_ADD_TEST(suite, testException);
-
+ 
     SUITE_ADD_TEST(suite, testBooleanScorer);
-
+ 
     SUITE_ADD_TEST(suite, testBooleanPrefixQuery);
     SUITE_ADD_TEST(suite, testBooleanScorer2WithProhibitedScorer);
-
+ 
     //_CrtSetBreakAlloc(1179);
 
 	return suite; 
