@@ -50,8 +50,8 @@ unittest tests[] = {
     {"LastTest", NULL}
 };
 
-//+     {"threads", testatomicupdates},
-//+     {"indexreader", testindexreader},
+//-     {"threads", testatomicupdates},
+//-     {"indexreader", testindexreader},
 //-     {"indexsearcher", testIndexSearcher},
 //-     {"reuters", testreuters},
 //-     {"analysis", testanalysis},
@@ -61,9 +61,9 @@ unittest tests[] = {
 //-     {"numbertools", testNumberTools},
 //-     {"debug", testdebug},
 //-     {"ramdirectory", testRAMDirectory},
-//+     {"indexwriter", testindexwriter},
+//-     {"indexwriter", testindexwriter},
 //+     {"indexmodifier", testIndexModifier},
-//+     {"addIndexesNoOptimize", testAddIndexesNoOptimize},
+//-     {"addIndexesNoOptimize", testAddIndexesNoOptimize},
 //-     {"highfreq", testhighfreq},
 //-     {"priorityqueue", testpriorityqueue},
 //-     {"datetools", testDateTools},
@@ -85,8 +85,8 @@ unittest tests[] = {
 //-     {"extractterms",testExtractTerms},
 //-     {"spanqueries",testSpanQueries},
 //-     {"stringbuffer", testStringBuffer},
-//+     {"termvectorsreader",testTermVectorsReader},
+//-     {"termvectorsreader",testTermVectorsReader},
 // #ifdef TEST_CONTRIB_LIBS
-//+     {"germananalyzer", testGermanAnalyzer},
+//-     {"germananalyzer", testGermanAnalyzer},
 //-     {"highlighter", testHighlighter},
 // #endif
