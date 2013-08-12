@@ -609,7 +609,9 @@ void BooleanScorer2::score( HitCollector* hc )
 {
 	if ( _internal->allowDocsOutOfOrder && _internal->requiredScorers.size() == 0 && _internal->prohibitedScorers.size() < 32 ) {
 
-		BooleanScorer* bs = _CLNEW BooleanScorer( getSimilarity(), _internal->minNrShouldMatch );
+        _internal->prohibitedScorers.setDoDelete(true);
+        _internal->optionalScorers.setDoDelete(true);
+        BooleanScorer* bs = _CLNEW BooleanScorer( getSimilarity(), _internal->minNrShouldMatch, false );
 		Internal::ScorersType::iterator si = _internal->optionalScorers.begin();
 		while ( si != _internal->optionalScorers.end() ) {
 			bs->add( (*si), false /* required */, false /* prohibited */ );
@@ -621,6 +623,7 @@ void BooleanScorer2::score( HitCollector* hc )
 			si++;
 		}
 		bs->score( hc );
+        _CLLDELETE(bs);
 	} else {
 		if ( _internal->countingSumScorer == NULL ) {
 			_internal->initCountingSumScorer();
