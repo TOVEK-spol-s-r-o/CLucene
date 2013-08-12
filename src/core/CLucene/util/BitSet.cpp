@@ -66,7 +66,8 @@ BitSet::BitSet ( int32_t size ):
 {
 	int32_t len = (_size >> 5) + 1;
 	bits = _CL_NEWARRAY(uint32_t, len);
-	memset(bits,0,len);
+	// memset is not needed - _CL_NEWARRAY uses calloc 
+    // memset(bits,0,len);
 }
 
 BitSet::BitSet(CL_NS(store)::Directory* d, const char* name)
