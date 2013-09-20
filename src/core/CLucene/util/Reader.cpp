@@ -36,27 +36,39 @@ StringReader::StringReader ( const TCHAR* _value, const int32_t _length, bool co
 	this->init(_value,_length,copyData);
 }
 
-void StringReader::init ( const TCHAR* _value, const int32_t _length, bool copyData ){
+void StringReader::init ( const TCHAR* _value, const int32_t _length, bool copyData )
+{
   const size_t length = ( _length < 0 ? _tcslen(_value) : _length );
 	this->pos = 0;
-	if ( copyData ){
-    TCHAR* tmp = (TCHAR*)this->value;
-    if ( tmp == NULL || !this->ownValue ){
-      tmp = _CL_NEWARRAY(TCHAR, length+1);
-      this->buffer_size = length;
-    }else if ( length > this->buffer_size || length < (this->buffer_size/2) ){ //expand, or shrink
-      tmp = (TCHAR*)realloc(tmp, sizeof(TCHAR) * (length+1));
-      this->buffer_size = length;
-    }
-		_tcsncpy(tmp, _value, length+1);
-    this->value = tmp;
-	}else{
-    if ( ownValue && this->value != NULL)
-      _CLDELETE_LARRAY( (TCHAR*)this->value);
-		this->value = _value;
-    this->buffer_size = 0;
+	if ( copyData )
+    {
+        TCHAR* tmp = (TCHAR*)this->value;
+        if ( tmp == NULL || !this->ownValue )
+        {
+            tmp = _CL_NEWARRAY(TCHAR, length+1);
+            this->buffer_size = length;
+        }
+        else if ( length > this->buffer_size || length < (this->buffer_size/2) )
+        { //expand, or shrink
+            tmp = (TCHAR*)realloc(tmp, sizeof(TCHAR) * (length+1));
+            this->buffer_size = length;
+        }
+
+        if ( tmp == NULL )
+            _CLTHROWA( CL_ERR_OutOfMemory, "cannot allocate buffer in StringReader::init" );
+
+	    _tcsncpy(tmp, _value, length+1);
+        this->value = tmp;
 	}
-  this->m_size = length;
+    else
+    {
+        if ( ownValue && this->value != NULL )
+          _CLDELETE_LARRAY( (TCHAR*)this->value);
+
+	    this->value = _value;
+        this->buffer_size = 0;
+	}
+    this->m_size = length;
 	this->ownValue = copyData;
 }
 

@@ -255,8 +255,9 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
 	if (bufferLength == -1){
 		//if (EINTR == errno) we could do something else... but we have
 		//to guarantee some return, or throw EOF
-
-		_CLTHROWA(CL_ERR_IO, "read error");
+        char errBuf[1024];
+        sprintf( errBuf, "read error %d", errno );
+		_CLTHROWA(CL_ERR_IO, errBuf);
 	}
 	_pos+=bufferLength;
 	handle->_fpos=_pos;
