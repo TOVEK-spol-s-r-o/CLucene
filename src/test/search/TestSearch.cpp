@@ -662,6 +662,13 @@ void testReadPastEOF(CuTest *tc)
     _CLDECDELETE( pDirectory );
 }
 
+void testSrchMemLeak(CuTest *tc )
+{
+	CuAssert(tc,_T("Searcher was not open"),s!=NULL);
+
+    _TestSearchesRun(tc, &a,s, _T("aaa AND (b AND b)") );
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 CuSuite *testsearch(void)
@@ -681,7 +688,10 @@ CuSuite *testsearch(void)
 	SUITE_ADD_TEST(suite, testSrchEscapes);
 	SUITE_ADD_TEST(suite, testSrchRange);
     SUITE_ADD_TEST(suite, testSrchSimple);
-    SUITE_ADD_TEST(suite, testSrchCloseIndex);
+    
+    SUITE_ADD_TEST(suite, testSrchMemLeak);
+     SUITE_ADD_TEST(suite, testSrchCloseIndex);
+
 //    SUITE_ADD_TEST(suite, testRepetitiveSearch); 
 
 //    This test fires an exception and causes mem leaks
