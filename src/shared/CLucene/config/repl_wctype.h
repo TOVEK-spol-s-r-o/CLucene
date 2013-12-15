@@ -46,6 +46,8 @@
 	#define _wctomb wctomb
 	#define _mbstowcs mbstowcs
 	#define _wcstombs wcstombs*/
+    #define stringCaseFold wcslwr
+	#define stringCaseFoldCmp wcsicmp
 
     //we are using native character functions
     #if defined(_ASCII)
