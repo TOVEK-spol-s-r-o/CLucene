@@ -468,6 +468,10 @@ public:
 
 	Scorer* makeCountingSumScorer()
 	{
+	    requiredScorers.setDoDelete(false);
+	    optionalScorers.setDoDelete(false);
+	    prohibitedScorers.setDoDelete(false);
+
 		return ( requiredScorers.size() == 0 ) ?
       makeCountingSumScorerNoReq() :
       makeCountingSumScorerSomeReq();
@@ -557,16 +561,16 @@ public:
 		}
 
 		this->coordinator = _CLNEW Coordinator( parent );
-
+	    requiredScorers.setDoDelete(true);
+	    optionalScorers.setDoDelete(true);
+	    prohibitedScorers.setDoDelete(true);
 	}
 	~Internal(){
+	    requiredScorers.clear();
+	    optionalScorers.clear();
+	    prohibitedScorers.clear();
 		_CLDELETE( coordinator );
 		_CLDELETE( countingSumScorer );
-		/* TODO: these leak memory... haven't figure out how it should be fixed though...
-		requiredScorers.clear();
-		optionalScorers.clear();
-		prohibitedScorers.clear();
-		*/
 	}
 
 };
