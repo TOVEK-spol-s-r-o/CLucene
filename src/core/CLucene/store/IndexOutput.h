@@ -158,8 +158,12 @@ protected:
 	* the output.
 	* @param b the bytes to write
 	* @param len the number of bytes to write
+    *
+    * BK: FSDirectory::FSIndexOutput constructor may throw exception (this happens i.e. if you are out of disk space)
+    * and if it happens the destructor of the base class is called (BufferedIndexOutput) which leads to the call of 
+    * pure virtual flushBuffer method, so redefine flushBuffer from pure to empty virtual method
 	*/
-	virtual void flushBuffer(const uint8_t* b, const int32_t len) = 0;
+	virtual void flushBuffer(const uint8_t* b, const int32_t len) {};
 };
 
 CL_NS_END
