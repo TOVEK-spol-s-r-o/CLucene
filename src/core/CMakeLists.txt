@@ -236,6 +236,12 @@ FOREACH(file ${HEADERS})
 	#ENDIF ( NOT aname MATCHES "^_.*" )
 ENDFOREACH(file)
 
+#tempoarary
+install(FILES ${clucene-core_SOURCE_DIR}/CLucene/search/_TermScorer.h 
+        DESTINATION include/CLucene/search 
+        COMPONENT development)
+
+
 #install clucene-shared headers.
 install(FILES ${clucene-shared_SOURCE_DIR}/CLucene/SharedHeader.h 
         DESTINATION include/CLucene 
