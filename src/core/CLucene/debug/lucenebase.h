@@ -20,7 +20,7 @@ public:
 		_LUCENE_ATOMIC_INT_SET(__cl_refcount,1);
 	}
 	inline int __cl_getref(){
-		return _LUCENE_ATOMIC_INT_GET(__cl_refcount);
+		return (int)_LUCENE_ATOMIC_INT_GET(__cl_refcount);
 	}
   inline int __cl_addref(){ return _LUCENE_ATOMIC_INC(&__cl_refcount); }
   inline int __cl_decref(){ return _LUCENE_ATOMIC_DEC(&__cl_refcount); }
