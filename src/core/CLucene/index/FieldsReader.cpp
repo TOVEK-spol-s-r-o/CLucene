@@ -557,8 +557,11 @@ void FieldsReader::uncompress(const CL_NS(util)::ValueArray<uint8_t>& input, CL_
 
   // get length of file:
   out.seekg (0, ios::end);
-  size_t length = out.tellg();
+  int length = out.tellg();
   out.seekg (0, ios::beg);
+
+  if ( length < 0 )
+	  length = 0;
 
   output.resize(length+1);
   out.read((char*)output.values,length);
