@@ -100,6 +100,9 @@ public:
 	///	recomputation is done for repeated calls. 
 	int32_t count();
 	BitSet *clone() const;
+
+    /// Bitwise AND other bitset
+    BitSet& operator&=( const BitSet& input );
 };
 typedef BitSet BitVector; //Lucene now calls the BitSet a BitVector...
 

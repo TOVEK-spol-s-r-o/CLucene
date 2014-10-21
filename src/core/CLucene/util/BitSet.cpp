@@ -302,4 +302,21 @@ void BitSet::writeDgaps(IndexOutput* output)
       return -1;
   }
 
+BitSet& BitSet::operator&=( const BitSet& input )
+{
+    int32_t nSize = ( _size >> 5 ) + 1;
+    int32_t nInpSize = ( input.size() >> 5 ) + 1;
+
+    for (int32_t i = 0; i < nSize; i++)
+    {
+        if( i < nInpSize )
+            bits[i] &= input.bits[i];
+        else
+            bits[i] = 0;
+    }
+
+    return( *this );
+}
+
+
 CL_NS_END
