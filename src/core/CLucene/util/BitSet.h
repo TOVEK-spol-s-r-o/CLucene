@@ -102,7 +102,17 @@ public:
 	BitSet *clone() const;
 
     /// Bitwise AND other bitset
-    BitSet& operator&=( const BitSet& input );
+    BitSet& operator &=( const BitSet& input );
+
+    /// Bitwise OR other bitset
+    BitSet& operator |=( const BitSet& input );
+
+    /// Bitwise XOR other bitset
+    BitSet& operator ^=( const BitSet& input );
+
+    /// Bitwise NAND other bitset
+    BitSet& nand( const BitSet& input );
+
 };
 typedef BitSet BitVector; //Lucene now calls the BitSet a BitVector...
 

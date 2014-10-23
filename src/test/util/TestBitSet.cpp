@@ -247,6 +247,80 @@ void testNextSetBit(CuTest* tc)
     doTestNextSetBit(tc, 100);
 }
 
+/**
+ * Test bitwise operators
+ * CLucene specific
+ * @throws Exception
+ */
+void testBitwiseOperations(CuTest* tc)
+{
+    BitSet  bv1( 100 );
+    BitSet  bv2( 100 );
+
+    bv1.set(5);
+    bv1.set(6);
+    bv2.set(6);
+
+    bv1 &= bv2;
+    CLUCENE_ASSERT( bv1.get(6) );
+    CLUCENE_ASSERT( !bv1.get(5) );
+    CLUCENE_ASSERT( !bv1.get(4) );
+
+    bv1.set(5);
+    bv1 |= bv2;
+    CLUCENE_ASSERT( bv1.get(6) );
+    CLUCENE_ASSERT( bv1.get(5) );
+    CLUCENE_ASSERT( !bv1.get(4) );
+
+    bv1.set(7);
+    bv1 ^= bv2;
+    CLUCENE_ASSERT( bv1.get(7) );
+    CLUCENE_ASSERT( !bv1.get(6) );
+    CLUCENE_ASSERT( bv1.get(5) );
+    CLUCENE_ASSERT( !bv1.get(4) );
+
+    bv1.set( 6 );
+    bv1.nand(bv2);
+    CLUCENE_ASSERT( bv1.get(7) );
+    CLUCENE_ASSERT( !bv1.get(6) );
+    CLUCENE_ASSERT( bv1.get(5) );
+    CLUCENE_ASSERT( bv1.get(4) );
+
+    for ( int i = 0; i < 100; i++ )
+    {
+        if ( i%2 )
+        {
+            bv1.set( i );
+            bv2.set( i, false );
+        }
+        else
+        {
+            bv1.set( i, false );
+            bv2.set( i );
+        }
+    }
+
+    CLUCENE_ASSERT( bv1.count() == 50 );
+    CLUCENE_ASSERT( bv2.count() == 50 );
+
+    bv1 |= bv2;
+
+    CLUCENE_ASSERT( bv1.count() == 100 );
+
+    bv1 &= bv2;
+    CLUCENE_ASSERT( bv1.count() == 50 );
+
+    bv1 ^= bv2;
+    CLUCENE_ASSERT( bv1.count() == 0 );
+
+    bv1.nand( bv2 );
+    CLUCENE_ASSERT( bv1.count() == 100 );
+
+    bv1.nand( bv1 );
+    CLUCENE_ASSERT( bv1.count() == 0 );
+
+}
+
 CuSuite *testBitSet(void)
 {
     CuSuite *suite = CuSuiteNew(_T("CLucene BitSet Test"));
@@ -260,6 +334,7 @@ CuSuite *testBitSet(void)
     SUITE_ADD_TEST(suite, testBitAtEndOfBitSet);
 
     SUITE_ADD_TEST(suite, testNextSetBit);
+    SUITE_ADD_TEST(suite, testBitwiseOperations);
 
     return suite; 
 }

@@ -123,7 +123,7 @@ void BitSet::set(const int32_t bit, bool val){
 	      _CLTHROWA(CL_ERR_IndexOutOfBounds, "bit out of range");
     }
 
-	_count = -1;
+    _count = -1;
 
 	if (val)
 		bits[bit >> 5] |= 1 << (bit & 0x1F);
@@ -302,21 +302,63 @@ void BitSet::writeDgaps(IndexOutput* output)
       return -1;
   }
 
-BitSet& BitSet::operator&=( const BitSet& input )
+BitSet& BitSet::operator &=( const BitSet& input )
 {
+    if ( _size  != input.size() )
+        _CLTHROWA(CL_ERR_IndexOutOfBounds, "bitsets have different size");
+
     int32_t nSize = ( _size >> 5 ) + 1;
-    int32_t nInpSize = ( input.size() >> 5 ) + 1;
+    for ( int32_t i = 0; i < nSize; i++ )
+        bits[i] &= input.bits[i];
 
-    for (int32_t i = 0; i < nSize; i++)
-    {
-        if( i < nInpSize )
-            bits[i] &= input.bits[i];
-        else
-            bits[i] = 0;
-    }
-
+    _count = -1;
     return( *this );
 }
+
+BitSet& BitSet::operator |=( const BitSet& input )
+{
+    if ( _size  != input.size() )
+        _CLTHROWA(CL_ERR_IndexOutOfBounds, "bitsets have different size");
+
+    int32_t nSize = ( _size >> 5 ) + 1;
+    for ( int32_t i = 0; i < nSize; i++ )
+        bits[i] |= input.bits[i];
+
+  	_count = -1;
+    return( *this );
+}
+
+BitSet& BitSet::operator ^=( const BitSet& input )
+{
+    if ( _size  != input.size() )
+        _CLTHROWA(CL_ERR_IndexOutOfBounds, "bitsets have different size");
+
+    int32_t nSize = ( _size >> 5 ) + 1;
+    for ( int32_t i = 0; i < nSize; i++ )
+        bits[i] ^= input.bits[i];
+
+    _count = -1;
+    return( *this );
+}
+
+BitSet& BitSet::nand( const BitSet& input )
+{
+    if ( _size  != input.size() )
+        _CLTHROWA(CL_ERR_IndexOutOfBounds, "bitsets have different size");
+
+    int32_t nSize = ( _size >> 5 ) + 1;
+    for ( int32_t i = 0; i < nSize; i++ )
+        bits[i] = ~(bits[i] & input.bits[i]);
+
+    // we must clear unused bits, otherwise count() returns incorrect value (because 0 nand 0 is 1)
+    int nRest = 32 - ( ( nSize * 32 ) - _size );
+    uint32_t mask = ( 1 << nRest ) - 1;
+    bits[ nSize-1 ] &= mask;
+
+  	_count = -1;
+    return( *this );
+}
+
 
 
 CL_NS_END

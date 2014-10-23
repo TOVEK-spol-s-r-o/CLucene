@@ -190,20 +190,20 @@ BitSet* ChainedFilter::doChain( BitSet* resultset, IndexReader* reader, CL_NS(se
 		switch( logic )
 		{
 		case OR:
-			for( i=0; i < maxDoc; i++ )
-				resultset->set( i, (resultset->get(i) || (filterbits==NULL || filterbits->get(i) ))?1:0 );
+            if ( resultset && filterbits )
+		        *resultset |= *filterbits;
 			break;
 		case AND:
-			for( i=0; i < maxDoc; i++ )
-				resultset->set( i, (resultset->get(i) && (filterbits==NULL || filterbits->get(i) ))?1:0 );
+            if ( resultset && filterbits )
+		        *resultset &= *filterbits;
 			break;
 		case ANDNOT:
-			for( i=0; i < maxDoc; i++ )
-				resultset->set( i, (resultset->get(i) && (filterbits==NULL || filterbits->get(i)))?0:1 );
+            if ( resultset && filterbits )
+		        resultset->nand( *filterbits );
 			break;
 		case XOR:
-			for( i=0; i < maxDoc; i++ )
-				resultset->set( i, resultset->get(i) ^ ((filterbits==NULL || filterbits->get(i) )?1:0) );
+            if ( resultset && filterbits )
+		        *resultset ^= *filterbits;
 			break;
 		default:
 			doChain( resultset, reader, similarity, DEFAULT, filter );
