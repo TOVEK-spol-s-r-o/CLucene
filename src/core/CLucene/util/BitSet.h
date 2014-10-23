@@ -110,8 +110,11 @@ public:
     /// Bitwise XOR other bitset
     BitSet& operator ^=( const BitSet& input );
 
-    /// Bitwise NAND other bitset
-    BitSet& nand( const BitSet& input );
+    /// Bitwise NAND NOT other bitset
+    BitSet& andnot( const BitSet& input );
+
+    /// Chenge bitset to its bitwise complement
+    BitSet & complement();
 
 };
 typedef BitSet BitVector; //Lucene now calls the BitSet a BitVector...

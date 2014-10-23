@@ -199,7 +199,7 @@ BitSet* ChainedFilter::doChain( BitSet* resultset, IndexReader* reader, CL_NS(se
 			break;
 		case ANDNOT:
             if ( resultset && filterbits )
-		        resultset->nand( *filterbits );
+		        resultset->andnot( *filterbits );
 			break;
 		case XOR:
             if ( resultset && filterbits )

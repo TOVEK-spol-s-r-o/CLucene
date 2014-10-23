@@ -280,11 +280,11 @@ void testBitwiseOperations(CuTest* tc)
     CLUCENE_ASSERT( !bv1.get(4) );
 
     bv1.set( 6 );
-    bv1.nand(bv2);
+    bv1.andnot(bv2);
     CLUCENE_ASSERT( bv1.get(7) );
     CLUCENE_ASSERT( !bv1.get(6) );
     CLUCENE_ASSERT( bv1.get(5) );
-    CLUCENE_ASSERT( bv1.get(4) );
+    CLUCENE_ASSERT( !bv1.get(4) );
 
     for ( int i = 0; i < 100; i++ )
     {
@@ -313,11 +313,39 @@ void testBitwiseOperations(CuTest* tc)
     bv1 ^= bv2;
     CLUCENE_ASSERT( bv1.count() == 0 );
 
-    bv1.nand( bv2 );
+    bv1.complement();
     CLUCENE_ASSERT( bv1.count() == 100 );
 
-    bv1.nand( bv1 );
+    bv1.andnot( bv2 );
+    CLUCENE_ASSERT( bv1.count() == 50 );
+
+    bv1 &= bv2;
     CLUCENE_ASSERT( bv1.count() == 0 );
+
+    for ( int i = 0; i < 100; i++ )
+    {
+        if ( i%2 )
+        {
+            CLUCENE_ASSERT( !bv2.get(i) );
+        }
+        else
+        {
+            CLUCENE_ASSERT( bv2.get(i) );
+        }
+    }
+
+    bv2.complement();
+    for ( int i = 0; i < 100; i++ )
+    {
+        if ( i%2 )
+        {
+            CLUCENE_ASSERT( bv2.get(i) );
+        }
+        else
+        {
+            CLUCENE_ASSERT( !bv2.get(i) );
+        }
+    }
 
 }
 

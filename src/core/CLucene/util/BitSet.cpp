@@ -341,16 +341,26 @@ BitSet& BitSet::operator ^=( const BitSet& input )
     return( *this );
 }
 
-BitSet& BitSet::nand( const BitSet& input )
+BitSet& BitSet::andnot( const BitSet& input )
 {
     if ( _size  != input.size() )
         _CLTHROWA(CL_ERR_IndexOutOfBounds, "bitsets have different size");
 
     int32_t nSize = ( _size >> 5 ) + 1;
     for ( int32_t i = 0; i < nSize; i++ )
-        bits[i] = ~(bits[i] & input.bits[i]);
+        bits[i] = bits[i] & ~input.bits[i];
 
-    // we must clear unused bits, otherwise count() returns incorrect value (because 0 nand 0 is 1)
+  	_count = -1;
+    return( *this );
+}
+
+BitSet& BitSet::complement()
+{
+    int32_t nSize = ( _size >> 5 ) + 1;
+    for ( int32_t i = 0; i < nSize; i++ )
+        bits[i] = ~bits[i];
+
+    // we must clear unused bits, otherwise count() returns incorrect value (because 0 changet to 1)
     int nRest = 32 - ( ( nSize * 32 ) - _size );
     uint32_t mask = ( 1 << nRest ) - 1;
     bits[ nSize-1 ] &= mask;
