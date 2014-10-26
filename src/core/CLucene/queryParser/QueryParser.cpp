@@ -809,41 +809,49 @@ Query* QueryParser::fClause(TCHAR* _field) {
     }
   }
   
-  switch ((jj_ntk==-1)?f_jj_ntk():jj_ntk)
+  try
   {
-  case STAR:
-  case QUOTED:
-  case TERM:
-  case PREFIXTERM:
-  case WILDTERM:
-  case RANGEIN_START:
-  case RANGEEX_START:
-  case NUMBER:
-    {
-      q = fTerm( tmpField==NULL ? _field : tmpField );
-      break;
-    }
-  case LPAREN:
-    {
-      jj_consume_token(LPAREN);
-      q = fQuery( tmpField==NULL ? _field : tmpField );
-      jj_consume_token(RPAREN);
-      if (((jj_ntk==-1)?f_jj_ntk():jj_ntk) == CARAT)
+      switch ((jj_ntk==-1)?f_jj_ntk():jj_ntk)
       {
-        jj_consume_token(CARAT);
-        boost = jj_consume_token(NUMBER);
+      case STAR:
+      case QUOTED:
+      case TERM:
+      case PREFIXTERM:
+      case WILDTERM:
+      case RANGEIN_START:
+      case RANGEEX_START:
+      case NUMBER:
+        {
+          q = fTerm( tmpField==NULL ? _field : tmpField );
+          break;
+        }
+      case LPAREN:
+        {
+          jj_consume_token(LPAREN);
+          q = fQuery( tmpField==NULL ? _field : tmpField );
+          jj_consume_token(RPAREN);
+          if (((jj_ntk==-1)?f_jj_ntk():jj_ntk) == CARAT)
+          {
+            jj_consume_token(CARAT);
+            boost = jj_consume_token(NUMBER);
+          }
+          else
+            jj_la1[6] = jj_gen;
+          break;
+        }
+      default:
+        {
+          jj_la1[7] = jj_gen;
+          jj_consume_token(-1);
+          //_CLDELETE_LCARRAY(tmpField); deleted in catch
+          _CLTHROWT(CL_ERR_Parse,_T(""));
+        }
       }
-      else
-        jj_la1[6] = jj_gen;
-      break;
-    }
-  default:
-    {
-      jj_la1[7] = jj_gen;
-      jj_consume_token(-1);
+  }
+  catch( ... )
+  {
       _CLDELETE_LCARRAY(tmpField);
-      _CLTHROWT(CL_ERR_Parse,_T(""));
-    }
+      throw;
   }
   _CLDELETE_LCARRAY(tmpField);
   if (q && boost != NULL) {
