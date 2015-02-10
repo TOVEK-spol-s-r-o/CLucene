@@ -53,9 +53,9 @@ typedef CL_NS(util)::CLHashMap<const TCHAR*, WeightedSpanTerm *,
 class CLUCENE_CONTRIBS_EXPORT SpanHighlightScorer : public HighlightScorer
 {
 protected:
-	CL_NS(util)::CLHashSet<const TCHAR*,
+	CL_NS(util)::CLHashSet<TCHAR*,
 		CL_NS(util)::Compare::TChar,
-		CL_NS(util)::Deletor::Dummy>            m_foundTerms;                   // Extracted terms
+		CL_NS(util)::Deletor::tcArray>          m_foundTerms;                   // Extracted terms
 
     WeightedSpanTermMap                         m_fieldWeightedSpanTerms;       // Extracted span terms
     bool                                        m_bDeleteWeightedSpanTerms;     // Flag to delete the content of the fieldWeightedSpanTerms

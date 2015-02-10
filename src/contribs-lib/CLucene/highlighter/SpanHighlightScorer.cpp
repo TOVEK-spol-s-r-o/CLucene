@@ -262,10 +262,12 @@ float_t SpanHighlightScorer::getTokenScore( CL_NS(analysis)::Token * pToken )
     }
 
     // found a query term - is it unique in this doc?
-    if( fScore > 0 && m_foundTerms.find( tszTermText ) == m_foundTerms.end() )
+    if( fScore > 0 && m_foundTerms.find( (TCHAR *)tszTermText ) == m_foundTerms.end() )
     {
         m_fTotalScore += fScore;
-        m_foundTerms.insert( tszTermText );
+        TCHAR * tszTermTextCopy = _tcsdup( tszTermText );
+        if ( tszTermTextCopy )
+            m_foundTerms.insert( tszTermTextCopy );
     }
 
     return fScore;
