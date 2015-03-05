@@ -57,7 +57,7 @@ BitSet::BitSet( const BitSet& copy ) :
 {
 	int32_t len = (_size >> 5) + 1;
 	bits = _CL_NEWARRAY(uint32_t, len);
-	memcpy( bits, copy.bits, len );
+	memcpy( bits, copy.bits, len * sizeof( uint32_t ) );
 }
 
 BitSet::BitSet ( int32_t size ):
