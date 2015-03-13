@@ -268,7 +268,7 @@ const TCHAR* TokenStream::name() const {
 }
 
 TokenFilter::TokenFilter(TokenStream* in, bool deleteTS):
-    TokenStream(in->name()),
+    TokenStream( in != NULL ? in->name() : NULL ),
 	input(in),
 	deleteTokenStream(deleteTS)
 {
