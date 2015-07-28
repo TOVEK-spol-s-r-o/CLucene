@@ -313,4 +313,8 @@ const char* Field::getObjectName() const{
 const char* Field::getClassName(){
 	return "Field";
 }
+uint32_t Field::getConfig() const{
+    return( config );
+}
+
 CL_NS_END

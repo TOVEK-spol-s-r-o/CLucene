@@ -292,6 +292,7 @@ public:
 
 	virtual const char* getObjectName() const;
 	static const char* getClassName();
+    uint32_t getConfig() const;
 
 protected:
 	/**
