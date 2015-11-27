@@ -30,7 +30,8 @@ SpanNearQuery::SpanNearQuery( const SpanNearQuery& clone ) :
     this->clausesCount = clone.clausesCount;
     this->bDeleteClauses = true;
 
-    this->slop = clone.slop;
+    this->maxSlop = clone.maxSlop;
+    this->minSlop = clone.minSlop;
     this->inOrder = clone.inOrder;
 
     this->field = NULL;
@@ -86,9 +87,14 @@ const TCHAR * SpanNearQuery::getField() const
     return field;
 }
 
-int32_t SpanNearQuery::getSlop() const
+int32_t SpanNearQuery::getMaxSlop() const
 {
-    return slop;
+    return maxSlop;
+}
+
+int32_t SpanNearQuery::getMinSlop() const
+{
+    return minSlop;
 }
 
 bool SpanNearQuery::isInOrder() const
@@ -141,7 +147,9 @@ TCHAR* SpanNearQuery::toString( const TCHAR* field ) const
     }
 
     buffer.append( _T( "], " ));
-    buffer.appendInt( slop );
+    buffer.appendInt( maxSlop );
+    buffer.append( _T( ", " ));
+    buffer.appendInt( minSlop );
     buffer.append( _T( ", " ));
     buffer.appendBool( inOrder );
     buffer.append( _T( ")" ));
@@ -158,7 +166,8 @@ bool SpanNearQuery::equals( Query* other ) const
 
 	SpanNearQuery * that = (SpanNearQuery *) other;
     if( inOrder != that->inOrder
-        || slop != that->slop
+        || maxSlop != that->maxSlop
+        || minSlop != that->minSlop
         || getBoost() != that->getBoost()
         || 0 != _tcscmp( field, that->field ) )     // CLucene: java version does not compare field names
     {
@@ -187,7 +196,8 @@ size_t SpanNearQuery::hashCode() const
     // differentiate SpanNearQuery hash codes from others.
     result ^= (result << 14) | (result >> 19);  // reversible
     result += Similarity::floatToByte( getBoost() );
-    result += slop;
+    result += maxSlop;
+    result += minSlop;
     result ^= ( inOrder ? 0x99AFD3BD : 0 );
 
     return result;

@@ -43,7 +43,8 @@ NearSpansOrdered::NearSpansOrdered( SpanNearQuery * spanNearQuery, CL_NS(index):
         _CLTHROWT_DEL( CL_ERR_IllegalArgument, tszMsg );
     }
 
-    allowedSlop = spanNearQuery->getSlop();
+    maxSlop = spanNearQuery->getMaxSlop();
+    minSlop = spanNearQuery->getMinSlop();
 
     subSpansCount = spanNearQuery->getClausesCount();
     subSpans = _CL_NEWARRAY( Spans *, subSpansCount );
@@ -253,7 +254,7 @@ bool NearSpansOrdered::shrinkToAfterShortestMatch()
         lastEnd = prevEnd;
     }
 
-    return matchSlop <= allowedSlop;    // ordered and allowed slop
+    return matchSlop <= maxSlop && ( minSlop == 0 || minSlop <= matchSlop );    // ordered and allowed slop
 }
 
 TCHAR* NearSpansOrdered::toString() const

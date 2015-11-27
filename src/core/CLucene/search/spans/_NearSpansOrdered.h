@@ -34,7 +34,8 @@ CL_NS_DEF2( search, spans )
 class NearSpansOrdered : public Spans 
 {
 private:
-    int32_t         allowedSlop;
+    int32_t         maxSlop;
+    int32_t         minSlop;
     bool            firstTime;
     bool            more;
 

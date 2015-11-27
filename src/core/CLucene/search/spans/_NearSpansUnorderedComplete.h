@@ -111,7 +111,8 @@ private:
     SpanNearQuery *     query;
 
     list<SpansCell *>   ordered;                // spans in query order
-    int32_t             slop;                   // from query
+    int32_t             maxSlop;                // from query
+    int32_t             minSlop;                // from query
 
     SpansCell *         first;                  // linked list of spans
     SpansCell *         last;                   // sorted by doc only

@@ -22,7 +22,8 @@ private:
     size_t          clausesCount;
     bool            bDeleteClauses;
 
-    int32_t         slop;
+    int32_t         maxSlop;
+    int32_t         minSlop;
     bool            inOrder;
 
     TCHAR *         field;
@@ -39,7 +40,7 @@ public:
      * them.  * When <code>inOrder</code> is true, the spans from each clause
      * must be * ordered as in <code>clauses</code>. */
     template<class ClauseIterator>
-    SpanNearQuery( ClauseIterator first, ClauseIterator last, int32_t slop, bool inOrder, bool bDeleteClauses )
+    SpanNearQuery( ClauseIterator first, ClauseIterator last, int32_t maxSlop, int32_t minSlop, bool inOrder, bool bDeleteClauses )
     {
         // CLucene specific: at least one clause must be here
         if( first ==  last )
@@ -65,7 +66,8 @@ public:
             this->clauses[ i ] = clause;
         }
 
-        this->slop = slop;
+        this->minSlop = minSlop;
+        this->maxSlop = maxSlop;
         this->inOrder = inOrder;
     }
 
@@ -83,7 +85,8 @@ public:
     size_t getClausesCount() const;
 
     /** Return the maximum number of intervening unmatched positions permitted.*/
-    int32_t getSlop() const;
+    int32_t getMaxSlop() const;
+    int32_t getMinSlop() const;
 
     /** Return true if matches are required to be in-order.*/
     bool isInOrder() const;

@@ -87,7 +87,8 @@ NearSpansUnordered::NearSpansUnordered( SpanNearQuery * query, CL_NS(index)::Ind
     this->totalLength = 0;                  // CLucene specific
 
     this->query = query;
-    this->slop = query->getSlop();
+    this->maxSlop = query->getMaxSlop();
+    this->minSlop = query->getMinSlop();
 
     SpanQuery ** clauses = query->getClauses();
     this->queue = _CLNEW CellQueue( query->getClausesCount() );
@@ -264,8 +265,12 @@ void NearSpansUnordered::listToQueue()
 
 bool NearSpansUnordered::atMatch() 
 {
-    return ( min()->doc() == max->doc() )
-        && (( max->end() - min()->start() - totalLength ) <= slop );
+    if( min()->doc() == max->doc() )
+    {
+        int32_t matchSlop = max->end() - min()->start() - totalLength;
+        return matchSlop <= maxSlop && ( minSlop == 0 || minSlop <= matchSlop );
+    }
+    return false;
 }
 
 CL_NS_END2

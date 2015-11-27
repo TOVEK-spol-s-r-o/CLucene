@@ -173,7 +173,8 @@ NearSpansUnorderedComplete::NearSpansUnorderedComplete( SpanNearQuery * query, C
     this->totalLength = 0;                  // CLucene specific
 
     this->query = query;
-    this->slop = query->getSlop();
+    this->maxSlop = query->getMaxSlop();
+    this->minSlop = query->getMinSlop();
 
     SpanQuery ** clauses = query->getClauses();
     this->queue = _CLNEW CellQueue( query->getClausesCount() );
@@ -366,10 +367,14 @@ bool NearSpansUnorderedComplete::atMatch()
     if( minDoc == max->doc())
     {
         int32_t minStart = min()->start();
-        if(( minStart > cachedStart || cachedDoc != minDoc ) && ( max->end() - minStart - totalLength ) <= slop )
+        if( minStart > cachedStart || cachedDoc != minDoc )
         {
-            prepareSpans();
-            return true;
+            int32_t matchSlop = max->end() - minStart - totalLength;
+            if( matchSlop <= maxSlop && ( minSlop==0 || minSlop <= matchSlop ))
+            {
+                prepareSpans();
+                return true;
+            }
         }
     }
     return false;
@@ -378,7 +383,7 @@ bool NearSpansUnorderedComplete::atMatch()
 void NearSpansUnorderedComplete::prepareSpans() 
 {
     cachedStart = min()->start();
-    int32_t endMax = cachedStart + totalLength + slop;
+    int32_t endMax = cachedStart + totalLength + maxSlop;
     int32_t endMin = max->end();
     bool minToo = false;
 

@@ -322,7 +322,7 @@ void HighlighterTest::testNearSpanSimpleQuery()
     SpanTermQuery * rgSubQuery[ 2 ];
     rgSubQuery[ 0 ] = createSpanTermQuery( FIELD_NAME, _T( "beginning" ));
     rgSubQuery[ 1 ] = createSpanTermQuery( FIELD_NAME, _T( "kennedy" ));
-    SpanNearQuery * query = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 3, false, true );
+    SpanNearQuery * query = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 3, 0, false, true );
     doSearching( query );
     assertHighlightAllHits( 2, 40, 2 );
 }
@@ -334,11 +334,11 @@ void HighlighterTest::testSpanHighlighting()
 
     rgSubQuery[ 0 ] = createSpanTermQuery( FIELD_NAME, _T( "wordx" ));
     rgSubQuery[ 1 ] = createSpanTermQuery( FIELD_NAME, _T( "wordy" ));
-    SpanNearQuery * query1 = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 1, false, true );
+    SpanNearQuery * query1 = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 1, 0, false, true );
 
     rgSubQuery[ 0 ] = createSpanTermQuery( FIELD_NAME, _T( "wordy" ));
     rgSubQuery[ 1 ] = createSpanTermQuery( FIELD_NAME, _T( "wordc" ));
-    SpanNearQuery * query2 = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 1, false, true );
+    SpanNearQuery * query2 = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 1, 0, false, true );
 
     BooleanQuery * bquery = _CLNEW BooleanQuery();
     bquery->add( query1, true, BooleanClause::SHOULD );
@@ -355,7 +355,7 @@ void HighlighterTest::testNotSpanSimpleQuery()
 
     rgSubQuery[ 0 ] = createSpanTermQuery( FIELD_NAME, _T( "shot" ));
     rgSubQuery[ 1 ] = createSpanTermQuery( FIELD_NAME, _T( "kennedy" ));
-    SpanNotQuery * query = _CLNEW SpanNotQuery( _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 3, false, true ),
+    SpanNotQuery * query = _CLNEW SpanNotQuery( _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 3, 0, false, true ),
                                                 createSpanTermQuery( FIELD_NAME, _T( "john" )), true );
     doSearching( query );
     assertHighlightAllHits( 2, 40, 4 );
@@ -427,7 +427,7 @@ void HighlighterTest::testGetBestFragmentsSpan()
 
     rgSubQuery[ 0 ] = createSpanTermQuery( _T( "contents" ), _T( "john" ));
     rgSubQuery[ 1 ] = createSpanTermQuery( _T( "contents" ), _T( "kennedy" ));
-    doSearching( _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 1, false, true ));
+    doSearching( _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, 1, 0, false, true ));
     assertHighlightAllHits( 2, 40, 2 );
 }
 
