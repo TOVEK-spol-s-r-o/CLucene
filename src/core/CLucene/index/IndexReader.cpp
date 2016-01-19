@@ -74,7 +74,7 @@ CL_NS_DEF(index)
     }
   };
 
-  IndexReader::IndexReader(Directory* dir){
+  IndexReader::IndexReader(Directory* dir) : m_lpContext( NULL ){
   //Constructor.
   //Func - Creates an instance of IndexReader
   //Pre  - true
@@ -82,7 +82,7 @@ CL_NS_DEF(index)
     _internal = _CLNEW Internal(dir, this);
   }
 
-  IndexReader::IndexReader(){
+  IndexReader::IndexReader() : m_lpContext( NULL ){
   //Constructor.
   //Func - Creates an instance of IndexReader
   //Pre  - true
