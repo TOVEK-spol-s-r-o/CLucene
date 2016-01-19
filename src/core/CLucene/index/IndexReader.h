@@ -27,6 +27,12 @@ class TermPositions;
 class IndexDeletionPolicy;
 class TermVectorMapper;
 
+/**
+ * IndexReaderContext base class
+ */
+class CLUCENE_EXPORT IndexReaderContext : public CL_NS(util)::NamedObject {};
+
+
 /** IndexReader is an abstract class, providing an interface for accessing an
  index.  Search of an index is done entirely through this abstract interface,
  so that any subclass which implements it is searchable.
@@ -56,6 +62,7 @@ class CLUCENE_EXPORT IndexReader: public CL_NS(util)::NamedObject{
   bool closed;
 protected:
   bool hasChanges;
+  IndexReaderContext* m_lpContext;
 
   /**
   * Legacy Constructor for backwards compatibility.
@@ -675,6 +682,17 @@ public:
 	* should pass their callback function to this.
 	*/
 	void addCloseCallback(CloseCallback callback, void* parameter);
+
+    /**
+     * Set Index Reader Context
+     */
+    void setContext( IndexReaderContext* lpContext ) { m_lpContext = lpContext; }
+
+    /**
+     * Set Index Reader Context
+     */
+     IndexReaderContext* getContext() { return( m_lpContext ); }
+
 
   friend class SegmentReader;
   friend class MultiReader;
