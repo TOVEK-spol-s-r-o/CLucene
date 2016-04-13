@@ -591,9 +591,8 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
 	        Directory* dir = DIRECTORIES.get(getDirName());
 	        if(dir){
 	            DIRECTORIES.remove( getDirName() ); //this will be removed in ~FSDirectory
-	            _CLDECDELETE(dir);   // once for map remove
-                _CLDECDELETE(dir);   // once for object itself
-                //NOTE: Don't unlock the mutex, since it has been destroyed now...
+	            _CLDECDELETE(dir);
+              //NOTE: Don't unlock the mutex, since it has been destroyed now...
 	            return;
 	        }
 	    }
