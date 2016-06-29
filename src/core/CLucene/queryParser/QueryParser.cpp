@@ -370,25 +370,29 @@ Query* QueryParser::getFieldQuery(const TCHAR* _field, TCHAR* queryText) {
 		    for (size_t i = 0; i < v.size(); i++) {
 			    t = v.at(i);
 			    if (t->getPositionIncrement() > 0 && multiTerms.size() > 0) {
-            ValueArray<Term*> termsArray(multiTerms.size());
-            multiTerms.toArray(termsArray.values);
+                    ValueArray<Term*> termsArray(multiTerms.size());
+                    multiTerms.toArray(termsArray.values);
 				    if (enablePositionIncrements) {
 					    mpq->add(&termsArray,position);
 				    } else {
 					    mpq->add(&termsArray);
 				    }
+                    for( size_t mt = 0; mt < multiTerms.size(); mt++ )
+                        _CLDECDELETE( multiTerms[ mt ]);
 				    multiTerms.clear();
 			    }
 			    position += t->getPositionIncrement();
 			    multiTerms.push_back(_CLNEW Term(field, t->termBuffer()));
 		    }
-        ValueArray<Term*> termsArray(multiTerms.size());
-        multiTerms.toArray(termsArray.values);
+            ValueArray<Term*> termsArray(multiTerms.size());
+            multiTerms.toArray(termsArray.values);
 		    if (enablePositionIncrements) {
 			    mpq->add(&termsArray,position);
 		    } else {
 			    mpq->add(&termsArray);
 		    }
+            for( size_t mt = 0; mt < multiTerms.size(); mt++ )
+                _CLDECDELETE( multiTerms[ mt ]);
 		    return mpq;
       }
     }else {
