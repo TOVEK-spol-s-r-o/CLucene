@@ -302,7 +302,17 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
   void FSDirectory::FSIndexOutput::flushBuffer(const uint8_t* b, const int32_t size) {
 	  CND_PRECONDITION(fhandle>=0,"file is not open");
       if ( size > 0 && _write(fhandle,b,size) != size )
-        _CLTHROWA(CL_ERR_IO, "File IO Write error");
+	  {
+        int err = errno;
+        if ( err == EBADF )
+	      _CLTHROWA(CL_ERR_IO, "Bad file descriptor. No permissions for write?");
+        else if ( err == ENOSPC )
+          _CLTHROWA(CL_ERR_IO, "Not enough disk space.");
+        else if ( err == EINVAL )
+          _CLTHROWA(CL_ERR_IO, "Invalid buffer. Not enough memory?");
+	    else
+         _CLTHROWA(CL_ERR_IO, "File IO Write error");
+	  }
   }
   void FSDirectory::FSIndexOutput::close() {
     try{
