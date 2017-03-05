@@ -51,6 +51,7 @@ public:
      */
 //   public Collection getTerms() { return match.getTerms(); }
     void extractTerms( CL_NS(search)::TermSet * terms ) const;
+    virtual void extractQueryTerms( QueryTermSet& terms ) const;
 
     CL_NS(search)::Query * rewrite( CL_NS(index)::IndexReader * reader );
 

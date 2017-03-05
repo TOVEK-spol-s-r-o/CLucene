@@ -218,7 +218,6 @@ const char* Searcher::getObjectName() const{
 	return Searcher::getClassName();
 }
 
-
 Weight::~Weight(){
 }
 
@@ -226,9 +225,19 @@ TCHAR* Weight::toString(){
      return STRDUP_TtoT(_T("Weight"));
 }
 
-
 Searchable::~Searchable(){
 }
 
+QueryTerm::QueryTerm(CL_NS(index)::Term* _term, Type _type) 
+    : term(_CL_POINTER(_term)), type(_type) {
+}
+        
+QueryTerm::~QueryTerm() { 
+    _CLDECDELETE(term); 
+}
+
+bool operator < (const QueryTerm& t1, const QueryTerm& t2) {
+    return t1.term->hashedCompareTo(t2.term);
+}
 
 CL_NS_END

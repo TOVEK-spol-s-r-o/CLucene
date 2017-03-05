@@ -237,6 +237,20 @@ void MultiPhraseQuery::extractTerms( TermSet * termset ) const
     }
 }
 
+void MultiPhraseQuery::extractQueryTerms( QueryTermSet& termset ) const
+{
+    for( size_t i = 0; i < termArrays->size(); i++ )
+    {
+        ArrayBase<Term*> * terms = termArrays->at( i );
+	    for( size_t j=0; j < terms->length; j++ )
+        {
+            Term * pTerm = terms->values[ j ];
+            if( pTerm )
+                termset.insert( QueryTerm(pTerm , QueryTerm::Scalar) );
+	    }
+    }
+}
+
 MultiPhraseQuery::MultiPhraseQuery():
   field(NULL),
   termArrays(_CLNEW CL_NS(util)::CLArrayList<CL_NS(util)::ArrayBase<CL_NS(index)::Term*>*>),

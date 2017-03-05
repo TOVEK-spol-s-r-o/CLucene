@@ -217,6 +217,13 @@ CL_NS_DEF(search)
             termset->insert( _CL_POINTER( term ));
     }
 
+    void TermQuery::extractQueryTerms( QueryTermSet& termset ) const
+    {
+        if( term )
+            termset.insert( QueryTerm( term, QueryTerm::Scalar ) );
+    }
+
+
 
 CL_NS_END
 

@@ -147,6 +147,26 @@ CL_NS_DEF(search)
 		virtual ~HitDoc();
     };
 
+/** 
+     * Term representing unexpanded form of query term and its type (used to compare term to tokens)
+     */
+    class CLUCENE_EXPORT QueryTerm {
+        public:
+            enum Type { Scalar = 0,
+                Prefix,
+                Wildcard,
+                Less,
+                More,
+                Typo,
+                Not }               type;
+            CL_NS(index)::Term*     term;
+        
+        QueryTerm(CL_NS(index)::Term* _term, Type _type);
+        
+        ~QueryTerm();
+    };
 
+    bool CLUCENE_EXPORT operator < (const QueryTerm& t1, const QueryTerm& t2);
+  
 CL_NS_END
 #endif

@@ -281,6 +281,15 @@ void PhraseQuery::extractTerms( TermSet * termset ) const
     }
 }
 
+void PhraseQuery::extractQueryTerms( QueryTermSet& termset ) const
+{
+    for( size_t i = 0; i < terms->size(); i++ )
+    {
+        Term * pTerm = (*terms)[i];
+        if( pTerm)
+            termset.insert( QueryTerm(pTerm, QueryTerm::Scalar) );
+    }
+}
 
  PhraseWeight::PhraseWeight(Searcher* searcher, PhraseQuery* _parentQuery, Similarity* similarity) {
    this->parentQuery=_parentQuery;

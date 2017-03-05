@@ -49,7 +49,9 @@ CL_NS_DEF(search)
 		TCHAR* toString(const TCHAR* field) const;
 
 		size_t hashCode() const;
-	};
+
+        void virtual extractQueryTerms(QueryTermSet& termset) const;
+    };
 	
 	
     class CLUCENE_EXPORT PrefixFilter: public Filter 

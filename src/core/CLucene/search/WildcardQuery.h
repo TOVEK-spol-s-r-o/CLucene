@@ -40,6 +40,8 @@ public:
   Query* clone() const;
 
   Query* rewrite(CL_NS(index)::IndexReader* reader);
+  
+  virtual void extractQueryTerms(QueryTermSet& termset) const;
 protected:
   bool termContainsWildcard;
 };

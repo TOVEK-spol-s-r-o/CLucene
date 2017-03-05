@@ -70,6 +70,12 @@ void SpanTermQuery::extractTerms( CL_NS(search)::TermSet * terms ) const
         terms->insert( _CL_POINTER( term ));
 }
 
+void SpanTermQuery::extractQueryTerms( QueryTermSet& terms ) const
+{
+    if( term ) 
+        terms.insert( QueryTerm( term, QueryTerm::Scalar ));
+}
+
 Spans * SpanTermQuery::getSpans( CL_NS(index)::IndexReader * reader, bool complete )
 {
     return _CLNEW TermSpans( reader->termPositions( term ), term );

@@ -86,6 +86,8 @@ public:
   const TCHAR* getField() const;
 
   size_t hashCode() const;
+
+  virtual void extractQueryTerms(QueryTermSet& termset) const;
 };
 
 CL_NS_END

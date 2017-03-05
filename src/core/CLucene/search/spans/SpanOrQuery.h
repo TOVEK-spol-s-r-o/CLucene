@@ -86,6 +86,7 @@ public:
 //    public Collection getTerms()
 
     void extractTerms( CL_NS(search)::TermSet * terms ) const;
+    virtual void extractQueryTerms( QueryTermSet& termset ) const;
 
     CL_NS(search)::Query * rewrite( CL_NS(index)::IndexReader * reader );
 

@@ -194,6 +194,11 @@ void SpanNotQuery::extractTerms( CL_NS(search)::TermSet * terms ) const
     include->extractTerms( terms );
 }
 
+void SpanNotQuery::extractQueryTerms( QueryTermSet& termset ) const
+{
+    include->extractQueryTerms( termset );
+}
+
 TCHAR* SpanNotQuery::toString( const TCHAR* field ) const
 {
     CL_NS(util)::StringBuffer buffer;

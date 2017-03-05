@@ -55,6 +55,8 @@ public:
         size_t result = Similarity::floatToByte( getBoost() ) ^ 0x97AF937F;
         return result;
     }
+
+    virtual void extractQueryTerms(QueryTermSet& termset ) const {}
 };
 
 /////////////////////////////////////////////////////////////////////////////

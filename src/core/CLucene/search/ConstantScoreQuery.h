@@ -40,6 +40,7 @@ public:
 
     /** Constant score query does not return any terms */
     void extractTerms( TermSet * termset ) const;
+    virtual void extractQueryTerms( QueryTermSet& termset ) const {}
 
 protected:
     Weight* _createWeight(Searcher* searcher, Similarity* similarity);
@@ -115,6 +116,8 @@ public:
     const char* getObjectName() const;
 	static const char* getClassName(){ return "ConstantScoreRangeQuery"; }
     Query* clone() const;
+    
+    virtual void extractQueryTerms( QueryTermSet& termset ) const {}
 protected:
     ConstantScoreRangeQuery( const ConstantScoreRangeQuery& copy );
 };

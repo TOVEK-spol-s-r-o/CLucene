@@ -275,6 +275,15 @@ CL_NS_DEF(search)
         }
     }
 
+    void BooleanQuery::extractQueryTerms( QueryTermSet& termset ) const
+    {
+		for (size_t i = 0 ; i < clauses->size(); i++)
+        {
+            BooleanClause* clause = (*clauses)[i];
+            clause->getQuery()->extractQueryTerms( termset );
+        }
+    }
+
   Query* BooleanQuery::clone()  const{
     BooleanQuery* clone = _CLNEW BooleanQuery(*this);
     return clone;

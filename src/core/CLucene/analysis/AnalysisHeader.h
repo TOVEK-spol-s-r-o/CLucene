@@ -236,7 +236,9 @@ public:
 	virtual ~TokenStream();
 
 protected:
-    TCHAR* fieldName;
+    /** Interned
+     */
+    const TCHAR* fieldName;
 
 public:
     TokenStream();

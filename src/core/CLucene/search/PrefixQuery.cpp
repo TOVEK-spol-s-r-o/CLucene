@@ -185,6 +185,10 @@ CL_NS_DEF(search)
     return buffer.toString();
   }
 
+  void PrefixQuery::extractQueryTerms(QueryTermSet& termset) const {
+    if( prefix )
+        termset.insert( QueryTerm(prefix, QueryTerm::Prefix) );
+  }
 
 
 

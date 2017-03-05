@@ -83,6 +83,12 @@ Query* WildcardQuery::rewrite(CL_NS(index)::IndexReader* reader) {
     return q;
 }
 
+void WildcardQuery::extractQueryTerms(QueryTermSet& termset) const {
+	if (termContainsWildcard)
+        termset.insert( QueryTerm(getTerm(false), QueryTerm::Wildcard) );
+    else
+        termset.insert( QueryTerm(getTerm(false), QueryTerm::Scalar) );
+}
 
 WildcardFilter::WildcardFilter( Term* term )
 {

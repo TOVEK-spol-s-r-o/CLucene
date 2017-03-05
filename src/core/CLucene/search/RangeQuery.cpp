@@ -190,5 +190,13 @@ CL_NS_DEF(search)
 
     bool RangeQuery::isInclusive() const { return inclusive; }
 
+    void RangeQuery::extractQueryTerms(QueryTermSet& termset) const {
+        if (lowerTerm) {
+            termset.insert( QueryTerm(lowerTerm, QueryTerm::More) );
+        }
+        if (upperTerm) {
+            termset.insert( QueryTerm(upperTerm, QueryTerm::Less) );
+        }
+    }
 
 CL_NS_END
