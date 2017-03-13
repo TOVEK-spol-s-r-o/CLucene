@@ -147,7 +147,7 @@ CL_NS_DEF(search)
 		virtual ~HitDoc();
     };
 
-/** 
+    /** 
      * Term representing unexpanded form of query term and its type (used to compare term to tokens)
      */
     class CLUCENE_EXPORT QueryTerm {
@@ -162,6 +162,8 @@ CL_NS_DEF(search)
             CL_NS(index)::Term*     term;
         
         QueryTerm(CL_NS(index)::Term* _term, Type _type);
+
+        QueryTerm(const QueryTerm& other);
         
         ~QueryTerm();
     };

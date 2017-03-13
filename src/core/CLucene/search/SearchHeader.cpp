@@ -231,7 +231,12 @@ Searchable::~Searchable(){
 QueryTerm::QueryTerm(CL_NS(index)::Term* _term, Type _type) 
     : term(_CL_POINTER(_term)), type(_type) {
 }
-        
+
+QueryTerm::QueryTerm(const QueryTerm& other) {
+    term = _CL_POINTER(other.term);
+    type = other.type;
+}
+
 QueryTerm::~QueryTerm() { 
     _CLDECDELETE(term); 
 }
