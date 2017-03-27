@@ -186,8 +186,15 @@ CL_NS_DEF(search)
   }
 
   void PrefixQuery::extractQueryTerms(QueryTermSet& termset) const {
-    if( prefix )
-        termset.insert( QueryTerm(prefix, QueryTerm::Prefix) );
+    if( prefix ) {
+        QueryTerm* pQt = _CLNEW QueryTerm(prefix, QueryTerm::Prefix);
+        if (termset.find(pQt) == termset.end()) {
+            termset.insert(pQt);
+        }
+        else {
+            _CLDECDELETE(pQt);
+        }
+    }
   }
 
 

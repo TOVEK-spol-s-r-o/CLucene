@@ -229,20 +229,24 @@ Searchable::~Searchable(){
 }
 
 QueryTerm::QueryTerm(CL_NS(index)::Term* _term, Type _type) 
-    : term(_CL_POINTER(_term)), type(_type) {
-}
-
-QueryTerm::QueryTerm(const QueryTerm& other) {
-    term = _CL_POINTER(other.term);
-    type = other.type;
+    : term(_CL_POINTER(_term)), type(_type), data(NULL) {
 }
 
 QueryTerm::~QueryTerm() { 
-    _CLDECDELETE(term); 
+    _CLDECDELETE(term);
+    if (data)
+        delete data;
 }
 
-bool operator < (const QueryTerm& t1, const QueryTerm& t2) {
-    return t1.term->hashedCompareTo(t2.term);
+bool QueryTerm::compare::operator()(const QueryTerm* t1, const QueryTerm* t2) const {
+    if (t1->term == NULL) return true;
+    if (t2->term == NULL) return false;
+
+    int32_t i = t1->term->hashedCompareTo(t2->term);
+    if (i == 0) {
+        return t1->type < t2->type;
+    }
+    return i < 0;
 }
 
 CL_NS_END

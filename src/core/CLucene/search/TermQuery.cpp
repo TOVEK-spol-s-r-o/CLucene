@@ -219,8 +219,15 @@ CL_NS_DEF(search)
 
     void TermQuery::extractQueryTerms( QueryTermSet& termset ) const
     {
-        if( term )
-            termset.insert( QueryTerm( term, QueryTerm::Scalar ) );
+        if( term ) {
+            QueryTerm* pQt = _CLNEW QueryTerm(term, QueryTerm::Scalar);
+            if (termset.find(pQt) == termset.end()) {
+                termset.insert( pQt );
+            }
+            else {
+                _CLDECDELETE(pQt);
+            }
+        }
     }
 
 

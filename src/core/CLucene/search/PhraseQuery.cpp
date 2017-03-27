@@ -286,8 +286,15 @@ void PhraseQuery::extractQueryTerms( QueryTermSet& termset ) const
     for( size_t i = 0; i < terms->size(); i++ )
     {
         Term * pTerm = (*terms)[i];
-        if( pTerm)
-            termset.insert( QueryTerm(pTerm, QueryTerm::Scalar) );
+        if( pTerm) {
+            QueryTerm* pQt = _CLNEW QueryTerm(pTerm, QueryTerm::Scalar);
+            if (termset.find(pQt) == termset.end()) {
+                termset.insert(pQt);
+            }
+            else {
+                _CLDECDELETE(pQt);
+            }
+        }
     }
 }
 

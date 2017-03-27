@@ -245,8 +245,15 @@ void MultiPhraseQuery::extractQueryTerms( QueryTermSet& termset ) const
 	    for( size_t j=0; j < terms->length; j++ )
         {
             Term * pTerm = terms->values[ j ];
-            if( pTerm )
-                termset.insert( QueryTerm(pTerm , QueryTerm::Scalar) );
+            if( pTerm ) {
+                QueryTerm* pQt = _CLNEW QueryTerm(pTerm, QueryTerm::Scalar);
+                if (termset.find(pQt) == termset.end()) {
+                    termset.insert( pQt );
+                }
+                else {
+                    _CLDECDELETE( pQt );
+                }
+            }
 	    }
     }
 }

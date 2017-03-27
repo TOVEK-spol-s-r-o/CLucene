@@ -21,8 +21,8 @@ CL_NS_DEF(search)
     class Similarity;
     class Searcher;
 
-    typedef std::set<CL_NS(index)::Term *, CL_NS(index)::Term_UnorderedCompare>  TermSet;
-    typedef std::set<QueryTerm>                                                  QueryTermSet;
+    typedef std::set<CL_NS(index)::Term *, CL_NS(index)::Term_UnorderedCompare> TermSet;
+    typedef std::set<QueryTerm*, QueryTerm::compare>                            QueryTermSet;
 
 	/** The abstract base class for queries.
     <p>Instantiable subclasses are:

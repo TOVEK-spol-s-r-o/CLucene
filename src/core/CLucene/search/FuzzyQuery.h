@@ -71,7 +71,7 @@ public:
 	bool equals(Query * other) const;
 	size_t hashCode() const;
 
-    void extractQueryTerms(QueryTermSet& termset) const {}
+    void extractQueryTerms(QueryTermSet& termset) const;
 
 protected:
 	FilteredTermEnum* getEnum(CL_NS(index)::IndexReader* reader);

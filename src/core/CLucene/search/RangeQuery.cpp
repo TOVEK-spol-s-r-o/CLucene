@@ -192,10 +192,22 @@ CL_NS_DEF(search)
 
     void RangeQuery::extractQueryTerms(QueryTermSet& termset) const {
         if (lowerTerm) {
-            termset.insert( QueryTerm(lowerTerm, QueryTerm::More) );
+            QueryTerm* pQt = _CLNEW QueryTerm(lowerTerm, QueryTerm::More);
+            if (termset.find(pQt) == termset.end()) {
+                termset.insert( pQt );
+            }
+            else {
+                _CLDECDELETE(pQt);
+            }
         }
         if (upperTerm) {
-            termset.insert( QueryTerm(upperTerm, QueryTerm::Less) );
+            QueryTerm* pQt = _CLNEW QueryTerm(upperTerm, QueryTerm::Less);
+            if (termset.find(pQt) == termset.end()) {
+                termset.insert( pQt );
+            }
+            else {
+                _CLDECDELETE(pQt);
+            }
         }
     }
 

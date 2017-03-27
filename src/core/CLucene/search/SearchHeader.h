@@ -150,7 +150,7 @@ CL_NS_DEF(search)
     /** 
      * Term representing unexpanded form of query term and its type (used to compare term to tokens)
      */
-    class CLUCENE_EXPORT QueryTerm {
+    class CLUCENE_EXPORT QueryTerm :LUCENE_REFBASE {
         public:
             enum Type { Scalar = 0,
                 Prefix,
@@ -160,15 +160,18 @@ CL_NS_DEF(search)
                 Typo,
                 Not }               type;
             CL_NS(index)::Term*     term;
+            void*                   data;
         
         QueryTerm(CL_NS(index)::Term* _term, Type _type);
 
-        QueryTerm(const QueryTerm& other);
-        
         ~QueryTerm();
+    
+        class compare {
+            public:
+                bool operator ()(const QueryTerm* t1, const QueryTerm* t2) const;
+        };
     };
 
-    bool CLUCENE_EXPORT operator < (const QueryTerm& t1, const QueryTerm& t2);
   
 CL_NS_END
 #endif

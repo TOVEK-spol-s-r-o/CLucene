@@ -169,6 +169,11 @@ void ConstantScoreQuery::extractTerms( TermSet * termset ) const
     // but may not be OK for highlighting
 }
 
+void ConstantScoreQuery::extractQueryTerms( QueryTermSet& termset ) const
+{
+	_CLTHROWA( CL_ERR_UnsupportedOperation,"UnsupportedOperationException: ConstantScoreQuery::extractQueryTerms" );
+}
+
 Weight* ConstantScoreQuery::_createWeight(Searcher* /*searcher*/ , Similarity* similarity) {
     return _CLNEW ConstantWeight(this, similarity);
 }
@@ -310,6 +315,33 @@ size_t ConstantScoreRangeQuery::hashCode() const
 const char* ConstantScoreRangeQuery::getObjectName() const { return "ConstantScoreRangeQuery"; }
 Query* ConstantScoreRangeQuery::clone() const{
     return _CLNEW ConstantScoreRangeQuery(*this);
+}
+
+void ConstantScoreRangeQuery::extractQueryTerms( QueryTermSet& termset ) const {
+    if (lowerVal) {
+        Term*       pLowerTerm = _CLNEW Term(fieldName, lowerVal);
+        QueryTerm*  pQt = _CLNEW QueryTerm(pLowerTerm, QueryTerm::More);
+        _CLDECDELETE(pLowerTerm);
+        
+        if (termset.find(pQt) == termset.end()) {
+            termset.insert( pQt );
+        }
+        else {
+            _CLDECDELETE(pQt);
+        }
+    }
+    if (upperVal) {
+        Term*       pUpperTerm = _CLNEW Term(fieldName, upperVal);
+        QueryTerm*  pQt = _CLNEW QueryTerm(pUpperTerm, QueryTerm::Less);
+        _CLDECDELETE(pUpperTerm);
+
+        if (termset.find(pQt) == termset.end()) {
+            termset.insert( pQt );
+        }
+        else {
+            _CLDECDELETE(pQt);
+        }
+    }
 }
 
 CL_NS_END

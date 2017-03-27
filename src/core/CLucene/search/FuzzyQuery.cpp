@@ -421,5 +421,17 @@ CL_NS_DEF(search)
 	  return query;
   }
 
+  void FuzzyQuery::extractQueryTerms(QueryTermSet& termset) const {
+      QueryTerm* pQt = _CLNEW QueryTerm(getTerm(false), QueryTerm::Typo);
+      pQt->data = new float(minimumSimilarity);
+      
+      if (termset.find(pQt) == termset.end()) {
+          termset.insert(pQt);
+      }
+      else {
+          _CLDECDELETE(pQt);
+      }
+  }
+
 
 CL_NS_END

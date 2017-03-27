@@ -70,10 +70,17 @@ void SpanTermQuery::extractTerms( CL_NS(search)::TermSet * terms ) const
         terms->insert( _CL_POINTER( term ));
 }
 
-void SpanTermQuery::extractQueryTerms( QueryTermSet& terms ) const
+void SpanTermQuery::extractQueryTerms( QueryTermSet& termset ) const
 {
-    if( term ) 
-        terms.insert( QueryTerm( term, QueryTerm::Scalar ));
+    if( term ) {
+        QueryTerm* pQt = _CLNEW QueryTerm( term, QueryTerm::Scalar );
+        if (termset.find(pQt) == termset.end()) {
+            termset.insert( pQt);
+        }
+        else {
+            _CLDECDELETE( pQt );
+        }
+    }
 }
 
 Spans * SpanTermQuery::getSpans( CL_NS(index)::IndexReader * reader, bool complete )
