@@ -239,7 +239,9 @@ void Token::clear() {
 	// type = DEFAULT_TYPE;
 }
 
-void TokenStream::reset( int32_t baseOffset ){
+void TokenStream::reset( TokenStream * prevStream ){
+    if ( prevStream && prevStream->getLastOffset() > 0 )
+        this->firstOffset = prevStream->getLastOffset() + 1;
 }
 
 Token* TokenStream::next(){
@@ -253,6 +255,8 @@ TokenStream::~TokenStream(){
 }
 TokenStream::TokenStream() : fieldName(NULL) 
 {
+    firstOffset = 0;
+    lastOffset = 0;
 }
 TokenStream::TokenStream(const TCHAR* _fieldName) : fieldName(NULL)
 {
@@ -262,6 +266,8 @@ TokenStream::TokenStream(const TCHAR* _fieldName) : fieldName(NULL)
     fieldName = (TCHAR*) malloc( (l+1) * sizeof(TCHAR));
     _tcsncpy(fieldName, _fieldName, l);
     fieldName[l] = 0;
+    firstOffset = 0;
+    lastOffset = 0;
 }
 const TCHAR* TokenStream::name() const {
     return fieldName;
