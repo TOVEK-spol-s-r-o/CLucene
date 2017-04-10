@@ -239,7 +239,7 @@ void Token::clear() {
 	// type = DEFAULT_TYPE;
 }
 
-void TokenStream::reset(){
+void TokenStream::reset( int32_t baseOffset ){
 }
 
 Token* TokenStream::next(){

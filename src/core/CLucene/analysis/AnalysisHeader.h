@@ -231,7 +231,7 @@ public:
    *  of a TokenStream are intended to be consumed more than
    *  once, it is necessary to implement reset().
    */
-  virtual void reset();
+  virtual void reset( int32_t baseOffset = 0 );
 
 	virtual ~TokenStream();
 
