@@ -235,6 +235,8 @@ public:
 
     virtual int32_t getLastOffset() const { return lastOffset; };
 
+    virtual int32_t getFirstOffset() const { return firstOffset; };
+
     virtual ~TokenStream();
 
 protected:

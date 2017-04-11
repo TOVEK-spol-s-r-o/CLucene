@@ -239,9 +239,10 @@ void Token::clear() {
 	// type = DEFAULT_TYPE;
 }
 
-void TokenStream::reset( TokenStream * prevStream ){
-    if ( prevStream && prevStream->getLastOffset() > 0 )
-        this->firstOffset = prevStream->getLastOffset() + 1;
+void TokenStream::reset( TokenStream * prevStream )
+{
+    if ( prevStream )
+        this->firstOffset = prevStream->getLastOffset();
 }
 
 Token* TokenStream::next(){
