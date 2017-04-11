@@ -224,21 +224,24 @@ public:
     /** Releases resources associated with this stream. */
 	virtual void close() = 0;
 
-  /** Resets this stream to the beginning. This is an
-   *  optional operation, so subclasses may or may not
-   *  implement this method. Reset() is not needed for
-   *  the standard indexing process. However, if the Tokens
-   *  of a TokenStream are intended to be consumed more than
-   *  once, it is necessary to implement reset().
-   */
-  virtual void reset();
+    /** Resets this stream to the beginning. This is an
+    *  optional operation, so subclasses may or may not
+    *  implement this method. Reset() is not needed for
+    *  the standard indexing process. However, if the Tokens
+    *  of a TokenStream are intended to be consumed more than
+    *  once, it is necessary to implement reset().
+    */
+    virtual void reset( TokenStream * prevStream = NULL );
 
-	virtual ~TokenStream();
+    virtual int32_t getLastOffset() const { return lastOffset; };
+
+    virtual ~TokenStream();
 
 protected:
-    /** Interned
-     */
+    /** Interned */
     const TCHAR* fieldName;
+    int32_t firstOffset;
+    int32_t lastOffset;
 
 public:
     TokenStream();
@@ -246,6 +249,7 @@ public:
     TokenStream(const TCHAR* _fieldName);
     
     const TCHAR* name() const;
+
 };
 
 

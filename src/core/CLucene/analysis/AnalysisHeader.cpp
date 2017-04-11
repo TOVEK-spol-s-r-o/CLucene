@@ -240,7 +240,9 @@ void Token::clear() {
 	// type = DEFAULT_TYPE;
 }
 
-void TokenStream::reset(){
+void TokenStream::reset( TokenStream * prevStream ){
+    if ( prevStream && prevStream->getLastOffset() > 0 )
+        this->firstOffset = prevStream->getLastOffset() + 1;
 }
 
 Token* TokenStream::next(){
@@ -254,12 +256,16 @@ TokenStream::~TokenStream() {
 }
 TokenStream::TokenStream() : fieldName(NULL) 
 {
+    firstOffset = 0;
+    lastOffset = 0;
 }
 TokenStream::TokenStream(const TCHAR* _fieldName) : fieldName(NULL)
 {
     if (!_fieldName) return;
 
     fieldName = CLStringIntern::intern(_fieldName);
+    firstOffset = 0;
+    lastOffset = 0;
 }
 const TCHAR* TokenStream::name() const {
     return fieldName;
