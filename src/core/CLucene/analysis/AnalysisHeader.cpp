@@ -239,10 +239,13 @@ void Token::clear() {
 	// type = DEFAULT_TYPE;
 }
 
-void TokenStream::reset( TokenStream * prevStream )
+void TokenStream::reset( TokenStream * pPrevStream )
 {
-    if ( prevStream )
-        this->firstOffset = prevStream->getLastOffset();
+    if ( pPrevStream )
+    {
+        firstOffset = pPrevStream->getLastOffset();
+        lastOffset = firstOffset;
+    }
 }
 
 Token* TokenStream::next(){
@@ -295,6 +298,29 @@ void TokenFilter::close() {
     //input = NULL; -- ISH 04/11/09
 }
 
+int32_t TokenFilter::getLastOffset() const
+{
+    if ( input )
+        return input->getLastOffset();
+    else
+        return lastOffset;
+}
+
+int32_t TokenFilter::getFirstOffset() const
+{
+    if ( input )
+        return input->getFirstOffset();
+    else
+        return firstOffset;
+}
+
+void TokenFilter::reset( CL_NS(analysis)::TokenStream * pPrevStream )
+{
+    if ( input )
+        input->reset( pPrevStream );
+
+    TokenStream::reset( pPrevStream );
+}
 
 
 Tokenizer::Tokenizer() : input(NULL)

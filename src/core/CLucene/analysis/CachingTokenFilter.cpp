@@ -44,7 +44,7 @@ Token * CachingTokenFilter::next( Token* t )
     return t;
 }
   
-void CachingTokenFilter::reset()
+void CachingTokenFilter::reset( CL_NS(analysis)::TokenStream * pPrevStream )
 {
     itCache = cache.begin();
 }

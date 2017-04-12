@@ -372,6 +372,12 @@ protected:
 public:
     /** Close the input TokenStream. */
 	void close();
+
+    virtual int32_t getLastOffset() const;
+
+    virtual int32_t getFirstOffset() const;
+
+    virtual void reset( CL_NS(analysis)::TokenStream * pPrevStream );
 };
 
 CL_NS_END
