@@ -49,6 +49,10 @@ ELSEIF ( ZLIB_FOUND )
 ENDIF ( ZLIB_FOUND )
 INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} )
 
+find_package(Boost)
+LINK_DIRECTORIES( ${Boost_LIBRARY_DIR} )
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+
 ########################################################################
 # test for headers
 ########################################################################

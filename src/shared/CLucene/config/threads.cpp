@@ -9,6 +9,10 @@
 #include "_threads.h"
 #include <assert.h>
 
+#if defined(_CL_HAVE_WIN32_THREADS)
+#include <boost/thread.hpp>
+#endif
+
 CL_NS_DEF(util)
 
 #ifndef _CL_DISABLE_MULTITHREADING
@@ -81,14 +85,10 @@ CL_NS_DEF(util)
 
 	class shared_condition::Internal{
 	public:
-	    void* _event;
-	    Internal(){
-	    	_event = CreateEventA( NULL, false, false, NULL );
-	    }
-	    ~Internal(){
-	    	CloseHandle( _event );
-	    }
+		boost::mutex                mutex;         /**< synchronization of new item event */
+		boost::condition_variable   condition;     /**< new item event */
 	};
+	
 	shared_condition::shared_condition(){
 		_internal = new Internal;
 	}
@@ -96,14 +96,16 @@ CL_NS_DEF(util)
 		delete _internal;
 	}
 	void shared_condition::Wait(mutex_thread* shared_lock){
-        shared_lock->unlock();
-        _cl_dword_t dwRes = WaitForSingleObject( _internal->_event, 0xFFFFFFFF );
-		assert ( 0x0 == dwRes );
+        {
+            boost::unique_lock<boost::mutex>    lock( _internal->mutex );
+            shared_lock->unlock();
+            _internal->condition.wait( lock );
+        }
         shared_lock->lock();
 	}
 	void shared_condition::NotifyAll(){
-		bool bRes = SetEvent(_internal->_event);
-        assert( bRes );
+		boost::lock_guard<boost::mutex> lock( _internal->mutex );
+		_internal->condition.notify_all();
 	}
 
 	_LUCENE_THREADID_TYPE mutex_thread::CreateThread(luceneThreadStartRoutine* func, void* arg){
