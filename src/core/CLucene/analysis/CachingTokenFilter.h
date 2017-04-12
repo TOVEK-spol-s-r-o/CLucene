@@ -24,7 +24,7 @@ public:
     virtual ~CachingTokenFilter();
 
     Token * next( Token* t );
-    void reset();
+    void reset( CL_NS(analysis)::TokenStream * pPrevStream = NULL );
     void fillCache();
 };
 
