@@ -2185,7 +2185,7 @@ void IndexWriter::addMergeException(MergePolicy::OneMerge* _merge) {
   if ( mergeGen == _merge->mergeGen ){
     MergeExceptionsType::iterator itr = mergeExceptions->begin();
     while ( itr != mergeExceptions->end() ){
-      MergePolicy::OneMerge* x = *itr;
+      MergePolicy::OneMerge* x = *itr++;
       if ( x == _merge ){
         return;
       }

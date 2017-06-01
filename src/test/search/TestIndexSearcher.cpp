@@ -23,8 +23,12 @@ _LUCENE_THREAD_FUNC(searchDocs, _searcher) {
 #ifndef WIN32
     usleep(9999); //make sure that searchMutex is being waited on...
 #endif
-        
-    CONDITION_NOTIFYALL(searchCondition);
+
+    {
+        SCOPED_LOCK_MUTEX(searchMutex);
+        CONDITION_NOTIFYALL(searchCondition);
+    }
+
     SCOPED_LOCK_MUTEX(deleteMutex);
 
     _CLLDELETE(hits);
@@ -68,7 +72,10 @@ void testEndThreadException(CuTest *tc) {
         usleep(9999); //make sure that searchMutex is being waited on...
 #endif
 
-        CONDITION_NOTIFYALL(deleteCondition);
+        {
+            SCOPED_LOCK_MUTEX(deleteMutex);
+            CONDITION_NOTIFYALL(deleteCondition);
+        }
 
         _LUCENE_THREAD_JOIN(thread);
 
