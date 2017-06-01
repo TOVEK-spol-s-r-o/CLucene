@@ -284,8 +284,8 @@ public:
 	TCharConstArray(size_t length):ArrayBase<const TCHAR*>(length){}
 
     void deleteValues(){
-        if ( this->values == NULL )
-            return;
+        if ( this->values == NULL ) return;
+
 	    this->deleteArray();
 	}
 	virtual ~TCharConstArray(){
@@ -302,8 +302,8 @@ public:
 	CharConstArray(size_t length):ArrayBase<const char*>(length){}
 
     void deleteValues(){
-        if ( this->values == NULL )
-            return;
+        if ( this->values == NULL ) return;
+
 	    this->deleteArray();
 	}
 	virtual ~CharConstArray(){
