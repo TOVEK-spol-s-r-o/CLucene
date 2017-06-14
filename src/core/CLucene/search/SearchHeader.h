@@ -166,7 +166,7 @@ CL_NS_DEF(search)
 
         ~QueryTerm();
     
-        class compare {
+        class CLUCENE_EXPORT compare {
             public:
                 bool operator ()(const QueryTerm* t1, const QueryTerm* t2) const;
         };
