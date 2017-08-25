@@ -318,29 +318,24 @@ Query* ConstantScoreRangeQuery::clone() const{
 }
 
 void ConstantScoreRangeQuery::extractQueryTerms( QueryTermSet& termset ) const {
-    if (lowerVal) {
-        Term*       pLowerTerm = _CLNEW Term(fieldName, lowerVal);
-        QueryTerm*  pQt = _CLNEW QueryTerm(pLowerTerm, QueryTerm::More);
-        _CLDECDELETE(pLowerTerm);
-        
-        if (termset.find(pQt) == termset.end()) {
-            termset.insert( pQt );
-        }
-        else {
-            _CLDECDELETE(pQt);
-        }
-    }
-    if (upperVal) {
-        Term*       pUpperTerm = _CLNEW Term(fieldName, upperVal);
-        QueryTerm*  pQt = _CLNEW QueryTerm(pUpperTerm, QueryTerm::Less);
-        _CLDECDELETE(pUpperTerm);
+    StringBuffer buffer;
+    buffer.append(lowerVal != NULL ? lowerVal : LUCENE_BLANK_STRING);
+    buffer.appendChar(_T(' '));
+    buffer.appendChar(includeLower ? _T('1') : _T('0'));
+    buffer.appendChar(_T(' '));
+    buffer.append(upperVal != NULL ? upperVal : LUCENE_BLANK_STRING);
+    buffer.appendChar(_T(' '));
+    buffer.appendChar(includeUpper ? _T('1') : _T('0'));
 
-        if (termset.find(pQt) == termset.end()) {
-            termset.insert( pQt );
-        }
-        else {
-            _CLDECDELETE(pQt);
-        }
+    CL_NS(index)::Term* pTerm = _CLNEW Term(fieldName, buffer.toString());
+    QueryTerm* pQt = _CLNEW QueryTerm(pTerm, QueryTerm::Range);
+    _CLDECDELETE(pTerm);
+
+    if (termset.find(pQt) == termset.end()) {
+        termset.insert( pQt );
+    }
+    else {
+        _CLDECDELETE(pQt);
     }
 }
 

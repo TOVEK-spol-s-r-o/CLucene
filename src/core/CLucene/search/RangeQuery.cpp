@@ -191,23 +191,24 @@ CL_NS_DEF(search)
     bool RangeQuery::isInclusive() const { return inclusive; }
 
     void RangeQuery::extractQueryTerms(QueryTermSet& termset) const {
-        if (lowerTerm) {
-            QueryTerm* pQt = _CLNEW QueryTerm(lowerTerm, QueryTerm::More);
-            if (termset.find(pQt) == termset.end()) {
-                termset.insert( pQt );
-            }
-            else {
-                _CLDECDELETE(pQt);
-            }
+        StringBuffer buffer;
+        buffer.append(lowerTerm != NULL ? lowerTerm->text() : LUCENE_BLANK_STRING);
+        buffer.appendChar(_T(' '));
+        buffer.appendChar(inclusive ? _T('1') : _T('0'));
+        buffer.appendChar(_T(' '));
+        buffer.append(upperTerm != NULL ? upperTerm->text() : LUCENE_BLANK_STRING);
+        buffer.appendChar(_T(' '));
+        buffer.appendChar(inclusive ? _T('1') : _T('0'));
+
+        CL_NS(index)::Term* pTerm = _CLNEW Term(lowerTerm, buffer.toString());
+        QueryTerm* pQt = _CLNEW QueryTerm(pTerm, QueryTerm::Range);
+        _CLDECDELETE(pTerm);
+
+        if (termset.find(pQt) == termset.end()) {
+            termset.insert( pQt );
         }
-        if (upperTerm) {
-            QueryTerm* pQt = _CLNEW QueryTerm(upperTerm, QueryTerm::Less);
-            if (termset.find(pQt) == termset.end()) {
-                termset.insert( pQt );
-            }
-            else {
-                _CLDECDELETE(pQt);
-            }
+        else {
+            _CLDECDELETE(pQt);
         }
     }
 
