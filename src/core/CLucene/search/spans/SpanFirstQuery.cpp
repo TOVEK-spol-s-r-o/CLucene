@@ -143,6 +143,11 @@ void SpanFirstQuery::extractTerms( CL_NS(search)::TermSet * terms ) const
     match->extractTerms( terms );
 }
 
+void SpanFirstQuery::extractQueryTerms( QueryTermSet& termset ) const
+{
+    match->extractQueryTerms( termset );
+}
+
 CL_NS(search)::Query * SpanFirstQuery::rewrite( CL_NS(index)::IndexReader * reader )
 {
     SpanFirstQuery * clone = NULL;

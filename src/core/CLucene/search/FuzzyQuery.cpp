@@ -421,5 +421,26 @@ CL_NS_DEF(search)
 	  return query;
   }
 
+  void FuzzyQuery::extractQueryTerms(QueryTermSet& termset) const {
+      StringBuffer buffer;
+
+      buffer.append(getTerm(false)->text());
+	  buffer.appendChar( _T(' ') );
+	  buffer.appendInt(prefixLength, 8);
+	  buffer.appendChar( _T(' ') );
+	  buffer.appendFloat(minimumSimilarity, 8);
+	
+      Term*      pTerm = _CLNEW Term(getTerm(false), buffer.toString()); 
+      QueryTerm* pQt = _CLNEW QueryTerm(pTerm, QueryTerm::Typo);
+      _CLDECDELETE(pTerm);
+
+      if (termset.find(pQt) == termset.end()) {
+          termset.insert(pQt);
+      }
+      else {
+          _CLDECDELETE(pQt);
+      }
+  }
+
 
 CL_NS_END

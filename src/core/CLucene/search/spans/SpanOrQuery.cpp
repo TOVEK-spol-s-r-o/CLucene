@@ -216,6 +216,12 @@ void SpanOrQuery::extractTerms( CL_NS(search)::TermSet * terms ) const
         clauses[ i ]->extractTerms( terms );
 }
 
+void SpanOrQuery::extractQueryTerms( QueryTermSet& termset ) const
+{
+    for( size_t i = 0; i < clausesCount; i++ )
+        clauses[ i ]->extractQueryTerms( termset );
+}
+
 CL_NS(search)::Query * SpanOrQuery::rewrite( CL_NS(index)::IndexReader * reader )
 {
     SpanOrQuery * clone = NULL;

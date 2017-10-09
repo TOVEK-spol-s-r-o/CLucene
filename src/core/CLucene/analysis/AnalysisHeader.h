@@ -240,7 +240,8 @@ public:
     virtual ~TokenStream();
 
 protected:
-    TCHAR* fieldName;
+    /** Interned */
+    const TCHAR* fieldName;
     int32_t firstOffset;
     int32_t lastOffset;
 

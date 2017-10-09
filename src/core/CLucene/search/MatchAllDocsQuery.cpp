@@ -188,6 +188,10 @@ void MatchAllDocsQuery::extractTerms( TermSet * termset ) const
 {
 }
 
+void MatchAllDocsQuery::extractQueryTerms( QueryTermSet& termset ) const
+{
+}
+
 bool MatchAllDocsQuery::equals(Query* o) const{
 	if (!(o->instanceOf(MatchAllDocsQuery::getClassName())))
 		return false;

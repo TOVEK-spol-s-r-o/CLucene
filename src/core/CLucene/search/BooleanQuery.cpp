@@ -275,6 +275,25 @@ CL_NS_DEF(search)
         }
     }
 
+    void BooleanQuery::extractQueryTerms( QueryTermSet& termset ) const
+    {
+		for (size_t i = 0 ; i < clauses->size(); i++)
+        {
+            BooleanClause* clause = (*clauses)[i];
+            // add queryterm::not queryterm (this query will be always evaluated)
+            if (clause->isProhibited()) {
+                QueryTerm* pQt = _CLNEW QueryTerm(NULL, QueryTerm::Not);
+                if (termset.find(pQt) == termset.end()) {
+                    termset.insert(pQt);
+                }
+                else {
+                    _CLDECDELETE(pQt);
+                }
+            }
+            clause->getQuery()->extractQueryTerms( termset );
+        }
+    }
+
   Query* BooleanQuery::clone()  const{
     BooleanQuery* clone = _CLNEW BooleanQuery(*this);
     return clone;

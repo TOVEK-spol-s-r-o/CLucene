@@ -281,6 +281,22 @@ void PhraseQuery::extractTerms( TermSet * termset ) const
     }
 }
 
+void PhraseQuery::extractQueryTerms( QueryTermSet& termset ) const
+{
+    for( size_t i = 0; i < terms->size(); i++ )
+    {
+        Term * pTerm = (*terms)[i];
+        if( pTerm) {
+            QueryTerm* pQt = _CLNEW QueryTerm(pTerm, QueryTerm::Scalar);
+            if (termset.find(pQt) == termset.end()) {
+                termset.insert(pQt);
+            }
+            else {
+                _CLDECDELETE(pQt);
+            }
+        }
+    }
+}
 
  PhraseWeight::PhraseWeight(Searcher* searcher, PhraseQuery* _parentQuery, Similarity* similarity) {
    this->parentQuery=_parentQuery;

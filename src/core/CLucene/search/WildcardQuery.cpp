@@ -83,6 +83,26 @@ Query* WildcardQuery::rewrite(CL_NS(index)::IndexReader* reader) {
     return q;
 }
 
+void WildcardQuery::extractQueryTerms(QueryTermSet& termset) const {
+	if (termContainsWildcard) {
+        QueryTerm* pQtw = _CLNEW QueryTerm(getTerm(false), QueryTerm::Wildcard);
+        if (termset.find(pQtw) == termset.end()) {
+            termset.insert(pQtw);
+        }
+        else {
+            _CLDECDELETE(pQtw);
+        }
+    }
+    else {
+        QueryTerm* pQt = _CLNEW QueryTerm(getTerm(false), QueryTerm::Scalar);
+        if (termset.find(pQt) == termset.end()) {
+            termset.insert(pQt);
+        }
+        else {
+            _CLDECDELETE(pQt);
+        }
+    }
+}
 
 WildcardFilter::WildcardFilter( Term* term )
 {

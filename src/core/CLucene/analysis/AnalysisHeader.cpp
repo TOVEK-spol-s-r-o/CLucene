@@ -7,6 +7,7 @@
 #include "CLucene/_ApiHeader.h"
 #include "AnalysisHeader.h"
 #include "CLucene/util/StringBuffer.h"
+#include "CLucene/util/_StringIntern.h"
 #include "CLucene/util/_ThreadLocal.h"
 #include <assert.h>
 
@@ -254,8 +255,8 @@ Token* TokenStream::next(){
 		_CLDELETE(t);
 	return t;
 }
-TokenStream::~TokenStream(){
-    if(fieldName) free(fieldName);
+TokenStream::~TokenStream() {
+    CLStringIntern::unintern(fieldName);
 }
 TokenStream::TokenStream() : fieldName(NULL) 
 {
@@ -269,10 +270,9 @@ TokenStream::TokenStream(const TCHAR* _fieldName) : fieldName(NULL)
 
     if (!_fieldName) return;
 
-    int32_t l = _tcslen(_fieldName);
-    fieldName = (TCHAR*) malloc( (l+1) * sizeof(TCHAR));
-    _tcsncpy(fieldName, _fieldName, l);
-    fieldName[l] = 0;
+    fieldName = CLStringIntern::intern(_fieldName);
+    firstOffset = 0;
+    lastOffset = 0;
 }
 const TCHAR* TokenStream::name() const {
     return fieldName;

@@ -185,6 +185,17 @@ CL_NS_DEF(search)
     return buffer.toString();
   }
 
+  void PrefixQuery::extractQueryTerms(QueryTermSet& termset) const {
+    if( prefix ) {
+        QueryTerm* pQt = _CLNEW QueryTerm(prefix, QueryTerm::Prefix);
+        if (termset.find(pQt) == termset.end()) {
+            termset.insert(pQt);
+        }
+        else {
+            _CLDECDELETE(pQt);
+        }
+    }
+  }
 
 
 

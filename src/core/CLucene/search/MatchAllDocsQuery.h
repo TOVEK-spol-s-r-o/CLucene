@@ -62,6 +62,7 @@ CL_NS_DEF(search)
 
         /** Expert: MatchAllDocsQuery provides no terms at all. */
         void extractTerms( TermSet * termset ) const;
+        void extractQueryTerms( QueryTermSet& termset ) const;
 
         virtual bool equals(Query* o) const;
         virtual size_t hashCode() const;

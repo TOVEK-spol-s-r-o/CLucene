@@ -11,6 +11,7 @@
 #include "CLucene/util/Array.h"
 #include "CLucene/index/Term.h"
 #include "CLucene/util/Equators.h"
+#include "CLucene/search/SearchHeader.h"
 
 CL_CLASS_DEF(index,IndexReader)
 
@@ -20,7 +21,8 @@ CL_NS_DEF(search)
     class Similarity;
     class Searcher;
 
-    typedef std::set<CL_NS(index)::Term *, CL_NS(index)::Term_UnorderedCompare>  TermSet;
+    typedef std::set<CL_NS(index)::Term *, CL_NS(index)::Term_UnorderedCompare> TermSet;
+    typedef std::set<QueryTerm*, QueryTerm::compare>                            QueryTermSet;
 
 	/** The abstract base class for queries.
     <p>Instantiable subclasses are:
@@ -48,14 +50,14 @@ CL_NS_DEF(search)
 	protected:
         Query();
         Query(const Query& clone);
-	public:
-		virtual ~Query();
+    public:
+        virtual ~Query();
 
-		/** Sets the boost for this query clause to <code>b</code>.  Documents
-		* matching this clause will (in addition to the normal weightings) have
-		* their score multiplied by <code>b</code>.
-		*/
-		void setBoost(float_t b);
+        /** Sets the boost for this query clause to <code>b</code>.  Documents
+         * matching this clause will (in addition to the normal weightings) have
+         * their score multiplied by <code>b</code>.
+         */
+        void setBoost(float_t b);
 
 		/** Gets the boost for this clause.  Documents matching
 		* this clause will (in addition to the normal weightings) have their score
@@ -98,6 +100,11 @@ CL_NS_DEF(search)
          */
         virtual void extractTerms( TermSet * termset ) const;
 
+        /** 
+         * Extract original unexpanded terms
+         */
+        virtual void extractQueryTerms(QueryTermSet& termset) const = 0;
+        
         /** Expert: merges the clauses of a set of BooleanQuery's into a single
         * BooleanQuery.
         *

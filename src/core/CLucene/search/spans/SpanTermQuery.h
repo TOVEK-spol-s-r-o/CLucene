@@ -42,6 +42,7 @@ public:
 //    public Collection getTerms()
 
     void extractTerms( CL_NS(search)::TermSet * terms ) const;
+    virtual void extractQueryTerms( QueryTermSet& termset ) const;
     Spans * getSpans( CL_NS(index)::IndexReader * reader, bool complete );
 
     CL_NS(search)::Query * clone() const;

@@ -147,6 +147,30 @@ CL_NS_DEF(search)
 		virtual ~HitDoc();
     };
 
+    /** 
+    * Term representing unexpanded form of query term and its type (used to compare term to tokens)
+    */
+    class CLUCENE_EXPORT QueryTerm :LUCENE_REFBASE {
+        public:
+            enum Type { Scalar = 0,
+                Prefix,
+                Wildcard,
+                Range,
+                Typo,
+                Not }               type;
 
+            CL_NS(index)::Term*     term;
+
+            QueryTerm(CL_NS(index)::Term* _term, Type _type);
+
+            ~QueryTerm();
+
+            class CLUCENE_EXPORT compare {
+                public:
+                    bool operator ()(const QueryTerm* t1, const QueryTerm* t2) const;
+            };
+    };
+
+  
 CL_NS_END
 #endif
