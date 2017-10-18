@@ -268,7 +268,7 @@ bool NearSpansUnordered::atMatch()
     if( min()->doc() == max->doc() )
     {
         int32_t matchSlop = max->end() - min()->start() - totalLength;
-        return matchSlop <= maxSlop && ( minSlop == 0 || minSlop <= matchSlop );
+        return matchSlop <= maxSlop && minSlop <= matchSlop;
     }
     return false;
 }

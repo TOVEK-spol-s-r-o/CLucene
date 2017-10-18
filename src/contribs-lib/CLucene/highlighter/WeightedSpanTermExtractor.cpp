@@ -264,7 +264,7 @@ void WeightedSpanTermExtractor::extractFromPhraseQuery( PhraseQuery * pQuery, We
     int32_t nSlop = pQuery->getSlop();
     bool bInOrder = ( nSlop == 0 );
 
-    SpanNearQuery * pNearQuery = _CLNEW SpanNearQuery( vSpans.begin(), vSpans.end(), nSlop, 0, bInOrder, true );
+    SpanNearQuery * pNearQuery = _CLNEW SpanNearQuery( vSpans.begin(), vSpans.end(), nSlop, INT_MIN, bInOrder, true );
     pNearQuery->setBoost( pQuery->getBoost() );
     
     extractWeightedSpanTerms( pNearQuery, spans, terms );
@@ -321,7 +321,7 @@ void WeightedSpanTermExtractor::extractFromMultiPhraseQuery( MultiPhraseQuery * 
         int32_t nSlop = pQuery->getSlop();
         bool bInOrder = ( nSlop == 0 );
 
-        SpanNearQuery * pNearQuery = _CLNEW SpanNearQuery( rgClauses, rgClauses + nDistinctPositions, nSlop + nPositionGaps, 0, bInOrder, true );
+        SpanNearQuery * pNearQuery = _CLNEW SpanNearQuery( rgClauses, rgClauses + nDistinctPositions, nSlop + nPositionGaps, INT_MIN, bInOrder, true );
         pNearQuery->setBoost( pQuery->getBoost() );
         extractWeightedSpanTerms( pNearQuery, spans, terms );
 

@@ -254,7 +254,7 @@ bool NearSpansOrdered::shrinkToAfterShortestMatch()
         lastEnd = prevEnd;
     }
 
-    return matchSlop <= maxSlop && ( minSlop == 0 || minSlop <= matchSlop );    // ordered and allowed slop
+    return matchSlop <= maxSlop && minSlop <= matchSlop;    // ordered and allowed slop
 }
 
 TCHAR* NearSpansOrdered::toString() const

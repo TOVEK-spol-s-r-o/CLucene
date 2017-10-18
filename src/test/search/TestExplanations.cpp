@@ -182,7 +182,7 @@ SpanNearQuery * TestExplanations::snear( const TCHAR * s,  const TCHAR * e, int3
 SpanNearQuery * TestExplanations::snear( SpanQuery * s, SpanQuery * e, int32_t slop, bool inOrder )
 {
     SpanQuery * clauses[] = { s, e };
-    return _CLNEW SpanNearQuery( clauses, clauses+2, slop, 0, inOrder, true );
+    return _CLNEW SpanNearQuery( clauses, clauses+2, slop, INT_MIN, inOrder, true );
 }
   
 SpanNearQuery * TestExplanations::snear( const TCHAR * s,  const TCHAR * m,  const TCHAR * e, int32_t slop, bool inOrder ) 
@@ -193,7 +193,7 @@ SpanNearQuery * TestExplanations::snear( const TCHAR * s,  const TCHAR * m,  con
 SpanNearQuery * TestExplanations::snear( SpanQuery * s, SpanQuery * m, SpanQuery * e, int32_t slop, bool inOrder )
 {
     SpanQuery * clauses[] = { s, m, e };
-    return _CLNEW SpanNearQuery( clauses, clauses+3, slop, 0, inOrder, true );
+    return _CLNEW SpanNearQuery( clauses, clauses+3, slop, INT_MIN, inOrder, true );
 }
   
 SpanFirstQuery * TestExplanations::sf( const TCHAR * s, int32_t b )

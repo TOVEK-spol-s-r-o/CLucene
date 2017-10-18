@@ -370,7 +370,7 @@ bool NearSpansUnorderedComplete::atMatch()
         if( minStart > cachedStart || cachedDoc != minDoc )
         {
             int32_t matchSlop = max->end() - minStart - totalLength;
-            if( matchSlop <= maxSlop && ( minSlop==0 || minSlop <= matchSlop ))
+            if( matchSlop <= maxSlop && minSlop <= matchSlop )
             {
                 prepareSpans();
                 return true;

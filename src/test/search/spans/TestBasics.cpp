@@ -169,7 +169,7 @@ void TestBasics::testSpanNearExact()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 0, 0, true, true );
+    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 0, INT_MIN, true, true );
     checkHits( query, expectedDocs, sizeof( expectedDocs ) / sizeof( expectedDocs[ 0 ] ));
 
     Explanation explanation1;
@@ -199,7 +199,7 @@ void TestBasics::testSpanNearUnordered()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 4, 0, false, true );
+    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 4, INT_MIN, false, true );
     
     _CLLDECDELETE( term1 );
     _CLLDECDELETE( term2 );
@@ -218,7 +218,7 @@ void TestBasics::testSpanNearOrdered()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 4, 0, true, true );
+    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 4, INT_MIN, true, true );
     
     _CLLDECDELETE( term1 );
     _CLLDECDELETE( term2 );
@@ -238,7 +238,7 @@ void TestBasics::testSpanNot()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, 4, 0, true, true );
+    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, 4, INT_MIN, true, true );
 
     SpanNotQuery * query = _CLNEW SpanNotQuery( near, _CLNEW SpanTermQuery( term3 ), true );
     
@@ -270,7 +270,7 @@ void TestBasics::testSpanWithMultipleNotSingle()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, 4, 0, true, true );
+    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, 4, INT_MIN, true, true );
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term3 );
     SpanOrQuery * orQuery = _CLNEW SpanOrQuery( clauses, clauses+1, true );
@@ -307,7 +307,7 @@ void TestBasics::testSpanWithMultipleNotMany()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, 4, 0, true, true );
+    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, 4, INT_MIN, true, true );
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term3 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term4 );
@@ -347,11 +347,11 @@ void TestBasics::testNpeInSpanNearWithSpanNot()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, 4, 0, true, true );
+    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, 4, INT_MIN, true, true );
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( hun );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term3 );
-    SpanNearQuery * exclude = _CLNEW SpanNearQuery( clauses, clauses+2, 1, 0, true, true );
+    SpanNearQuery * exclude = _CLNEW SpanNearQuery( clauses, clauses+2, 1, INT_MIN, true, true );
     
     SpanNotQuery * query = _CLNEW SpanNotQuery( near, exclude, true );
 
@@ -387,7 +387,7 @@ void TestBasics::testNpeInSpanNearInSpanFirstInSpanNot()
     clauses[ 1 ] = (SpanTermQuery *) termQry40->clone();
 
     SpanFirstQuery * include = _CLNEW SpanFirstQuery( termQry40, n, true ); 
-    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, n-1, 0, true, true );
+    SpanNearQuery * near = _CLNEW SpanNearQuery( clauses, clauses+2, n-1, INT_MIN, true, true );
     SpanFirstQuery * exclude = _CLNEW SpanFirstQuery( near, n-1, true );
     SpanNotQuery * q = _CLNEW SpanNotQuery( include, exclude, true );
     
@@ -442,11 +442,11 @@ void TestBasics::testSpanOr()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * near1 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, 0, true, true );
+    SpanNearQuery * near1 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, INT_MIN, true, true );
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term3 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term4 );
-    SpanNearQuery * near2 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, 0, true, true );
+    SpanNearQuery * near2 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, INT_MIN, true, true );
 
     clauses[ 0 ] = near1;
     clauses[ 1 ] = near2;
@@ -481,15 +481,15 @@ void TestBasics::testSpanExactNested()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term1 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term2 );
-    SpanNearQuery * near1 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, 0, true, true );
+    SpanNearQuery * near1 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, INT_MIN, true, true );
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( term3 );
     clauses[ 1 ] = _CLNEW SpanTermQuery( term1 );
-    SpanNearQuery * near2 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, 0, true, true );
+    SpanNearQuery * near2 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, INT_MIN, true, true );
 
     clauses[ 0 ] = near1;
     clauses[ 1 ] = near2;
-    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 0, 0, true, true );
+    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 0, INT_MIN, true, true );
 
     _CLLDECDELETE( term1 );
     _CLLDECDELETE( term2 );
@@ -528,7 +528,7 @@ void TestBasics::testSpanNearOr()
 
     clauses[ 0 ] = to1;
     clauses[ 1 ] = to2;
-    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 10, 0, true, true );
+    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 10, INT_MIN, true, true );
 
     _CLLDECDELETE( term1 );
     _CLLDECDELETE( term2 );
@@ -555,11 +555,11 @@ void TestBasics::testSpanComplex1()
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( termSix );
     clauses[ 1 ] = _CLNEW SpanTermQuery( termHun );
-    SpanNearQuery * tt1 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, 0, true, true );
+    SpanNearQuery * tt1 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, INT_MIN, true, true );
 
     clauses[ 0 ] = _CLNEW SpanTermQuery( termSev );
     clauses[ 1 ] = _CLNEW SpanTermQuery( termHun );
-    SpanNearQuery * tt2 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, 0, true, true );
+    SpanNearQuery * tt2 = _CLNEW SpanNearQuery( clauses, clauses+2, 0, INT_MIN, true, true );
 
     clauses[ 0 ] = tt1;
     clauses[ 1 ] = tt2;
@@ -571,7 +571,7 @@ void TestBasics::testSpanComplex1()
     
     clauses[ 0 ] = to1;
     clauses[ 1 ] = to2;
-    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 100, 0, true, true );
+    SpanNearQuery * query = _CLNEW SpanNearQuery( clauses, clauses+2, 100, INT_MIN, true, true );
     
     _CLLDECDELETE( termSix );
     _CLLDECDELETE( termHun );

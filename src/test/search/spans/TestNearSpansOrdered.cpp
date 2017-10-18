@@ -79,7 +79,7 @@ SpanNearQuery * TestNearSpansOrdered::makeQuery( const TCHAR * s1, const TCHAR *
     _CLLDECDELETE( t1 );
     _CLLDECDELETE( t2 );
     _CLLDECDELETE( t3 );
-    return _CLNEW SpanNearQuery( clauses, clauses+3, slop, 0, inOrder, true );
+    return _CLNEW SpanNearQuery( clauses, clauses+3, slop, INT_MIN, inOrder, true );
 }
 
 SpanNearQuery * TestNearSpansOrdered::makeQuery() 
