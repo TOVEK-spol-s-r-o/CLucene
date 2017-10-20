@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <limits.h> //MU: Linux - Include because of INT_MIN usage, should be the same as in tlcore prolog.h
 
 #include "CLucene/_ApiHeader.h"
 
