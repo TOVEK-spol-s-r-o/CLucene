@@ -60,7 +60,9 @@ Token::Token():
   _termTextLen = 0;
 #ifndef LUCENE_TOKEN_WORD_LENGTH
   _buffer = NULL;
+
 	bufferTextLen = 0;
+    growBuffer( LUCENE_MAX_WORD_LEN+1 );
 #else
   _buffer[0] = 0; //make sure null terminated
 	bufferTextLen = LUCENE_TOKEN_WORD_LENGTH+1;
@@ -85,6 +87,7 @@ Token::Token(const TCHAR* text, const int32_t start, const int32_t end, const TC
 #ifndef LUCENE_TOKEN_WORD_LENGTH
   _buffer = NULL;
 	bufferTextLen = 0;
+    growBuffer( LUCENE_MAX_WORD_LEN+1 );
 #else
   _buffer[0] = 0; //make sure null terminated
 	bufferTextLen = LUCENE_TOKEN_WORD_LENGTH+1;
@@ -129,7 +132,13 @@ void Token::set(const TCHAR* text, const int32_t start, const int32_t end, const
 }
 
 void Token::setText(const TCHAR* text, int32_t l){
-	if ( l < 0 ) l = _tcslen(text);
+	if ( l < 0 ) 
+    {
+        if ( text )
+            l = _tcslen(text);
+        else
+            l = 0;
+    }
 #ifndef LUCENE_TOKEN_WORD_LENGTH
 	if(bufferTextLen < l+1)
 	  growBuffer(l+1);
@@ -140,8 +149,10 @@ void Token::setText(const TCHAR* text, int32_t l){
 		l=LUCENE_TOKEN_WORD_LENGTH;
 	}
 #endif
-	_tcsncpy(_buffer,text,l);
-  _termTextLen = l;
+    if ( text )
+  	  _tcsncpy(_buffer,text,l);
+
+    _termTextLen = l;
 	_buffer[_termTextLen] = 0; //make sure null terminated
 }
 
