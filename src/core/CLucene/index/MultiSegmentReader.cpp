@@ -722,7 +722,12 @@ MultiTermEnum::MultiTermEnum(ArrayBase<IndexReader*>* subReaders, const int32_t 
 		// Note that in the call termEnum->getTerm(false) below false is required because
 		// otherwise a reference is leaked. By passing false getTerm is
 		// ordered to return an unowned reference instead. (Credits for DSR)
-		if (t == NULL ? smi->next() : termEnum->term(false) != NULL){
+
+        Term* firstTerm = NULL;
+        if (t != NULL)
+            firstTerm = termEnum->term(false);
+
+        if (t == NULL ? smi->next() : firstTerm != NULL && firstTerm->field() == t->field()){
 			// initialize queue
 			queue->put(smi);
 		} else{
