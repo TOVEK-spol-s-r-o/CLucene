@@ -707,35 +707,34 @@ MultiTermEnum::MultiTermEnum(ArrayBase<IndexReader*>* subReaders, const int32_t 
 		//Get the i-th reader
 		reader = (*subReaders)[i];
 
-		//Check if the enumeration must start from term t
-		if (t != NULL) {
-			//termEnum is an enumeration of terms starting at or after the named term t
-			termEnum = reader->terms(t);
-		}else{
-			//termEnum is an enumeration of all the Terms and TermInfos in the set.
-			termEnum = reader->terms();
-		}
+        // we should skip empty segments
+        if ( reader->maxDoc() > 0 )
+        {
+		    //Check if the enumeration must start from term t
+		    if (t != NULL) {
+			    //termEnum is an enumeration of terms starting at or after the named term t
+			    termEnum = reader->terms(t);
+		    }else{
+			    //termEnum is an enumeration of all the Terms and TermInfos in the set.
+			    termEnum = reader->terms();
+		    }
 
-		//Instantiate an new SegmentMerginfo
-		smi = _CLNEW SegmentMergeInfo(starts[i], termEnum, reader);
+		    //Instantiate an new SegmentMerginfo
+		    smi = _CLNEW SegmentMergeInfo(starts[i], termEnum, reader);
 
-		// Note that in the call termEnum->getTerm(false) below false is required because
-		// otherwise a reference is leaked. By passing false getTerm is
-		// ordered to return an unowned reference instead. (Credits for DSR)
-
-        Term* firstTerm = NULL;
-        if (t != NULL)
-            firstTerm = termEnum->term(false);
-
-        if (t == NULL ? smi->next() : firstTerm != NULL && firstTerm->field() == t->field()){
-			// initialize queue
-			queue->put(smi);
-		} else{
-			//Close the SegmentMergeInfo
-			smi->close();
-			//And have it deleted
-			_CLDELETE(smi);
-		}
+		    // Note that in the call termEnum->getTerm(false) below false is required because
+		    // otherwise a reference is leaked. By passing false getTerm is
+		    // ordered to return an unowned reference instead. (Credits for DSR)
+            if (t == NULL ? smi->next() : termEnum->term(false) != NULL ){
+			    // initialize queue
+			    queue->put(smi);
+		    } else{
+			    //Close the SegmentMergeInfo
+			    smi->close();
+			    //And have it deleted
+			    _CLDELETE(smi);
+		    }
+        }
 	}
 
 	//Check if the queue has elements
