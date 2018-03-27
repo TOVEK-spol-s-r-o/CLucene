@@ -91,48 +91,9 @@ bool NearSpansUnorderedComplete::SpansCell::skipTo( int32_t target )
     if( cache.empty() || doc() < target )
     {
         cache.clear();
-        return adjust( spans->skipTo( target )); 
+        return adjust( spans->doc() >= target || spans->skipTo( target ) ); 
     }
     return true;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void NearSpansUnorderedComplete::SpansCell::addEnds( int32_t endMin, int32_t endMax, set<int32_t>& ends )
-{
-    int32_t end;
-
-    size_t sz = cache.size();
-    for( size_t pos = 1; pos < sz; pos += 2 )
-    {
-        end = cache.get( pos );
-        if( endMin < end && end <= endMax )
-            ends.insert( end );
-    }
-
-    if( cachedNext && spans->doc() == parentSpans->cachedDoc )
-    {
-        end = spans->end();
-        while( end <= endMax )
-        {
-            cache.push2(spans->start(), end);
-            if( spans->next() )
-            {
-                if( spans->doc() == parentSpans->cachedDoc )
-                {
-                    end = spans->end();
-                    if( endMin < end && end <= endMax )
-                        ends.insert( end );
-                }
-                else
-                    break;
-            }
-            else
-            {
-                cachedNext = false;
-                break;
-            }
-        }
-    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -370,11 +331,19 @@ bool NearSpansUnorderedComplete::atMatch()
         if( minStart > cachedStart || cachedDoc != minDoc )
         {
             int32_t matchSlop = max->end() - minStart - totalLength;
-            if( matchSlop <= maxSlop && minSlop <= matchSlop )
+            if( matchSlop <= maxSlop )
             {
                 prepareSpans();
-                return true;
+                if( minSlop <= matchSlop )
+                    return true;
+                else
+                    return iCachedEnds != cachedEnds.end();
             }
+        }
+        else if( minStart == cachedStart && iCachedEnds != cachedEnds.end())
+        {
+            int32_t matchSlop = max->end() - minStart - totalLength;
+            return matchSlop <= maxSlop && minSlop <= matchSlop;
         }
     }
     return false;
@@ -383,20 +352,21 @@ bool NearSpansUnorderedComplete::atMatch()
 void NearSpansUnorderedComplete::prepareSpans() 
 {
     cachedStart = min()->start();
-    int32_t endMax = cachedStart + totalLength + maxSlop;
-    int32_t endMin = max->end();
-    bool minToo = false;
-
     cachedEnds.clear();
+
     if( cachedDoc != min()->doc() )
     {
         for( SpansCell * cell = first; cell; cell = cell->nextCell )
             cell->clearCache();
-        
         cachedDoc = min()->doc();
     }
 
-    cachedEnds.insert( endMin );
+    int32_t minEnd = max->end();
+    int32_t matchSlop = max->end() - cachedStart - totalLength;
+    if( matchSlop <= maxSlop && minSlop <= matchSlop )
+        cachedEnds.insert( max->end() );
+
+    bool minToo = false;
     for( SpansCell * cell = first; cell; cell = cell->nextCell )
     {
         if( cell != min())
@@ -404,15 +374,50 @@ void NearSpansUnorderedComplete::prepareSpans()
             if( cell->start() == cachedStart )
                 minToo = true;
 
-            cell->addEnds( endMin, endMax, cachedEnds );
+            cell->addEnds( minEnd, minSlop, maxSlop, cachedEnds );
         }
     }
     if( minToo )
     {
-        min()->addEnds( endMin, endMax, cachedEnds );
+        min()->addEnds( minEnd, minSlop, maxSlop, cachedEnds );
     }
 
     iCachedEnds = cachedEnds.begin();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// spans->start() - slopBase <-> end - slopBase - length_of_current_span_interval == maxSlop
+void NearSpansUnorderedComplete::SpansCell::addEnds( int32_t currentEnd, int32_t minSlop, int32_t maxSlop, set<int32_t>& ends )
+{
+    int32_t slopBase = parentSpans->cachedStart + parentSpans->totalLength - length;
+    int32_t end;
+
+    size_t sz = cache.size();
+    for( size_t pos = 1; pos < sz; pos += 2 )
+    {
+        end = cache.get( pos );
+        if( end > currentEnd )
+        {
+            int32_t matchSlop = cache.get( pos-1 ) - slopBase;
+            if( matchSlop <= maxSlop && minSlop <= matchSlop )
+                ends.insert( end );
+        }
+    }
+    while( cachedNext && spans->doc() == parentSpans->cachedDoc )
+    {
+        end = spans->end();
+        if( end > currentEnd )
+        {
+            int32_t matchSlop = spans->start() - slopBase;
+            if( matchSlop <= maxSlop && minSlop <= matchSlop )
+                ends.insert( end );
+            else if( matchSlop > maxSlop )
+                break;
+        }
+        cache.push2( spans->start(), end );
+        cachedNext = spans->next();
+    }
 }
 
 CL_NS_END2

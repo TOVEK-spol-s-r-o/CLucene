@@ -70,6 +70,9 @@ public:
     void testNearSpanSimpleQuery();
     void testSpanHighlighting();
     void testNotSpanSimpleQuery();
+    void testNearSpanMinSlopQuery();
+    void testNearSpanMinSlopQuery2();
+    void testNearSpanMinSlopQuery3();
     void testGetBestFragmentsSimpleQuery();
     void testGetFuzzyFragments();
     void testGetWildCardFragments();

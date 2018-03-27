@@ -136,11 +136,13 @@ protected:
     /**
      * Fills a <code>Map</code> with <@link WeightedSpanTerm>s using the terms from the supplied <code>SpanQuery</code>.
      * 
-     * @param terms         Map to place created WeightedSpanTerms in
      * @param spanQuery     SpanQuery to extract Terms from
+     * @param minSlop       min slop defined by the span query 
+     * @param spans         external span within which the span should lay
+     * @param terms         Map to place created WeightedSpanTerms in
      * @throws IOException
      */
-    void extractWeightedSpanTerms( CL_NS2(search,spans)::SpanQuery * pSpanQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
+    void extractFromSpanQuery( CL_NS2(search,spans)::SpanQuery * pSpanQuery, int32_t minSlop, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
 
     /**
      * Fills a <code>Map</code> with <@link WeightedSpanTerm>s using the terms from the supplied <code>Query</code>.
@@ -150,6 +152,7 @@ protected:
      * @throws IOException
      */
     void extractWeightedTerms( CL_NS(search)::Query * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
+    void extractWeightedSpanTerms( CL_NS2(search,spans)::SpanQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
     void processNonWeightedTerms( PositionCheckingMap& terms, TermSet& nonWeightedTerms, float_t fBoost, WeightedSpanTerm::PositionSpans& spans );
     void processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum * termEnum, float_t fBoost, WeightedSpanTerm::PositionSpans& spans );
 

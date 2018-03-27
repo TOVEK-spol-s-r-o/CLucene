@@ -33,11 +33,13 @@ public:
     public:
         int32_t start;
         int32_t end;
+        int32_t minlen;
 
-        PositionSpan( int32_t _start, int32_t _end )
+        PositionSpan( int32_t _start, int32_t _end, int32_t _minlen )
         {
             start = _start;
             end = _end;
+            minlen = _minlen;
         }
 
         virtual ~PositionSpan() {}

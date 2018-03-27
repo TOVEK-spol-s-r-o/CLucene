@@ -86,7 +86,7 @@ private:
         int32_t start() const           { return cache.empty() ? spans->start() : cache.top(); }
         int32_t end() const             { return cache.empty() ? spans->end() : cache.top2(); }
 
-        void addEnds( int32_t endMin, int32_t endMax, set<int32_t>& ends );
+        void addEnds( int32_t currentEnd, int32_t minSlop, int32_t maxSlop, set<int32_t>& ends );
         void clearCache()               { cache.clear(); }
 
         TCHAR* toString() const;

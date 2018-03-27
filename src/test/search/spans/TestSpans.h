@@ -46,6 +46,8 @@ public:
     void testSpanNearUnorderedComplete1();
     void testSpanNearUnorderedComplete2();
     void testSpanNearUnorderedComplete3();
+    void testSpanNearUnorderedComplete4();
+    void testSpanNearUnorderedComplete5();
     void testSpanNearOrderedComplete();
     void testSpanNearOrderedComplete1();
 

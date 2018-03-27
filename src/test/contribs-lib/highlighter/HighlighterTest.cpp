@@ -62,6 +62,17 @@ const TCHAR* HighlighterTest::texts[] = {
         _T( "This text has a typo in referring to Keneddy" ),
         _T( "wordx wordy wordz wordx wordy wordx worda wordb wordy wordc" ),
         _T( "y z x y z a b" ),
+        _T( "wx wa wa wa wa wa" ),
+        _T( "wa wa wa wa wa wy" ),
+        _T( "wz wz wz wz wz wz wz" ),
+        _T( "wl wl wl wr wr wr" ),
+        _T( "wo we wo we wo we" ),
+        _T( "vx va va va va va aaaaa" ),
+        _T( "vx va va va va va bbbbb" ),
+        _T( "va va va va va vy aaaaa" ),
+        _T( "va va va va va vy bbbbb" ),
+        _T( "vz vz vz vz vz vz vz aaaaa" ),
+        _T( "vz vz vz vz vz vz vz bbbbb" ),
         NULL
 };
 
@@ -349,6 +360,242 @@ void HighlighterTest::testSpanHighlighting()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+void HighlighterTest::testNearSpanMinSlopQuery()
+{
+    SpanTermQuery * rgSubQuery[ 8 ];
+    rgSubQuery[ 0 ] = createSpanTermQuery( FIELD_NAME, _T( "wx" ));
+    rgSubQuery[ 1 ] = createSpanTermQuery( FIELD_NAME, _T( "wx" ));
+    rgSubQuery[ 2 ] = createSpanTermQuery( FIELD_NAME, _T( "wa" ));
+    rgSubQuery[ 3 ] = createSpanTermQuery( FIELD_NAME, _T( "wa" ));
+    rgSubQuery[ 4 ] = createSpanTermQuery( FIELD_NAME, _T( "wy" ));
+    rgSubQuery[ 5 ] = createSpanTermQuery( FIELD_NAME, _T( "wy" ));
+    rgSubQuery[ 6 ] = createSpanTermQuery( FIELD_NAME, _T( "wz" ));
+    rgSubQuery[ 7 ] = createSpanTermQuery( FIELD_NAME, _T( "wz" ));
+
+    SpanNearQuery * rgSubNearQuery[ 12 ];
+    rgSubNearQuery[ 0 ] = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, -1, -1, false, false );
+    rgSubNearQuery[ 1 ] = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, -1, -1, false, false );
+    rgSubNearQuery[ 2 ] = _CLNEW SpanNearQuery( rgSubQuery+4, rgSubQuery+6, -1, -1, false, false );
+    rgSubNearQuery[ 3 ] = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, -1, -1, false, false );
+    rgSubNearQuery[ 4 ] = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, 0, -1, false, false );
+    rgSubNearQuery[ 5 ] = _CLNEW SpanNearQuery( rgSubQuery+4, rgSubQuery+6, -1, -1, false, false );
+    rgSubNearQuery[ 6 ] = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, -1, -1, false, false );
+    rgSubNearQuery[ 7 ] = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, 1, -1, false, false );
+    rgSubNearQuery[ 8 ] = _CLNEW SpanNearQuery( rgSubQuery+4, rgSubQuery+6, -1, -1, false, false );
+    rgSubNearQuery[ 9 ] = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, -1, -1, false, false );
+    rgSubNearQuery[ 10 ] = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, 1, 1, false, false );
+    rgSubNearQuery[ 11 ] = _CLNEW SpanNearQuery( rgSubQuery+4, rgSubQuery+6, -1, -1, false, false );
+
+    for( int maxSlop = 0; maxSlop < 5; maxSlop++ )
+    {
+        for( int minSlop = 0; minSlop <= maxSlop; minSlop++ )
+        {
+            SpanNearQuery * queryWxWa = _CLNEW SpanNearQuery( rgSubQuery+1, rgSubQuery+3, maxSlop, minSlop, false, false );
+            doSearching( queryWxWa );
+            assertHighlightAllHits( 2, 40, maxSlop - minSlop + 2 );
+
+            SpanNearQuery * queryW1xW1a = _CLNEW SpanNearQuery( rgSubNearQuery, rgSubNearQuery+2, maxSlop, minSlop, false, false );
+            doSearching( queryW1xW1a );
+            assertHighlightAllHits( 2, 40, maxSlop - minSlop + 2 );
+
+            SpanNearQuery * queryW1xW2a = _CLNEW SpanNearQuery( rgSubNearQuery+3, rgSubNearQuery+5, maxSlop, minSlop, false, false );
+            doSearching( queryW1xW2a );
+            assertHighlightAllHits( 2, 40, 1 + min( 5, maxSlop + 2 ) - minSlop );
+
+            SpanNearQuery * queryW1xW3a = _CLNEW SpanNearQuery( rgSubNearQuery+6, rgSubNearQuery+8, maxSlop, minSlop, false, false );
+            doSearching( queryW1xW3a );
+            assertHighlightAllHits( 2, 40, 1 + min( 5, maxSlop + 3 ) - minSlop );
+
+            SpanNearQuery * queryW1xWa_a = _CLNEW SpanNearQuery( rgSubNearQuery+9, rgSubNearQuery+11, maxSlop, minSlop, false, false );
+            doSearching( queryW1xWa_a );
+            assertHighlightAllHits( 2, 40, minSlop == 2 ? 3 : (minSlop > 2 ? 0 : (minSlop == maxSlop ? ( 1 + min( 5, maxSlop + 2 ) - minSlop ) : ( 1 + min( 5, maxSlop + 3 ) - minSlop ))));
+
+            SpanNearQuery * queryWaWy = _CLNEW SpanNearQuery( rgSubQuery+3, rgSubQuery+5, maxSlop, minSlop, false, false );
+            doSearching( queryWaWy );
+            assertHighlightAllHits( 2, 40, maxSlop - minSlop + 2 );
+
+            SpanNearQuery * queryW1aW1y = _CLNEW SpanNearQuery( rgSubNearQuery+1, rgSubNearQuery+3, maxSlop, minSlop, false, false );
+            doSearching( queryW1aW1y );
+            assertHighlightAllHits( 2, 40, maxSlop - minSlop + 2 );
+
+            SpanNearQuery * queryW2aW1y = _CLNEW SpanNearQuery( rgSubNearQuery+4, rgSubNearQuery+6, maxSlop, minSlop, false, false );
+            doSearching( queryW2aW1y );
+            assertHighlightAllHits( 2, 40,  1 + min( 5, maxSlop + 2 ) - minSlop );
+
+            SpanNearQuery * queryW3aW1y = _CLNEW SpanNearQuery( rgSubNearQuery+7, rgSubNearQuery+9, maxSlop, minSlop, false, false );
+            doSearching( queryW3aW1y );
+            assertHighlightAllHits( 2, 40,  1 + min( 5, maxSlop + 3 ) - minSlop );
+
+            SpanNearQuery * queryWa_aW1y = _CLNEW SpanNearQuery( rgSubNearQuery+10, rgSubNearQuery+12, maxSlop, minSlop, false, false );
+            doSearching( queryWa_aW1y );
+            assertHighlightAllHits( 2, 40, minSlop == 2 ? 3 : (minSlop > 2 ? 0 : (minSlop == maxSlop ? ( 1 + min( 5, maxSlop + 2 ) - minSlop ) : ( 1 + min( 5, maxSlop + 3 ) - minSlop ))));
+
+            SpanNearQuery * queryWzWz = _CLNEW SpanNearQuery( rgSubQuery+6, rgSubQuery+8, maxSlop, minSlop, false, false );
+            doSearching( queryWzWz );
+            assertHighlightAllHits( 2, 40, min(7, ( 7 - minSlop - 1 ) * 2 ));
+        }
+    }
+
+    _CLDELETE( rgSubNearQuery[ 0 ] );
+    _CLDELETE( rgSubNearQuery[ 1 ] );
+    _CLDELETE( rgSubNearQuery[ 2 ] );
+    _CLDELETE( rgSubNearQuery[ 3 ] );
+    _CLDELETE( rgSubNearQuery[ 4 ] );
+    _CLDELETE( rgSubNearQuery[ 5 ] );
+    _CLDELETE( rgSubNearQuery[ 6 ] );
+    _CLDELETE( rgSubNearQuery[ 7 ] );
+    _CLDELETE( rgSubNearQuery[ 8 ] );
+    _CLDELETE( rgSubNearQuery[ 9 ] );
+    _CLDELETE( rgSubNearQuery[ 10 ] );
+    _CLDELETE( rgSubNearQuery[ 11 ] );
+
+    _CLDELETE( rgSubQuery[ 0 ] );
+    _CLDELETE( rgSubQuery[ 1 ] );
+    _CLDELETE( rgSubQuery[ 2 ] );
+    _CLDELETE( rgSubQuery[ 3 ] );
+    _CLDELETE( rgSubQuery[ 4 ] );
+    _CLDELETE( rgSubQuery[ 5 ] );
+    _CLDELETE( rgSubQuery[ 6 ] );
+    _CLDELETE( rgSubQuery[ 7 ] );
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void HighlighterTest::testNearSpanMinSlopQuery3()
+{
+    SpanTermQuery * rgSubQuery[ 8 ];
+    rgSubQuery[ 0 ] = createSpanTermQuery( FIELD_NAME, _T( "vx" ));
+    rgSubQuery[ 1 ] = createSpanTermQuery( FIELD_NAME, _T( "vx" ));
+    rgSubQuery[ 2 ] = createSpanTermQuery( FIELD_NAME, _T( "va" ));
+    rgSubQuery[ 3 ] = createSpanTermQuery( FIELD_NAME, _T( "va" ));
+    rgSubQuery[ 4 ] = createSpanTermQuery( FIELD_NAME, _T( "vy" ));
+    rgSubQuery[ 5 ] = createSpanTermQuery( FIELD_NAME, _T( "vy" ));
+    rgSubQuery[ 6 ] = createSpanTermQuery( FIELD_NAME, _T( "vz" ));
+    rgSubQuery[ 7 ] = createSpanTermQuery( FIELD_NAME, _T( "vz" ));
+
+    SpanNearQuery * rgSubNearQuery[ 12 ];
+    rgSubNearQuery[ 0 ] = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, -1, -1, false, false );
+    rgSubNearQuery[ 1 ] = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, -1, -1, false, false );
+    rgSubNearQuery[ 2 ] = _CLNEW SpanNearQuery( rgSubQuery+4, rgSubQuery+6, -1, -1, false, false );
+    rgSubNearQuery[ 3 ] = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, -1, -1, false, false );
+    rgSubNearQuery[ 4 ] = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, 0, -1, false, false );
+    rgSubNearQuery[ 5 ] = _CLNEW SpanNearQuery( rgSubQuery+4, rgSubQuery+6, -1, -1, false, false );
+    rgSubNearQuery[ 6 ] = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, -1, -1, false, false );
+    rgSubNearQuery[ 7 ] = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, 1, -1, false, false );
+    rgSubNearQuery[ 8 ] = _CLNEW SpanNearQuery( rgSubQuery+4, rgSubQuery+6, -1, -1, false, false );
+    rgSubNearQuery[ 9 ] = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, -1, -1, false, false );
+    rgSubNearQuery[ 10 ] = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, 1, 1, false, false );
+    rgSubNearQuery[ 11 ] = _CLNEW SpanNearQuery( rgSubQuery+4, rgSubQuery+6, -1, -1, false, false );
+
+    for( int maxSlop = 0; maxSlop < 5; maxSlop++ )
+    {
+        for( int minSlop = 0; minSlop <= maxSlop; minSlop++ )
+        {
+            SpanNearQuery * queryWxWa = _CLNEW SpanNearQuery( rgSubQuery+1, rgSubQuery+3, maxSlop, minSlop, false, false );
+            doSearching( queryWxWa );
+            assertHighlightAllHits( 2, 40, 2 * ( maxSlop - minSlop + 2 ));
+
+            SpanNearQuery * queryW1xW1a = _CLNEW SpanNearQuery( rgSubNearQuery, rgSubNearQuery+2, maxSlop, minSlop, false, false );
+            doSearching( queryW1xW1a );
+            assertHighlightAllHits( 2, 40, 2 * ( maxSlop - minSlop + 2 ));
+
+            SpanNearQuery * queryW1xW2a = _CLNEW SpanNearQuery( rgSubNearQuery+3, rgSubNearQuery+5, maxSlop, minSlop, false, false );
+            doSearching( queryW1xW2a );
+            assertHighlightAllHits( 2, 40, 2 * ( 1 + min( 5, maxSlop + 2 ) - minSlop ));
+
+            SpanNearQuery * queryW1xW3a = _CLNEW SpanNearQuery( rgSubNearQuery+6, rgSubNearQuery+8, maxSlop, minSlop, false, false );
+            doSearching( queryW1xW3a );
+            assertHighlightAllHits( 2, 40, 2 * ( 1 + min( 5, maxSlop + 3 ) - minSlop ));
+
+            SpanNearQuery * queryW1xWa_a = _CLNEW SpanNearQuery( rgSubNearQuery+9, rgSubNearQuery+11, maxSlop, minSlop, false, false );
+            doSearching( queryW1xWa_a );
+            assertHighlightAllHits( 2, 40, 2 * ( minSlop == 2 ? 3 : (minSlop > 2 ? 0 : (minSlop == maxSlop ? ( 1 + min( 5, maxSlop + 2 ) - minSlop ) : ( 1 + min( 5, maxSlop + 3 ) - minSlop )))));
+
+            SpanNearQuery * queryWaWy = _CLNEW SpanNearQuery( rgSubQuery+3, rgSubQuery+5, maxSlop, minSlop, false, false );
+            doSearching( queryWaWy );
+            assertHighlightAllHits( 2, 40, 2 * ( maxSlop - minSlop + 2 ));
+
+            SpanNearQuery * queryW1aW1y = _CLNEW SpanNearQuery( rgSubNearQuery+1, rgSubNearQuery+3, maxSlop, minSlop, false, false );
+            doSearching( queryW1aW1y );
+            assertHighlightAllHits( 2, 40, 2 * ( maxSlop - minSlop + 2 ));
+
+            SpanNearQuery * queryW2aW1y = _CLNEW SpanNearQuery( rgSubNearQuery+4, rgSubNearQuery+6, maxSlop, minSlop, false, false );
+            doSearching( queryW2aW1y );
+            assertHighlightAllHits( 2, 40,  2 * ( 1 + min( 5, maxSlop + 2 ) - minSlop ));
+
+            SpanNearQuery * queryW3aW1y = _CLNEW SpanNearQuery( rgSubNearQuery+7, rgSubNearQuery+9, maxSlop, minSlop, false, false );
+            doSearching( queryW3aW1y );
+            assertHighlightAllHits( 2, 40,  2 * ( 1 + min( 5, maxSlop + 3 ) - minSlop ));
+
+            SpanNearQuery * queryWa_aW1y = _CLNEW SpanNearQuery( rgSubNearQuery+10, rgSubNearQuery+12, maxSlop, minSlop, false, false );
+            doSearching( queryWa_aW1y );
+            assertHighlightAllHits( 2, 40, 2 * ( minSlop == 2 ? 3 : (minSlop > 2 ? 0 : (minSlop == maxSlop ? ( 1 + min( 5, maxSlop + 2 ) - minSlop ) : ( 1 + min( 5, maxSlop + 3 ) - minSlop )))));
+
+            SpanNearQuery * queryWzWz = _CLNEW SpanNearQuery( rgSubQuery+6, rgSubQuery+8, maxSlop, minSlop, false, false );
+            doSearching( queryWzWz );
+            assertHighlightAllHits( 2, 40, 2 * ( min(7, ( 7 - minSlop - 1 ) * 2 )));
+        }
+    }
+
+    _CLDELETE( rgSubNearQuery[ 0 ] );
+    _CLDELETE( rgSubNearQuery[ 1 ] );
+    _CLDELETE( rgSubNearQuery[ 2 ] );
+    _CLDELETE( rgSubNearQuery[ 3 ] );
+    _CLDELETE( rgSubNearQuery[ 4 ] );
+    _CLDELETE( rgSubNearQuery[ 5 ] );
+    _CLDELETE( rgSubNearQuery[ 6 ] );
+    _CLDELETE( rgSubNearQuery[ 7 ] );
+    _CLDELETE( rgSubNearQuery[ 8 ] );
+    _CLDELETE( rgSubNearQuery[ 9 ] );
+    _CLDELETE( rgSubNearQuery[ 10 ] );
+    _CLDELETE( rgSubNearQuery[ 11 ] );
+
+    _CLDELETE( rgSubQuery[ 0 ] );
+    _CLDELETE( rgSubQuery[ 1 ] );
+    _CLDELETE( rgSubQuery[ 2 ] );
+    _CLDELETE( rgSubQuery[ 3 ] );
+    _CLDELETE( rgSubQuery[ 4 ] );
+    _CLDELETE( rgSubQuery[ 5 ] );
+    _CLDELETE( rgSubQuery[ 6 ] );
+    _CLDELETE( rgSubQuery[ 7 ] );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+void HighlighterTest::testNearSpanMinSlopQuery2()
+{
+    SpanTermQuery * rgSubQuery[ 4 ];
+    rgSubQuery[ 0 ] = createSpanTermQuery( FIELD_NAME, _T( "wl" ));
+    rgSubQuery[ 1 ] = createSpanTermQuery( FIELD_NAME, _T( "wr" ));
+    rgSubQuery[ 2 ] = createSpanTermQuery( FIELD_NAME, _T( "we" ));
+    rgSubQuery[ 3 ] = createSpanTermQuery( FIELD_NAME, _T( "wo" ));
+
+    for( int maxSlop = 0; maxSlop < 5; maxSlop++ )
+    {
+        for( int minSlop = 0; minSlop <= maxSlop; minSlop++ )
+        {
+
+            SpanNearQuery * queryWlWr = _CLNEW SpanNearQuery( rgSubQuery, rgSubQuery+2, maxSlop, minSlop, false, false );
+            doSearching( queryWlWr );
+            assertHighlightAllHits( 2, 40, min(2 * (maxSlop + 1), 6) - max(0, (minSlop-2) * 2));
+
+            SpanNearQuery * queryWoWe = _CLNEW SpanNearQuery( rgSubQuery+2, rgSubQuery+4, maxSlop, minSlop, false, false );
+            doSearching( queryWoWe );
+            if( maxSlop == minSlop && (maxSlop % 2) == 1 )
+                assertHighlightAllHits( 2, 40, 0);
+            else if( minSlop == 3 || minSlop == 4 )
+                assertHighlightAllHits( 2, 40, 2 );
+            else
+                assertHighlightAllHits( 2, 40, 6 );
+        }
+    }
+
+    _CLDELETE( rgSubQuery[ 0 ] );
+    _CLDELETE( rgSubQuery[ 1 ] );
+    _CLDELETE( rgSubQuery[ 2 ] );
+    _CLDELETE( rgSubQuery[ 3 ] );
+}
+
+/////////////////////////////////////////////////////////////////////////////
 void HighlighterTest::testNotSpanSimpleQuery()
 {
     SpanTermQuery * rgSubQuery[ 2 ];
@@ -538,12 +785,12 @@ void HighlighterTest::testGetBestSingleFragmentWithWeights()
     vector<WeightedSpanTerm::PositionSpan *> vSpans;
     WeightedSpanTerm * weightedTerms[ 2 ];
 
-    vSpans.push_back( _CLNEW WeightedSpanTerm::PositionSpan( 0, 0 ));
+    vSpans.push_back( _CLNEW WeightedSpanTerm::PositionSpan( 0, 0, INT_MIN ));
     weightedTerms[ 0 ] = new WeightedSpanTerm( 10.0f, _T( "hello" ));
     weightedTerms[ 0 ]->addPositionSpans( vSpans );
     _CLLDECDELETE( vSpans[ 0 ] );
 
-    vSpans[ 0 ] = _CLNEW WeightedSpanTerm::PositionSpan( 14, 14 );
+    vSpans[ 0 ] = _CLNEW WeightedSpanTerm::PositionSpan( 14, 14, INT_MIN );
     weightedTerms[ 1 ] = new WeightedSpanTerm( 1.0f, _T( "kennedy" ));
     weightedTerms[ 1 ]->addPositionSpans( vSpans );
     _CLLDECDELETE( vSpans[ 0 ] );
@@ -627,6 +874,9 @@ void testHighlighter( CuTest* tc )
     pTest->testNearSpanSimpleQuery();
     pTest->testSpanHighlighting();
     pTest->testNotSpanSimpleQuery();
+    pTest->testNearSpanMinSlopQuery();
+    pTest->testNearSpanMinSlopQuery2();
+    pTest->testNearSpanMinSlopQuery3();
     pTest->testGetBestFragmentsSimpleQuery();
     pTest->testGetFuzzyFragments();
     pTest->testGetWildCardFragments();
@@ -641,7 +891,6 @@ void testHighlighter( CuTest* tc )
     pTest->testGetBestSingleFragmentWithWeights();
     pTest->testUnRewrittenQuery();
     pTest->testNoFragments();
-
     _CLDELETE( pTest );
 }
 

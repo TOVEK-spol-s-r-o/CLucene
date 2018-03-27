@@ -219,7 +219,7 @@ Spans * SpanNearQuery::getSpans( CL_NS(index)::IndexReader * reader, bool comple
 
     return inOrder
             ? (Spans *) _CLNEW NearSpansOrdered( this, reader, complete )
-            : ( complete ?  (Spans *) _CLNEW NearSpansUnorderedComplete( this, reader ) : (Spans *) _CLNEW NearSpansUnordered( this, reader ));
+            : ( complete || minSlop > 0 ?  (Spans *) _CLNEW NearSpansUnorderedComplete( this, reader ) : (Spans *) _CLNEW NearSpansUnordered( this, reader ));
 }
 
 CL_NS_END2
