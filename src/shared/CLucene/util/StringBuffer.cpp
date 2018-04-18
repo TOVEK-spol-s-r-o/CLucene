@@ -174,7 +174,7 @@ CL_NS_DEF(util)
 	 if ( dig > 0 ){
 		_tcscat(buf,_T(".")); //add a decimal point
 
-		int64_t remi=(int64_t)((value-v)*pow((float_t)10,(float_t)(dig+1))); //take the remainder and make a whole number
+		int64_t remi=(int64_t)((value-v)*(double)pow((float_t)10,(float_t)(dig+1))); //take the remainder and make a whole number
 		if ( remi<0 ) remi*=-1;
 		int64_t remadj=remi/10;
 		if ( remi-(remadj*10) >=5 )
