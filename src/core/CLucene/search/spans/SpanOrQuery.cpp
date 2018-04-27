@@ -58,7 +58,7 @@ public:
     bool next();
     bool skipTo( int32_t target );
 
-    int32_t doc() const     { return top()->doc(); }
+    int32_t doc() const     { return queue == NULL ? -1 : top()->doc(); }
     int32_t start() const   { return top()->start(); }
     int32_t end() const     { return top()->end(); }
 
