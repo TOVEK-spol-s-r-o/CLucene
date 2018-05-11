@@ -137,7 +137,7 @@ public:
     bool next();
     bool skipTo( int32_t target );
 
-    int32_t doc() const     { return cachedEnds.empty() ? min()->doc() : cachedDoc; }
+    int32_t doc() const     { return cachedEnds.empty() ? (firstTime ? -1 : min()->doc()) : cachedDoc; }
     int32_t start() const   { return cachedEnds.empty() ? min()->start() : cachedStart; }
     int32_t end() const     { return cachedEnds.empty() ? max->end() : *iCachedEnds; }
 
