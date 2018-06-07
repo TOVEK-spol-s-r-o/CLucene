@@ -11,7 +11,7 @@
 
 CL_NS_DEF(search)
 
-#define LUCENE_SEARCH_EXPLANATION_DESC_LEN 200
+#define LUCENE_SEARCH_EXPLANATION_DESC_LEN 256
 
 /** Expert: Describes the score computation for document and query. */
 class CLUCENE_EXPORT Explanation {

@@ -189,16 +189,15 @@ CuSuite *testSpanQueries(void)
 {
 	CuSuite *suite = CuSuiteNew( _T( "CLucene SpanQuery Tests" ));
 
-/*    SUITE_ADD_TEST( suite, testBasics );
+    SUITE_ADD_TEST( suite, testBasics );
     SUITE_ADD_TEST( suite, testSpans );
     SUITE_ADD_TEST( suite, testNearSpansOrdered );
     SUITE_ADD_TEST( suite, testSpansAdvanced );
-*/
     SUITE_ADD_TEST( suite, testSpansAdvanced1 );
     SUITE_ADD_TEST( suite, testSpansAdvanced2 );
     SUITE_ADD_TEST( suite, testSpanExplanations );
     SUITE_ADD_TEST( suite, testSpanExplanationsOfNonMatches );
 
-	return suite; 
+    return suite; 
 }
 
