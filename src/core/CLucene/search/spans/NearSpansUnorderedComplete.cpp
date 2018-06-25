@@ -42,7 +42,7 @@ NearSpansUnorderedComplete::SpansCell::SpansCell( NearSpansUnorderedComplete * p
     this->spans  = spans;
     this->index  = index;
     this->length = -1;
-    this->cachedNext = true;
+    this->hasNext = true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,11 +77,15 @@ bool NearSpansUnorderedComplete::SpansCell::adjust( bool condition )
 bool NearSpansUnorderedComplete::SpansCell::next()
 { 
     if( cache.empty() )
-        return adjust( spans->next() );
+    {
+        if( hasNext )
+            hasNext = spans->next();
+        return adjust( hasNext );
+    }
     else
     {
         cache.pop2();
-        return adjust( ! cache.empty() || cachedNext );
+        return adjust( !cache.empty() || hasNext );
     }
 }
 
@@ -91,7 +95,9 @@ bool NearSpansUnorderedComplete::SpansCell::skipTo( int32_t target )
     if( cache.empty() || doc() < target )
     {
         cache.clear();
-        return adjust( spans->doc() >= target || spans->skipTo( target ) ); 
+        if( hasNext && spans->doc() < target )
+            hasNext = spans->skipTo( target );
+        return adjust( hasNext ); 
     }
     return true;
 }
@@ -404,7 +410,7 @@ void NearSpansUnorderedComplete::SpansCell::addEnds( int32_t currentEnd, int32_t
                 ends.insert( end );
         }
     }
-    while( cachedNext && spans->doc() == parentSpans->cachedDoc )
+    while( hasNext && spans->doc() == parentSpans->cachedDoc )
     {
         end = spans->end();
         if( end > currentEnd )
@@ -416,7 +422,7 @@ void NearSpansUnorderedComplete::SpansCell::addEnds( int32_t currentEnd, int32_t
                 break;
         }
         cache.push2( spans->start(), end );
-        cachedNext = spans->next();
+        hasNext = spans->next();
     }
 }
 

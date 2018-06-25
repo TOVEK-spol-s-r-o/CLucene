@@ -70,7 +70,7 @@ private:
         int32_t                         index;
         
         Int32Cache                      cache;
-        bool                            cachedNext;
+        bool                            hasNext;
 
     public:
         SpansCell *                     nextCell;
