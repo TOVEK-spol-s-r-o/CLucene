@@ -217,7 +217,7 @@ CL_NS_USE(util)
 			int32_t endOffset;
 			int32_t lastEndOffset = 0;
 			_textFragmenter->start(text);
-			TCHAR substringBuffer[LUCENE_MAX_WORD_LEN];
+			TCHAR substringBuffer[LUCENE_MAX_WORD_LEN+1];
 
 			TokenGroup* tokenGroup=_CLNEW TokenGroup();
 

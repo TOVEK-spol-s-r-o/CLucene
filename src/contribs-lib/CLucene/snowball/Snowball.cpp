@@ -99,13 +99,13 @@ CL_NS_DEF2(analysis,snowball)
     if (input->next(token) == NULL)
       return NULL;
 
-	unsigned char uctext[LUCENE_MAX_WORD_LEN];
-	TCHAR tchartext[LUCENE_MAX_WORD_LEN];
+	unsigned char uctext[LUCENE_MAX_WORD_LEN+1];
+	TCHAR tchartext[LUCENE_MAX_WORD_LEN+1];
 
 #ifdef _UCS2
-	char utf8text[LUCENE_MAX_WORD_LEN];
+	char utf8text[4*LUCENE_MAX_WORD_LEN+1];
 
-	size_t len = lucene_wcstoutf8(utf8text,token->termBuffer(),LUCENE_MAX_WORD_LEN);
+	size_t len = lucene_wcstoutf8(utf8text,token->termBuffer(),4*LUCENE_MAX_WORD_LEN);
 	memcpy(uctext,utf8text,len);
 	uctext[len]='\0';
 #else

@@ -142,7 +142,7 @@ bool Lexer::GetNextToken(QueryToken* token) {
             return true;
          case '~':
             if( _istdigit( reader->Peek() )!=0 ) {
-				TCHAR number[LUCENE_MAX_FIELD_LEN];
+				TCHAR number[LUCENE_MAX_FIELD_LEN+1];
                 ReadIntegerNumber(ch, number,LUCENE_MAX_FIELD_LEN);
                 token->set(number, QueryToken::SLOP);
                 return true;
