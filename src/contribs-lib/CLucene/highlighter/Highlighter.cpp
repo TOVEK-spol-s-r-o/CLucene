@@ -292,11 +292,16 @@ CL_NS_USE(util)
   	            startOffset = tokenGroup->getStartOffset();
   	            endOffset = tokenGroup->getEndOffset();
 
-				_tcsncpy(substringBuffer,text+startOffset,endOffset-startOffset);
-				substringBuffer[endOffset-startOffset]=_T('\0');
+                int len = endOffset-startOffset;
+                if ( len > LUCENE_MAX_WORD_LEN )
+                    len = LUCENE_MAX_WORD_LEN;
+
+
+				_tcsncpy(substringBuffer,text+startOffset,len);
+				substringBuffer[len]=_T('\0');
 
 				TCHAR* encoded = _encoder->encodeText(substringBuffer);
-        TCHAR* markedUpText=_formatter->highlightTerm(encoded, tokenGroup);
+                TCHAR* markedUpText=_formatter->highlightTerm(encoded, tokenGroup);
 				_CLDELETE_CARRAY(encoded);
 
   	            //store any whitespace etc from between this and last group
