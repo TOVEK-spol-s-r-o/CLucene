@@ -19,8 +19,12 @@ SET(CLUCENE_VERSION "${CLUCENE_VERSION_MAJOR}.${CLUCENE_VERSION_MINOR}.${CLUCENE
 #CMake 2.6+ is recommended to an improved Boost module
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.0 FATAL_ERROR)
 
+SET(CMAKE_REQUIRED_LIBRARIES legacy_stdio_definitions.lib)
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
+  cmake_policy(SET CMP0043 NEW)  
+  cmake_policy(SET CMP0054 NEW)
+  cmake_policy(SET CMP0077 NEW)  
 endif(COMMAND cmake_policy)
 
 #set various platform specific global options
