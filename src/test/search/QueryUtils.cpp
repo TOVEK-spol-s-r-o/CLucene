@@ -56,7 +56,9 @@ public:
         return result;
     }
 
-    virtual void extractQueryTerms(QueryTermSet& termset ) const {}
+    virtual void extractQueryTerms(QueryTermSet& termset ) const {};
+    virtual void applyFieldRights( FieldFilter * pFilter ) {};
+
 };
 
 /////////////////////////////////////////////////////////////////////////////

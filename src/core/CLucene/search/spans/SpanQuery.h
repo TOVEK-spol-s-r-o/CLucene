@@ -40,6 +40,16 @@ public:
 
     /** Returns count of child queries */
     virtual size_t getClausesCount() const = 0;
+
+    virtual void applyFieldRights( FieldFilter * pFilter )
+    {
+        size_t cnt = getClausesCount();
+        SpanQuery ** clauses = getClauses();
+        for( size_t i = 0; i < cnt; i++ )
+        {
+            clauses[ i ]->applyFieldRights( pFilter );
+        }
+    }
 };
 
 CL_NS_END2

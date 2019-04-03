@@ -197,8 +197,13 @@ CL_NS_DEF(search)
     }
   }
 
-
-
+  void PrefixQuery::applyFieldRights( FieldFilter * pFilter )
+  {
+      if ( prefix && !pFilter->isAllowed( prefix->field() ) )
+      {
+          prefix->set( NOT_EXISTING_FIELD, prefix->text() );
+      }
+  }
 
 //todo: this needs to be exposed, but java is still a bit confused about how...
 class PrefixFilter::PrefixGenerator{

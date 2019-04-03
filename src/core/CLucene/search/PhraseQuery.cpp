@@ -499,5 +499,22 @@ void PhraseQuery::extractQueryTerms( QueryTermSet& termset ) const
 	  return result;
   }
 
+  void PhraseQuery::applyFieldRights( FieldFilter * pFilter )
+  {
+      if ( terms && field && !pFilter->isAllowed( field ) )
+      {
+          size_t size = terms->size();
+          for ( uint32_t i = 0; i < size; i++ )
+          {
+              Term * pTerm = (*terms)[i];
+              if ( pTerm )
+              {
+                  pTerm->set( NOT_EXISTING_FIELD, pTerm->text() );
+              }
+          }
+      }
+  }
+
+
 
 CL_NS_END

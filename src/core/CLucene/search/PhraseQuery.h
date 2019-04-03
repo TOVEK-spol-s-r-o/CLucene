@@ -103,6 +103,7 @@ CL_NS_DEF(search)
         /** Expert: adds all terms occurring in this query to the terms set. */
         void extractTerms( TermSet * termset ) const;
         void extractQueryTerms( QueryTermSet& termset ) const;
+        virtual void applyFieldRights( FieldFilter * pFilter );
 	};
 CL_NS_END
 #endif

@@ -212,4 +212,16 @@ CL_NS_DEF(search)
         }
     }
 
+    void RangeQuery::applyFieldRights( FieldFilter * pFilter )
+    {
+        if ( !pFilter->isAllowed( getField() ) )
+        {
+            if ( lowerTerm )
+                lowerTerm->set( NOT_EXISTING_FIELD, lowerTerm->text() );
+            if ( upperTerm )
+                upperTerm->set( NOT_EXISTING_FIELD, upperTerm->text() );
+        }
+    }
+
+
 CL_NS_END

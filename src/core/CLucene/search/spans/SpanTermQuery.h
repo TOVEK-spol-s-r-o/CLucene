@@ -61,6 +61,7 @@ public:
     /** Returns count of child queries */
     virtual size_t getClausesCount() const  { return 0; }
 
+    virtual void applyFieldRights( FieldFilter * pFilter );
 };
 
 CL_NS_END2
