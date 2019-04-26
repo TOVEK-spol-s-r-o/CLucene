@@ -30,11 +30,18 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0077 NEW)  
 endif(COMMAND cmake_policy)
 
+# required standards
+string(CONCAT CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -std=c++11")
+
 #set various platform specific global options
 if(WIN32)
  set(CMAKE_DEBUG_POSTFIX "d")
 endif(WIN32)
 
+#required standard
+string(CONCAT CMAKE_C_FLAGS ${CMAKE_C_FLAGS} " -std=c11")
+string(CONCAT CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -std=c++11")
+string(CONCAT CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -D_GLIBCXX_USE_C99")
 
 # include specific modules
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -116,7 +123,7 @@ OPTION(ENABLE_COMPILE_TESTS
 
 #check flags...
 INCLUDE (TestCXXAcceptsFlag)
-IF ( CMAKE_COMPILER_IS_GNUCC )
+IF ( CMAKE_COMPILER_IS_GNUCC OR (${CMAKE_C_COMPILER_ID} STREQUAL "Clang") )
     CHECK_CXX_ACCEPTS_FLAG(-pg GccFlagPg)
     IF ( GccFlagPg )
         OPTION(ENABLE_GPROF
@@ -138,7 +145,12 @@ IF ( CMAKE_COMPILER_IS_GNUCC )
    IF( ENABLE_ANSI_MODE )
     SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi")
    ENDIF ( ENABLE_ANSI_MODE )
-ENDIF(CMAKE_COMPILER_IS_GNUCC) 
+
+   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+
+   set_property(DIRECTORY APPEND PROPERTY COMPILE_OPTIONS $<$<CONFIG:Release>:-ggdb>)
+
+ENDIF(CMAKE_COMPILER_IS_GNUCC OR (${CMAKE_C_COMPILER_ID} STREQUAL "Clang") ) 
 
 
 #Single output directory for building all executables and libraries.

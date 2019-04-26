@@ -112,6 +112,8 @@ public:
 
 	const char* getObjectName() const { return getClassName(); }
 	static const char* getClassName(){ return "MultiPhraseQuery"; }
+    virtual void applyFieldRights( FieldFilter * pFilter );
+
 };
 CL_NS_END
 #endif

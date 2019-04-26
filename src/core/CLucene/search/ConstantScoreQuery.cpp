@@ -339,5 +339,14 @@ void ConstantScoreRangeQuery::extractQueryTerms( QueryTermSet& termset ) const {
     }
 }
 
+void ConstantScoreRangeQuery::applyFieldRights( FieldFilter * pFilter )
+{
+    if ( !pFilter->isAllowed( fieldName ) )
+    {
+        this->fieldName = const_cast<TCHAR*>(CLStringIntern::intern( NOT_EXISTING_FIELD ));
+    }
+}
+
+
 CL_NS_END
 
