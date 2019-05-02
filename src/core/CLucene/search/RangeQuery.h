@@ -88,6 +88,7 @@ public:
   size_t hashCode() const;
 
   virtual void extractQueryTerms(QueryTermSet& termset) const;
+  virtual void applyFieldRights( FieldFilter * pFilter );
 };
 
 CL_NS_END

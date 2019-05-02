@@ -230,6 +230,15 @@ CL_NS_DEF(search)
         }
     }
 
+    void TermQuery::applyFieldRights( FieldFilter * pFilter )
+    {
+        if ( term && !pFilter->isAllowed( term->field() ) )
+        {
+            term->set( NOT_EXISTING_FIELD, term->text() );
+        }
+    }
+
+
 
 
 CL_NS_END
