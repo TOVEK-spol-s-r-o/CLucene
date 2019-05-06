@@ -13,6 +13,8 @@
 #include "CLucene/util/Equators.h"
 #include "CLucene/search/SearchHeader.h"
 
+#define NOT_EXISTING_FIELD _T("_n_o_t__a__f_i_e_l_d_")
+
 CL_CLASS_DEF(index,IndexReader)
 
 
@@ -23,6 +25,15 @@ CL_NS_DEF(search)
 
     typedef std::set<CL_NS(index)::Term *, CL_NS(index)::Term_UnorderedCompare> TermSet;
     typedef std::set<QueryTerm*, QueryTerm::compare>                            QueryTermSet;
+
+
+    /** The abstract base class for applying field access rights 
+    */
+    class CLUCENE_EXPORT FieldFilter
+    {
+    public:
+        virtual bool isAllowed( const TCHAR* field ) = 0;
+    };
 
 	/** The abstract base class for queries.
     <p>Instantiable subclasses are:
@@ -156,6 +167,8 @@ CL_NS_DEF(search)
         * <i>This is an Internal function</i>
         */
         virtual Weight* _createWeight(Searcher* searcher, Similarity* similarity);
+
+        virtual void applyFieldRights( FieldFilter * pFilter ) = 0;
   };
 
 CL_NS_END

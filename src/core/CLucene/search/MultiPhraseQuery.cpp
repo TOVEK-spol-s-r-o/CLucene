@@ -462,4 +462,19 @@ size_t MultiPhraseQuery::hashCode() const {
 	return ret;
 }
 
+void MultiPhraseQuery::applyFieldRights( FieldFilter * pFilter )
+{
+    for( size_t i = 0; i < termArrays->size(); i++ )
+    {
+        ArrayBase<Term*> * terms = termArrays->at( i );
+        for( size_t j=0; j < terms->length; j++ )
+        {
+            Term * pTerm = terms->values[ j ];
+            if ( pTerm && !pFilter->isAllowed( pTerm->field() ) )
+                pTerm->set( NOT_EXISTING_FIELD, pTerm->text() );
+        }
+    }
+}
+
+
 CL_NS_END

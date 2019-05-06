@@ -41,6 +41,7 @@ public:
     /** Constant score query does not return any terms */
     void extractTerms( TermSet * termset ) const;
     virtual void extractQueryTerms( QueryTermSet& termset ) const;
+    virtual void applyFieldRights( FieldFilter * pFilter ) {};
 
 protected:
     Weight* _createWeight(Searcher* searcher, Similarity* similarity);
@@ -118,6 +119,8 @@ public:
     Query* clone() const;
     
     virtual void extractQueryTerms( QueryTermSet& termset ) const;
+    virtual void applyFieldRights( FieldFilter * pFilter );
+
 protected:
     ConstantScoreRangeQuery( const ConstantScoreRangeQuery& copy );
 };

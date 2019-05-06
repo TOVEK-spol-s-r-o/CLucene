@@ -114,4 +114,13 @@ bool SpanTermQuery::equals( Query* other ) const
 		  && this->term->equals( that->term );
 }
 
+void SpanTermQuery::applyFieldRights( FieldFilter * pFilter )
+{
+    if ( term && !pFilter->isAllowed( term->field() ) )
+    {
+        term->set( NOT_EXISTING_FIELD, term->text() );
+    }
+}
+
+
 CL_NS_END2

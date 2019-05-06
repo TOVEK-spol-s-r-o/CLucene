@@ -49,6 +49,7 @@ CL_NS_DEF(search)
         void extractTerms( TermSet * termset ) const;
         void extractQueryTerms( QueryTermSet& termset ) const;
 
+        virtual void applyFieldRights( FieldFilter * pFilter );
     };
 
 

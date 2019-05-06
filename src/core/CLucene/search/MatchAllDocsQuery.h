@@ -69,6 +69,7 @@ CL_NS_DEF(search)
 
 		static const char* getClassName();
 		const char* getObjectName() const;
+        virtual void applyFieldRights( FieldFilter * pFilter ) {};
 	};
 
 CL_NS_END

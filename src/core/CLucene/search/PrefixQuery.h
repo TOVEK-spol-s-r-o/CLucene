@@ -51,6 +51,8 @@ CL_NS_DEF(search)
 		size_t hashCode() const;
 
         void virtual extractQueryTerms(QueryTermSet& termset) const;
+
+        virtual void applyFieldRights( FieldFilter * pFilter );
     };
 	
 	

@@ -573,4 +573,16 @@ CL_NS_DEF(search)
 		}
 	}
 
+    void BooleanQuery::applyFieldRights( FieldFilter * pFilter )
+    {
+        size_t size = clauses->size();
+        for ( uint32_t i = 0; i < size; i++ )
+        {
+            Query * pQuery = ((*clauses)[i])->getQuery();
+            if ( pQuery )
+                pQuery->applyFieldRights( pFilter );
+        }
+    }
+
+
 CL_NS_END

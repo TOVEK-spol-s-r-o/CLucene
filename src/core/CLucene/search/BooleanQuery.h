@@ -150,7 +150,9 @@ CL_NS_DEF(search)
 
 	  //internal
 	  int32_t getMinNrShouldMatch();
-    friend class BooleanWeight;
+      friend class BooleanWeight;
+
+      virtual void applyFieldRights( FieldFilter * pFilter );
   };
 
 CL_NS_END
