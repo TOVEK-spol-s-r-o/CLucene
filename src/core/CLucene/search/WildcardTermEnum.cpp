@@ -39,7 +39,7 @@ CL_NS_DEF(search)
 		const TCHAR* tidx = sidx;
 		if (tidx == NULL) 
 			tidx = cidx;
-		else if ( cidx && cidx > pre) 
+		else if ( cidx && cidx >= pre) 
 			tidx = cl_min(sidx, cidx);
 
         if ( tidx != NULL )
