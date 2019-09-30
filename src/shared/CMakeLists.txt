@@ -151,7 +151,7 @@ CHOOSE_FUNCTION(_ftime "_ftime(0);ftime")
 CHOOSE_FUNCTION(_mkdir "_mkdir((const char*)0)" "#define _mkdir(x) mkdir(x,0777)")
 CHOOSE_FUNCTION(SLEEPFUNCTION "usleep;Sleep(0);_sleep")
 
-CHOOSE_FUNCTION(_snprintf "snprintf;_snprintf")
+#CHOOSE_FUNCTION(_snprintf "snprintf;_snprintf")
 CHOOSE_FUNCTION(_snwprintf "snwprintf;_snwprintf")
 
 ########################################################################

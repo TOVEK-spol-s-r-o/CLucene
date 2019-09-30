@@ -20,28 +20,24 @@ SET(CLUCENE_VERSION "${CLUCENE_VERSION_MAJOR}.${CLUCENE_VERSION_MINOR}.${CLUCENE
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.0 FATAL_ERROR)
 
 if(WIN32)
-    SET(CMAKE_REQUIRED_LIBRARIES legacy_stdio_definitions.lib)
+#    SET(CMAKE_REQUIRED_LIBRARIES legacy_stdio_definitions.lib)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(WIN32)
 
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
   cmake_policy(SET CMP0043 NEW)  
   cmake_policy(SET CMP0054 NEW)
-  cmake_policy(SET CMP0077 NEW)  
+  cmake_policy(SET CMP0074 NEW) 
+  cmake_policy(SET CMP0075 NEW) 
+  cmake_policy(SET CMP0077 NEW)
 endif(COMMAND cmake_policy)
 
-# required standards
-string(CONCAT CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -std=c++11")
 
 #set various platform specific global options
 if(WIN32)
  set(CMAKE_DEBUG_POSTFIX "d")
 endif(WIN32)
-
-#required standard
-string(CONCAT CMAKE_C_FLAGS ${CMAKE_C_FLAGS} " -std=c11")
-string(CONCAT CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -std=c++11")
-string(CONCAT CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -D_GLIBCXX_USE_C99")
 
 # include specific modules
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -124,7 +120,12 @@ OPTION(ENABLE_COMPILE_TESTS
 #check flags...
 INCLUDE (TestCXXAcceptsFlag)
 IF ( CMAKE_COMPILER_IS_GNUCC OR (${CMAKE_C_COMPILER_ID} STREQUAL "Clang") )
-    CHECK_CXX_ACCEPTS_FLAG(-pg GccFlagPg)
+	#required standard
+	string(CONCAT CMAKE_C_FLAGS ${CMAKE_C_FLAGS} " -std=c11")
+	string(CONCAT CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -std=c++11")
+	string(CONCAT CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -D_GLIBCXX_USE_C99")
+    
+	CHECK_CXX_ACCEPTS_FLAG(-pg GccFlagPg)
     IF ( GccFlagPg )
         OPTION(ENABLE_GPROF
           "turn on gprof profiling support"
@@ -166,6 +167,7 @@ INCLUDE_DIRECTORIES( ${clucene_SOURCE_DIR}/src/shared )
 INCLUDE_DIRECTORIES( ${clucene_BINARY_DIR}/src/shared )
 INCLUDE_DIRECTORIES( ${clucene_SOURCE_DIR}/src/core )
 
+add_definitions(-DBOOST_ALL_DYN_LINK)
 #set boost path. we need src/ext to be defined before this works...
 Include (CLuceneBoost)
 GET_BOOST_INCLUDE_PATH(_CL_BOOST_INCLUDE_PATH)

@@ -4,14 +4,19 @@
 * Distributable under the terms of either the Apache License (Version 2.0) or
 * the GNU Lesser General Public License, as specified in the COPYING file.
 ------------------------------------------------------------------------------*/
+
 #include "CLucene/_SharedHeader.h"
+
+#if defined(_CL_HAVE_WIN32_THREADS)
+#include <windows.h>
+#include <process.h>
+#include <boost/thread.hpp>
+#endif
+
 #include "CLucene/LuceneThreads.h"
 #include "_threads.h"
 #include <assert.h>
 
-#if defined(_CL_HAVE_WIN32_THREADS)
-#include <boost/thread.hpp>
-#endif
 
 CL_NS_DEF(util)
 
@@ -109,7 +114,7 @@ CL_NS_DEF(util)
 	}
 
 	_LUCENE_THREADID_TYPE mutex_thread::CreateThread(luceneThreadStartRoutine* func, void* arg){
-	    return (_LUCENE_THREADID_TYPE) ::_beginthread (func, 0, arg);
+	    return (_LUCENE_THREADID_TYPE) ::_beginthread(reinterpret_cast<::_beginthread_proc_type>(func), 0, arg);
 	}
 	void mutex_thread::JoinThread(_LUCENE_THREADID_TYPE id){
 	    WaitForSingleObject((void*)id, 0xFFFFFFFF);
