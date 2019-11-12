@@ -1,5 +1,6 @@
 
 INCLUDE (CheckFunctionExists)
+INCLUDE (CheckCXXSymbolExists)
 INCLUDE (Macro_ChooseStatus)
 
 #macro that sets OUTPUT as the value of oneof options (if _CL_HAVE_OPTION exists)
@@ -13,7 +14,7 @@ MACRO(CHOOSE_FUNCTION name options)
             STRING(REGEX MATCH "[(|)]+" MACRO_CHOOSE_FUNCTION_MATCH ${option} )
             IF ( MACRO_CHOOSE_FUNCTION_MATCH STREQUAL "" )
                 _CHOOSE_STATUS(PROGRESS ${name} "function" )
-                CHECK_SYMBOL_EXISTS (${option} "stdio.h;sys/stat.h;io.h" _CL_HAVE_FUNCTION_${OPTION})
+                CHECK_CXX_SYMBOL_EXISTS (${option} "unistd.h;stdio.h;sys/timeb.h;sys/types.h;sys/stat.h;sys/mman.h;fcntl.h;limits.h;stdlib.h" _CL_HAVE_FUNCTION_${OPTION})
             ELSE ( MACRO_CHOOSE_FUNCTION_MATCH STREQUAL "" )
                 STRING(REGEX REPLACE "(\\(.*\\))" "" option ${option} )
                 STRING(TOUPPER ${option} OPTION)
