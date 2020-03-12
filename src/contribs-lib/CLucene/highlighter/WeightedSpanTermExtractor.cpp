@@ -108,6 +108,87 @@ WeightedSpanTerm * WeightedSpanTermExtractor::PositionCheckingMap::get( const TC
         return NULL;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+WeightedSpanTermExtractor::Context::Context()
+{
+}
+
+WeightedSpanTermExtractor::Context::~Context()
+{
+    for( auto cachedQuery : cachedQueries )
+    {
+        if( cachedQuery.first != cachedQuery.second )
+            freeQueryImpl( cachedQuery.second );
+    }
+    cachedQueries.clear();
+
+    for( auto cachedWeight : cachedWeights )
+    {
+        freeWeightImpl( cachedWeight.second );
+    }
+    cachedWeights.clear();
+
+    for( auto cachedScorer : cachedScorers )
+    {
+        freeScorerImpl( cachedScorer.second );
+    }
+    cachedScorers.clear();
+
+    for( auto cachedTermDoc : cachedTermDocs )
+    {
+        freeTermDocsImpl( cachedTermDoc.second );
+    }
+    cachedTermDocs.clear();
+
+    for( auto cachedTermSet : cachedTermSets )
+    {
+        freeTermSetImpl( cachedTermSet.second );
+    }
+    cachedTermSets.clear();
+
+    for( auto cachedSpan : cachedSpans )
+    {
+        freeSpansImpl( cachedSpan.second );
+    }
+    cachedSpans.clear();
+}
+
+void WeightedSpanTermExtractor::Context::freeQueryImpl( CL_NS(search)::Query * pQuery )
+{
+    _CLLDELETE( pQuery );
+}
+
+void WeightedSpanTermExtractor::Context::freeWeightImpl( CL_NS(search)::Weight * pWeight )
+{
+    _CLLDELETE( pWeight );
+}
+
+void WeightedSpanTermExtractor::Context::freeScorerImpl( CL_NS(search)::Scorer * pScorer )
+{
+    _CLLDELETE( pScorer );
+}
+
+void WeightedSpanTermExtractor::Context::freeSpansImpl( CL_NS2(search,spans)::Spans * pSpans )
+{
+    _CLLDELETE( pSpans );
+}
+
+void WeightedSpanTermExtractor::Context::freeTermDocsImpl( CL_NS(index)::TermDocs * pTermDocs )
+{
+    pTermDocs->close();
+    _CLLDELETE( pTermDocs );
+}
+
+void WeightedSpanTermExtractor::Context::freeTermSetImpl(  CL_NS(search)::TermSet * pTermSet )
+{
+    for( TermSet::iterator itTerms = pTermSet->begin(); itTerms != pTermSet->end(); itTerms++ )
+    {
+        Term * pTerm = *itTerms;
+        _CLLDECDELETE( pTerm );
+    }
+    pTermSet->clear();
+    _CLLDELETE( pTermSet );
+}
 
 /////////////////////////////////////////////////////////////////////////////
 WeightedSpanTermExtractor::WeightedSpanTermExtractor( bool bAutoRewriteQueries )
@@ -121,16 +202,34 @@ WeightedSpanTermExtractor::WeightedSpanTermExtractor( bool bAutoRewriteQueries )
     m_nDocId                 = -1;
 
     m_bScoreTerms            = false;
+    m_bExactTermSpans        = false;
+
+    m_pContext               = NULL;
 }
 
 WeightedSpanTermExtractor::~WeightedSpanTermExtractor()
 {
+    closeContext();
     closeFieldReader();
 }
 
 void WeightedSpanTermExtractor::setIndexReader( CL_NS(index)::IndexReader * pReader )
 {
     m_pReader = pReader;
+}
+
+void WeightedSpanTermExtractor::createContext()
+{
+    closeContext();
+    m_pContext = _CLNEW Context();
+}
+
+void WeightedSpanTermExtractor::closeContext()
+{
+    if( m_pContext )
+    {
+        _CLDELETE( m_pContext );
+    }
 }
 
 void WeightedSpanTermExtractor::setScoreTerms( bool bScoreTerms )
@@ -153,8 +252,21 @@ bool WeightedSpanTermExtractor::autoRewriteQueries()
     return m_bAutoRewriteQueries;
 }
 
+void WeightedSpanTermExtractor::setExtractExactTermSpans( bool bExactTermSpans )
+{
+    m_bExactTermSpans = bExactTermSpans;
+}
+
+bool WeightedSpanTermExtractor::exactTermSpans()
+{
+    return m_bExactTermSpans;
+}
+
 void WeightedSpanTermExtractor::extractWeightedSpanTerms( WeightedSpanTermMap& weightedSpanTerms, CL_NS(search)::Query * pQuery, const TCHAR * tszFieldName, CL_NS(analysis)::TokenStream * pTokenStream, int32_t nDocId )
 {
+    if( !m_pContext )
+        m_pContext = _CLNEW DummyContext();
+
     m_tszFieldName = tszFieldName;
     m_pTokenStream = pTokenStream;
     m_nDocId       = nDocId;
@@ -246,7 +358,7 @@ void WeightedSpanTermExtractor::extract( Query * pQuery, WeightedSpanTerm::Posit
 
 void WeightedSpanTermExtractor::extractFromBooleanQuery( BooleanQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
-    int32_t nClauses = pQuery->getClauseCount();
+    int32_t nClauses = (int32_t) pQuery->getClauseCount();
     if( nClauses > 0 )
     {
         BooleanClause ** rgQueryClauses = _CL_NEWARRAY( BooleanClause*, nClauses );
@@ -263,80 +375,95 @@ void WeightedSpanTermExtractor::extractFromBooleanQuery( BooleanQuery * pQuery, 
 
 void WeightedSpanTermExtractor::extractFromPhraseQuery( PhraseQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
-    Term** rgPhraseQueryTerms = pQuery->getTerms();
-    vector<SpanQuery *> vSpans;
-    for( int32_t i = 0; rgPhraseQueryTerms[ i ]; i++ )
-        vSpans.push_back( _CLNEW SpanTermQuery( rgPhraseQueryTerms[ i ] ));
-
-    int32_t nSlop = pQuery->getSlop();
-    bool bInOrder = ( nSlop == 0 );
-
-    SpanNearQuery * pNearQuery = _CLNEW SpanNearQuery( vSpans.begin(), vSpans.end(), nSlop, INT_MIN, bInOrder, true );
-    pNearQuery->setBoost( pQuery->getBoost() );
-    
-    extractFromSpanQuery( pNearQuery, 0, spans, terms );
-
-    _CLDELETE( pNearQuery );
-    _CLDELETE_ARRAY( rgPhraseQueryTerms );
-} 
-
-void WeightedSpanTermExtractor::extractFromMultiPhraseQuery( MultiPhraseQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
-{
-    const CLArrayList<ArrayBase<Term*>*>* termArrays   = NULL;
-    ValueArray<int32_t>                   positions;
-
-    termArrays = pQuery->getTermArrays();
-    pQuery->getPositions( positions );
-
-    if( positions.length > 0 )
+    SpanNearQuery * pNearQuery = (SpanNearQuery *) m_pContext->getQuery( pQuery );
+    if( ! pNearQuery )
     {
-        int32_t nMaxPosition = positions[ positions.length - 1 ];
-        for( size_t i = 0; i < positions.length - 1; i++ )
-        {
-            if( positions[ i ] > nMaxPosition )
-                nMaxPosition = positions[ i ];
-        }
-
-        vector<SpanTermQuery *>** disjunctLists = _CL_NEWARRAY( vector<SpanTermQuery *>*, nMaxPosition + 1 );
-        memset( disjunctLists, 0, sizeof( vector<SpanTermQuery *>* ) * ( nMaxPosition + 1 ) );
-        int32_t nDistinctPositions = 0;
-        for( size_t i = 0; i < termArrays->size(); i++ )
-        {
-            ArrayBase<Term*> * termArray = termArrays->at( i );
-            if( ! disjunctLists[ positions[ i ]] )
-                disjunctLists[ positions[ i ]] = _CLNEW vector<SpanTermQuery *>;
-            vector<SpanTermQuery *>& disjuncts = *( disjunctLists[ positions[ i ]] );
-            if( disjuncts.empty() )
-                nDistinctPositions++;
-    
-            for( size_t j = 0; j < termArray->length; j++ )
-                disjuncts.push_back( _CLNEW SpanTermQuery( (*termArray)[ j ] ));
-        }
-
-        int32_t nPositionGaps = 0;
-        int32_t nPosition = 0;
-        SpanQuery** rgClauses = _CL_NEWARRAY( SpanQuery*, nDistinctPositions );
-        for( int32_t i = 0; i <= nMaxPosition; i++ )
-        {
-            vector<SpanTermQuery *> * pDisjuncts = disjunctLists[ i ];
-            if( pDisjuncts && ! pDisjuncts->empty() )
-                rgClauses[ nPosition++ ] = _CLNEW SpanOrQuery( pDisjuncts->begin(), pDisjuncts->end(), true );
-            else
-                nPositionGaps++;
-        }
+        Term** rgPhraseQueryTerms = pQuery->getTerms();
+        vector<SpanQuery *> vSpans;
+        for( int32_t i = 0; rgPhraseQueryTerms[ i ]; i++ )
+            vSpans.push_back( _CLNEW SpanTermQuery( rgPhraseQueryTerms[ i ] ));
 
         int32_t nSlop = pQuery->getSlop();
         bool bInOrder = ( nSlop == 0 );
 
-        SpanNearQuery * pNearQuery = _CLNEW SpanNearQuery( rgClauses, rgClauses + nDistinctPositions, nSlop + nPositionGaps, INT_MIN, bInOrder, true );
+        pNearQuery = _CLNEW SpanNearQuery( vSpans.begin(), vSpans.end(), nSlop, INT_MIN, bInOrder, true );
         pNearQuery->setBoost( pQuery->getBoost() );
-        extractFromSpanQuery( pNearQuery, 0, spans, terms );
 
-        _CLDELETE( pNearQuery );
-        _CLDELETE_ARRAY( rgClauses );
-        for( int32_t i = 0; i <= nMaxPosition; i++ )
-            _CLDELETE( disjunctLists[ i ] );
-        _CLDELETE_ARRAY( disjunctLists ); 
+        _CLDELETE_ARRAY( rgPhraseQueryTerms );
+        m_pContext->putQuery( pQuery, pNearQuery );
+    }
+
+    extractFromSpanQuery( pNearQuery, 0, spans, terms );
+    m_pContext->freeQuery( pNearQuery );
+} 
+
+void WeightedSpanTermExtractor::extractFromMultiPhraseQuery( MultiPhraseQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
+{
+    SpanNearQuery * pNearQuery = (SpanNearQuery *) m_pContext->getQuery( pQuery );
+    if( ! pNearQuery )
+    {
+        const CLArrayList<ArrayBase<Term*>*>* termArrays   = NULL;
+        ValueArray<int32_t>                   positions;
+
+        termArrays = pQuery->getTermArrays();
+        pQuery->getPositions( positions );
+
+        if( positions.length > 0 )
+        {
+            int32_t nMaxPosition = positions[ positions.length - 1 ];
+            for( size_t i = 0; i < positions.length - 1; i++ )
+            {
+                if( positions[ i ] > nMaxPosition )
+                    nMaxPosition = positions[ i ];
+            }
+
+            vector<SpanTermQuery *>** disjunctLists = _CL_NEWARRAY( vector<SpanTermQuery *>*, nMaxPosition + 1 );
+            memset( disjunctLists, 0, sizeof( vector<SpanTermQuery *>* ) * ( nMaxPosition + 1 ) );
+            int32_t nDistinctPositions = 0;
+            for( size_t i = 0; i < termArrays->size(); i++ )
+            {
+                ArrayBase<Term*> * termArray = termArrays->at( i );
+                if( ! disjunctLists[ positions[ i ]] )
+                    disjunctLists[ positions[ i ]] = _CLNEW vector<SpanTermQuery *>;
+                vector<SpanTermQuery *>& disjuncts = *( disjunctLists[ positions[ i ]] );
+                if( disjuncts.empty() )
+                    nDistinctPositions++;
+    
+                for( size_t j = 0; j < termArray->length; j++ )
+                    disjuncts.push_back( _CLNEW SpanTermQuery( (*termArray)[ j ] ));
+            }
+
+            int32_t nPositionGaps = 0;
+            int32_t nPosition = 0;
+            SpanQuery** rgClauses = _CL_NEWARRAY( SpanQuery*, nDistinctPositions );
+            for( int32_t i = 0; i <= nMaxPosition; i++ )
+            {
+                vector<SpanTermQuery *> * pDisjuncts = disjunctLists[ i ];
+                if( pDisjuncts && ! pDisjuncts->empty() )
+                    rgClauses[ nPosition++ ] = _CLNEW SpanOrQuery( pDisjuncts->begin(), pDisjuncts->end(), true );
+                else
+                    nPositionGaps++;
+            }
+
+            int32_t nSlop = pQuery->getSlop();
+            bool bInOrder = ( nSlop == 0 );
+
+            pNearQuery = _CLNEW SpanNearQuery( rgClauses, rgClauses + nDistinctPositions, nSlop + nPositionGaps, INT_MIN, bInOrder, true );
+            pNearQuery->setBoost( pQuery->getBoost() );
+
+            _CLDELETE_ARRAY( rgClauses );
+            for( int32_t i = 0; i <= nMaxPosition; i++ )
+                _CLDELETE( disjunctLists[ i ] );
+            _CLDELETE_ARRAY( disjunctLists ); 
+
+            m_pContext->putQuery( pQuery, pNearQuery );
+        }
+    }
+
+    if( pNearQuery )
+    {
+        extractFromSpanQuery( pNearQuery, 0, spans, terms );
+        m_pContext->freeQuery( pNearQuery );
     }
 } 
 
@@ -344,39 +471,45 @@ void WeightedSpanTermExtractor::extractFromConstantScoreRangeQuery( ConstantScor
 {
     if( m_bAutoRewriteQueries && matchesField( pQuery->getField() ))
     {
-        Term * pLower = _CLNEW Term( m_tszFieldName, pQuery->getLowerVal() );
-        Term * pUpper = _CLNEW Term( m_tszFieldName, pQuery->getUpperVal() );
-
-        IndexReader * pReader = getFieldReader();
-        try 
+        TermSet * pTermSet = m_pContext->getTermSet( pQuery );
+        if( ! pTermSet )
         {
-            TermEnum * pTermEnum = pReader->terms( pLower );
-            TermSet setTerms;
-            do 
+            Term * pLower = _CLNEW Term( m_tszFieldName, pQuery->getLowerVal() );
+            Term * pUpper = _CLNEW Term( m_tszFieldName, pQuery->getUpperVal() );
+
+            IndexReader * pReader = getFieldReader();
+            try 
             {
-                Term * pTerm = pTermEnum->term( true );
-                if( pTerm && pUpper->compareTo( pTerm ) >= 0 ) {
-                    setTerms.insert( pTerm );
+                TermEnum * pTermEnum = pReader->terms( pLower );
+                pTermSet = _CLNEW TermSet();
+                do 
+                {
+                    Term * pTerm = pTermEnum->term( true );
+                    if( pTerm && pUpper->compareTo( pTerm ) >= 0 ) {
+                        pTermSet->insert( pTerm );
+                    }
+                    else {
+                        _CLLDECDELETE( pTerm );
+                        break;
+                    }
                 }
-                else {
-                    _CLLDECDELETE( pTerm );
-                    break;
-                }
-            }
-            while( pTermEnum->next() );
+                while( pTermEnum->next() );
 
-            processNonWeightedTerms( terms, setTerms, pQuery->getBoost(), spans );
-            clearTermSet( setTerms );
-            _CLLDELETE( pTermEnum );
-        }
-        catch( ... )
-        {
+                 m_pContext->putTermSet( pQuery, pTermSet );
+                _CLLDELETE( pTermEnum );
+            }
+            catch( ... )
+            {
+                _CLLDECDELETE( pUpper );
+                _CLLDECDELETE( pLower );
+                throw;
+            }
             _CLLDECDELETE( pUpper );
             _CLLDECDELETE( pLower );
-            throw;
         }
-        _CLLDECDELETE( pUpper );
-        _CLLDECDELETE( pLower );
+
+        processNonWeightedTerms( terms, *pTermSet, pQuery->getBoost(), spans );
+        m_pContext->freeTermSet( pTermSet );
     }
 }
 
@@ -384,18 +517,24 @@ void WeightedSpanTermExtractor::rewriteAndExtract( Query * pQuery, WeightedSpanT
 {
     if( m_bAutoRewriteQueries )
     {
-        IndexReader * pReader = getFieldReader();
-        Query * pRewrittenQuery = pQuery->rewrite( pReader );
-        if( pRewrittenQuery != pQuery )
+        Query * pRewrittenQuery = m_pContext->getQuery( pQuery );
+        if( ! pRewrittenQuery )
+        {
+            IndexReader * pReader = getFieldReader();
+            pRewrittenQuery = pQuery->rewrite( pReader );
+            m_pContext->putQuery( pQuery, pRewrittenQuery );
+        }
+
+        if( pRewrittenQuery && pRewrittenQuery != pQuery )
         {
             try
             {
                 extract( pRewrittenQuery, spans, terms );
-                _CLLDELETE( pRewrittenQuery );
+                m_pContext->freeQuery( pRewrittenQuery );
             }
             catch( ... )
             {
-                _CLLDELETE( pRewrittenQuery );
+                m_pContext->freeQuery( pRewrittenQuery );
                 throw;
             }
         }
@@ -429,16 +568,19 @@ bool WeightedSpanTermExtractor::spanMatchesPositionSpans(Spans * pSpans, Weighte
 
 void WeightedSpanTermExtractor::extractFromSpanQuery( CL_NS2(search,spans)::SpanQuery * pSpanQuery, int32_t minSlop, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
-    vector<WeightedSpanTerm::PositionSpan *>    spanPositions;
-    IndexReader *                               pReader = getFieldReader();
-    Spans *                                     pSpans  = pSpanQuery->getSpans( pReader, true );
+    Spans * pSpans = m_pContext->getSpans( pSpanQuery );
+    if( ! pSpans )
+    {
+        pSpans = _CLNEW GuardedSpans( pSpanQuery->getSpans( getFieldReader(), true ) );
+        m_pContext->putSpans( pSpanQuery, pSpans );
+    }
 
-
-    int32_t spanLenMin = minSlop > 0 ? minSlop + pSpanQuery->getClausesCount() - 1 : 0;
+    int32_t spanLenMin = minSlop > 0 ? minSlop + (int32_t) pSpanQuery->getClausesCount() - 1 : 0;
     int32_t spanLenMark = spanLenMin < 0 ? 0 : spanLenMin;
     if( !spans.empty() && (*(spans.begin()))->minlen > 0 )
         spanLenMark = INT_MIN;
 
+    vector<WeightedSpanTerm::PositionSpan *> spanPositions;
     if( m_nDocId == -1 )
     {
         while( pSpans->next() )
@@ -449,7 +591,9 @@ void WeightedSpanTermExtractor::extractFromSpanQuery( CL_NS2(search,spans)::Span
     }
     else
     {
-        if( pSpans->skipTo( m_nDocId ) && pSpans->doc() == m_nDocId  )
+        if( pSpans->doc() < m_nDocId )
+            pSpans->skipTo( m_nDocId );
+        if( pSpans->doc() == m_nDocId  )
         {
             if( spanMatchesPositionSpans( pSpans, spans ))
                 spanPositions.push_back( _CLNEW WeightedSpanTerm::PositionSpan( pSpans->start(), pSpans->end() - 1, spanLenMark ));
@@ -461,7 +605,8 @@ void WeightedSpanTermExtractor::extractFromSpanQuery( CL_NS2(search,spans)::Span
             }
         }
     }
-    _CLDELETE( pSpans );
+    m_pContext->freeSpans( pSpans );
+    pSpans = NULL;
 
     if( spanPositions.size() > 0 ) 
     {
@@ -538,7 +683,7 @@ void WeightedSpanTermExtractor::extractFromSpanQuery( CL_NS2(search,spans)::Span
 
 void WeightedSpanTermExtractor::extractWeightedSpanTerms( CL_NS2(search,spans)::SpanQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms )
 {
-    if( !spans.empty() && (*(spans.begin()))->minlen > 0 )
+    if( m_bExactTermSpans || (!spans.empty() && (*(spans.begin()))->minlen > 0 ))
         extractFromSpanQuery( pQuery, 0, spans, terms );
     else
         extractWeightedTerms( pQuery, spans, terms );
@@ -547,10 +692,15 @@ void WeightedSpanTermExtractor::extractWeightedSpanTerms( CL_NS2(search,spans)::
 
 void WeightedSpanTermExtractor::extractWeightedTerms( CL_NS(search)::Query * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
 {
-    TermSet nonWeightedTerms;
-    pQuery->extractTerms( &nonWeightedTerms );
-    processNonWeightedTerms( terms, nonWeightedTerms, pQuery->getBoost(), spans );
-    clearTermSet( nonWeightedTerms );
+    TermSet * pNonWeightedTerms = m_pContext->getTermSet( pQuery );
+    if( ! pNonWeightedTerms )
+    {
+        pNonWeightedTerms = _CLNEW TermSet();
+        pQuery->extractTerms( pNonWeightedTerms );
+        m_pContext->putTermSet( pQuery, pNonWeightedTerms );
+    }
+    processNonWeightedTerms( terms, *pNonWeightedTerms, pQuery->getBoost(), spans );
+    m_pContext->freeTermSet( pNonWeightedTerms );
 }
 
 void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& terms, TermSet& nonWeightedTerms, float_t fBoost, WeightedSpanTerm::PositionSpans& spans )
@@ -580,54 +730,6 @@ void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& te
             }
         }
     }
-}
-
-void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum* termEnum, float_t fBoost, WeightedSpanTerm::PositionSpans& spans )
-{
-    try 
-    {
-        do 
-        {
-            CL_NS(index)::Term * t = termEnum->term(false);
-            if( t != NULL )
-            {
-                WeightedSpanTerm * pWeightedSpanTerm = terms.get( t->text() );
-                if( ! pWeightedSpanTerm )
-                {
-                    WeightedSpanTerm * pWeightedSpanTerm = _CLNEW WeightedSpanTerm( fBoost, t->text() );
-                    if( ! spans.empty() )
-                    {
-                        pWeightedSpanTerm->addPositionSpans( spans );
-                        pWeightedSpanTerm->setPositionSensitive( true );
-                    }
-                    terms.put( pWeightedSpanTerm );
-                }
-                else
-                {
-                    if( spans.empty() )
-                        pWeightedSpanTerm->setPositionSensitive( false );
-                    else
-                        pWeightedSpanTerm->addPositionSpans( spans );
-                }
-            }
-        } 
-        while( termEnum->next() );
-    } 
-    _CLFINALLY 
-    ( 
-        termEnum->close(); 
-        _CLDELETE(termEnum) 
-    );
-}
-
-void WeightedSpanTermExtractor::clearTermSet( TermSet& termSet )
-{
-    for( TermSet::iterator itTerms = termSet.begin(); itTerms != termSet.end(); itTerms++ )
-    {
-        Term * pTerm = *itTerms;
-        _CLLDECDELETE( pTerm );
-    }
-    termSet.clear();
 }
 
 IndexReader * WeightedSpanTermExtractor::getFieldReader()

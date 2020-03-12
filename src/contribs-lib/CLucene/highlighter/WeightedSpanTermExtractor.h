@@ -22,6 +22,8 @@
 #include "CLucene/highlighter/SpanHighlightScorer.h"
 #include "CLucene/highlighter/WeightedSpanTerm.h"
 
+#include "CLucene/search/spans/Spans.h"
+
 CL_CLASS_DEF(analysis,TokenStream);
 CL_CLASS_DEF(index,IndexReader);
 
@@ -30,7 +32,6 @@ CL_CLASS_DEF(search,PhraseQuery);
 CL_CLASS_DEF(search,MultiPhraseQuery);
 CL_CLASS_DEF(search,ConstantScoreRangeQuery);
 CL_CLASS_DEF2(search,spans,SpanQuery);
-CL_CLASS_DEF2(search,spans,Spans);
 
 CL_NS_DEF2(search,highlight)
 
@@ -58,14 +59,123 @@ public:
     };
 
 protected:
+    class CLUCENE_CONTRIBS_EXPORT GuardedSpans : public CL_NS2(search,spans)::Spans
+    {
+    private:
+        CL_NS2(search,spans)::Spans *   m_pSpans;
+        bool                            m_bMore;
+
+    public:
+        GuardedSpans( CL_NS2(search,spans)::Spans * pSpans )    { m_pSpans = pSpans; m_bMore = true; };
+        virtual ~GuardedSpans()                                 { _CLDELETE( m_pSpans ); };
+
+        virtual bool next()                                     { return m_bMore ? m_bMore = m_pSpans->next() : false; };
+        virtual bool skipTo( int32_t target )                   { return m_bMore ? m_bMore = m_pSpans->skipTo( target ) : false; };
+        virtual int32_t doc() const                             { return m_bMore ? m_pSpans->doc() : INT_MAX; };
+        virtual int32_t start() const                           { return m_bMore ? m_pSpans->start() : -1; };
+        virtual int32_t end() const                             { return m_bMore ? m_pSpans->end() : -1; };
+        virtual TCHAR* toString() const                         { return m_pSpans->toString(); }
+    };
+
+    /**
+     * Context for highlighting multiple documents in docid order
+     */
+    class CLUCENE_CONTRIBS_EXPORT Context
+    {
+        std::map<CL_NS(search)::Query *, CL_NS(search)::Query *>                    cachedQueries;
+        std::map<CL_NS(search)::Query *, CL_NS(search)::Weight *>                   cachedWeights;
+        std::map<CL_NS(search)::Query *, CL_NS(search)::Scorer *>                   cachedScorers;
+        std::map<CL_NS(search)::Query *, CL_NS(index)::TermDocs *>                  cachedTermDocs;
+        std::map<CL_NS(search)::Query *, CL_NS(search)::TermSet *>                  cachedTermSets;
+        std::map<CL_NS2(search,spans)::SpanQuery *, CL_NS2(search,spans)::Spans *>  cachedSpans;
+
+    public:
+        Context();
+        virtual ~Context();
+
+        virtual bool                            isCaching() { return true; };
+
+        virtual CL_NS(search)::Query *          getQuery( CL_NS(search)::Query * pQuery ) { auto it = cachedQueries.find( pQuery ); return it == cachedQueries.end() ? NULL : it->second; };
+        virtual void                            putQuery( CL_NS(search)::Query * pQuery, CL_NS(search)::Query * pValue ) { cachedQueries.emplace( pQuery, pValue ); };
+        virtual void                            freeQuery( CL_NS(search)::Query * pValue ) {};
+
+        virtual CL_NS(search)::Weight *         getWeight( CL_NS(search)::Query * pQuery ) { auto it = cachedWeights.find( pQuery ); return it == cachedWeights.end() ? NULL : it->second; };
+        virtual void                            putWeight( CL_NS(search)::Query * pQuery, CL_NS(search)::Weight * pWeight ) { cachedWeights.emplace( pQuery, pWeight ); };
+        virtual void                            freeWeight( CL_NS(search)::Weight * pWeight ) {};
+
+        virtual CL_NS(search)::Scorer *         getScorer( CL_NS(search)::Query * pQuery ) { auto it = cachedScorers.find( pQuery ); return it == cachedScorers.end() ? NULL : it->second; };
+        virtual void                            putScorer( CL_NS(search)::Query * pQuery, CL_NS(search)::Scorer * pScorer ) { cachedScorers.emplace( pQuery, pScorer ); };
+        virtual void                            freeScorer( CL_NS(search)::Scorer * pScorer ) {};
+
+        virtual CL_NS2(search,spans)::Spans *   getSpans( CL_NS2(search,spans)::SpanQuery * pQuery ) { auto it = cachedSpans.find( pQuery ); return it == cachedSpans.end() ? NULL : it->second; };
+        virtual void                            putSpans( CL_NS2(search,spans)::SpanQuery * pQuery, CL_NS2(search,spans)::Spans * pSpans ) { cachedSpans.emplace( pQuery, pSpans ); };
+        virtual void                            freeSpans( CL_NS2(search,spans)::Spans * pSpans ) {};
+
+        virtual CL_NS(index)::TermDocs *        getTermDocs( CL_NS(search)::Query * pQuery ) { auto it = cachedTermDocs.find( pQuery ); return it == cachedTermDocs.end() ? NULL : it->second; };
+        virtual void                            putTermDocs( CL_NS(search)::Query * pQuery, CL_NS(index)::TermDocs * pTermDocs ) { cachedTermDocs.emplace( pQuery, pTermDocs ); };
+        virtual void                            freeTermDocs( CL_NS(index)::TermDocs * pTermDocs ) {};
+
+        virtual CL_NS(search)::TermSet *        getTermSet( CL_NS(search)::Query * pQuery ) { auto it = cachedTermSets.find( pQuery ); return it == cachedTermSets.end() ? NULL : it->second; };
+        virtual void                            putTermSet( CL_NS(search)::Query * pQuery, CL_NS(search)::TermSet * pTermSet ) { cachedTermSets.emplace( pQuery, pTermSet ); };
+        virtual void                            freeTermSet( CL_NS(search)::TermSet * pTermSet ) {};
+
+    protected:
+        void freeQueryImpl( CL_NS(search)::Query * pQuery );
+        void freeWeightImpl( CL_NS(search)::Weight * pWeight );
+        void freeScorerImpl( CL_NS(search)::Scorer * pScorer );
+        void freeSpansImpl( CL_NS2(search,spans)::Spans * pSpans );
+        void freeTermDocsImpl( CL_NS(index)::TermDocs * pTermDocs );
+        void freeTermSetImpl( CL_NS(search)::TermSet * pTermSet );
+    };
+
+    /**
+     * Dummy context that stores nothing
+     */
+    class CLUCENE_CONTRIBS_EXPORT DummyContext : public Context
+    {
+    public:
+        DummyContext() {};
+        virtual ~DummyContext() {};
+
+        virtual bool                            isCaching() { return false; };
+
+        virtual CL_NS(search)::Query *          getQuery( CL_NS(search)::Query * pQuery ) { return NULL; };
+        virtual void                            putQuery( CL_NS(search)::Query * pQuery, CL_NS(search)::Query * pValue ) {};
+        virtual void                            freeQuery( CL_NS(search)::Query * pValue ) { freeQueryImpl( pValue ); };
+
+        virtual CL_NS(search)::Weight *         getWeight( CL_NS(search)::Query * pQuery ) { return NULL;};
+        virtual void                            putWeight( CL_NS(search)::Query * pQuery, CL_NS(search)::Weight * pWeight ) {};
+        virtual void                            freeWeight( CL_NS(search)::Weight * pWeight ) { freeWeightImpl( pWeight ); };
+
+        virtual CL_NS(search)::Scorer *         getScorer( CL_NS(search)::Query * pQuery ) { return NULL;};
+        virtual void                            putScorer( CL_NS(search)::Query * pQuery, CL_NS(search)::Scorer * pScorer ) {};
+        virtual void                            freeScorer( CL_NS(search)::Scorer * pScorer ) { freeScorerImpl( pScorer ); };
+
+        virtual CL_NS2(search,spans)::Spans *   getSpans( CL_NS2(search,spans)::SpanQuery * pQuery ) { return NULL;};
+        virtual void                            putSpans( CL_NS2(search,spans)::SpanQuery * pQuery, CL_NS2(search,spans)::Spans * pSpans ) {};
+        virtual void                            freeSpans( CL_NS2(search,spans)::Spans * pSpans ) { freeSpansImpl( pSpans ); };
+
+        virtual CL_NS(index)::TermDocs *        getTermDocs( CL_NS(search)::Query * pQuery ) { return NULL;};
+        virtual void                            putTermDocs( CL_NS(search)::Query * pQuery, CL_NS(index)::TermDocs * pTermDocs ) {};
+        virtual void                            freeTermDocs( CL_NS(index)::TermDocs * pTermDocs ) { freeTermDocsImpl( pTermDocs ); };
+
+        virtual CL_NS(search)::TermSet *        getTermSet( CL_NS(search)::Query * pQuery ) { return NULL;};
+        virtual void                            putTermSet( CL_NS(search)::Query * pQuery, CL_NS(search)::TermSet * pTermSet ) {};
+        virtual void                            freeTermSet( CL_NS(search)::TermSet * pTermSet ) { freeTermSetImpl( pTermSet ); };
+    };
+
+
+protected:
     const TCHAR *                               m_tszFieldName;
     CL_NS(analysis)::TokenStream *              m_pTokenStream;
     
     CL_NS(index)::IndexReader *                 m_pReader;
     CL_NS(index)::IndexReader *                 m_pFieldReader;
+    Context *                                   m_pContext;
     int32_t                                     m_nDocId;
 
     bool                                        m_bAutoRewriteQueries;
+    bool                                        m_bExactTermSpans;
     bool                                        m_bScoreTerms;
 
 public:
@@ -85,6 +195,12 @@ public:
     void setIndexReader( CL_NS(index)::IndexReader * pReader );
 
     /**
+     * Creates and closes the caching context for the extractor
+     */
+    void createContext();
+    void closeContext();
+
+    /**
      * Should the index reader be used to score each terms based on its idf?
      */
     void setScoreTerms( bool bScoreTerms );
@@ -95,6 +211,12 @@ public:
      */
     void setAutoRewriteQueries( bool bAutoRewriteQueries );
     bool autoRewriteQueries();
+
+    /**
+     * Compute exact term spans
+     */
+    void setExtractExactTermSpans( bool bExactTermSpans );
+    bool exactTermSpans();
 
     /**
      * Creates a Map of <code>WeightedSpanTerms</code> from the given <code>Query</code> and <code>TokenStream</code>. 
@@ -154,7 +276,6 @@ protected:
     void extractWeightedTerms( CL_NS(search)::Query * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
     void extractWeightedSpanTerms( CL_NS2(search,spans)::SpanQuery * pQuery, WeightedSpanTerm::PositionSpans& spans, PositionCheckingMap& terms );
     void processNonWeightedTerms( PositionCheckingMap& terms, TermSet& nonWeightedTerms, float_t fBoost, WeightedSpanTerm::PositionSpans& spans );
-    void processNonWeightedTerms( PositionCheckingMap& terms, CL_NS(index)::TermEnum * termEnum, float_t fBoost, WeightedSpanTerm::PositionSpans& spans );
 
     /**
      * Checks the field to match the current field
@@ -170,11 +291,6 @@ protected:
      * Closes allocated reader
      */
     void closeFieldReader();
-
-    /**
-     * Clears given term set
-     */
-    void clearTermSet( TermSet& termSet );
 
     /**
      * Checks span match
