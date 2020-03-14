@@ -17,6 +17,8 @@
 #ifndef _lucene_search_highlight_weightedspantermextractor_
 #define _lucene_search_highlight_weightedspantermextractor_
 
+#include <limits.h>
+
 #include "CLucene/search/Query.h"
 #include "CLucene/index/Terms.h"
 #include "CLucene/highlighter/SpanHighlightScorer.h"
