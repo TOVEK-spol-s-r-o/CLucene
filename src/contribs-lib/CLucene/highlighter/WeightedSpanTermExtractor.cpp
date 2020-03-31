@@ -474,8 +474,8 @@ void WeightedSpanTermExtractor::extractFromConstantScoreRangeQuery( ConstantScor
         TermSet * pTermSet = m_pContext->getTermSet( pQuery );
         if( ! pTermSet )
         {
-            Term * pLower = _CLNEW Term( m_tszFieldName, pQuery->getLowerVal() );
-            Term * pUpper = _CLNEW Term( m_tszFieldName, pQuery->getUpperVal() );
+            Term * pLower = pQuery->getLowerVal() ? _CLNEW Term( m_tszFieldName, pQuery->getLowerVal() ) : _CLNEW Term( m_tszFieldName, LUCENE_BLANK_STRING );
+            Term * pUpper = pQuery->getUpperVal() ? _CLNEW Term( m_tszFieldName, pQuery->getUpperVal() ) : NULL;
 
             IndexReader * pReader = getFieldReader();
             try 
@@ -485,7 +485,7 @@ void WeightedSpanTermExtractor::extractFromConstantScoreRangeQuery( ConstantScor
                 do 
                 {
                     Term * pTerm = pTermEnum->term( true );
-                    if( pTerm && pUpper->compareTo( pTerm ) >= 0 ) {
+                    if( pTerm && (!pUpper || pUpper->compareTo( pTerm ) >= 0 )) {
                         pTermSet->insert( pTerm );
                     }
                     else {
