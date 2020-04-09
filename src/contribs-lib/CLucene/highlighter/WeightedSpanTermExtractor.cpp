@@ -134,17 +134,18 @@ WeightedSpanTermExtractor::Context::~Context()
     }
     cachedScorers.clear();
 
-    for( auto cachedTermDoc : cachedTermDocs )
-    {
-        freeTermDocsImpl( cachedTermDoc.second );
-    }
-    cachedTermDocs.clear();
-
     for( auto cachedTermSet : cachedTermSets )
     {
         freeTermSetImpl( cachedTermSet.second );
     }
     cachedTermSets.clear();
+
+    for( auto cachedTermDoc : cachedTermDocs )
+    {
+        freeTermDocsImpl( cachedTermDoc.second );
+        _CL_LDECREF( cachedTermDoc.first );
+    }
+    cachedTermDocs.clear();
 
     for( auto cachedSpan : cachedSpans )
     {
@@ -203,6 +204,7 @@ WeightedSpanTermExtractor::WeightedSpanTermExtractor( bool bAutoRewriteQueries )
 
     m_bScoreTerms            = false;
     m_bExactTermSpans        = false;
+    m_bExactTerms            = false;
 
     m_pContext               = NULL;
 }
@@ -262,6 +264,16 @@ bool WeightedSpanTermExtractor::exactTermSpans()
     return m_bExactTermSpans;
 }
 
+void WeightedSpanTermExtractor::setExtractExactTerms( bool bExactTerms )
+{
+    m_bExactTerms = bExactTerms;
+}
+
+bool WeightedSpanTermExtractor::exactTerms()
+{
+    return m_bExactTerms;
+}
+
 void WeightedSpanTermExtractor::extractWeightedSpanTerms( WeightedSpanTermMap& weightedSpanTerms, CL_NS(search)::Query * pQuery, const TCHAR * tszFieldName, CL_NS(analysis)::TokenStream * pTokenStream, int32_t nDocId )
 {
     if( !m_pContext )
@@ -303,6 +315,29 @@ void WeightedSpanTermExtractor::extractWeightedSpanTerms( WeightedSpanTermMap& w
 bool WeightedSpanTermExtractor::matchesField( const TCHAR * tszFieldNameToCheck )
 {
     return ( tszFieldNameToCheck == m_tszFieldName || 0 == _tcscmp( tszFieldNameToCheck, m_tszFieldName ));
+}
+
+bool WeightedSpanTermExtractor::matchesDoc( CL_NS(index)::Term * pTerm )
+{
+    bool matches = false;
+    CL_NS(index)::TermDocs * termDocs = m_pContext->getTermDocs( pTerm );
+    if( ! termDocs )
+    {
+        CL_NS(index)::IndexReader * pReader = getFieldReader();
+        if( pReader )
+        {
+            termDocs = pReader->termDocs( pTerm );
+            m_pContext->putTermDocs( pTerm, termDocs );
+        }
+    }
+    if( termDocs )
+    {
+        if( termDocs->doc() < m_nDocId )
+            termDocs->skipTo( m_nDocId );
+        matches = termDocs->doc() == m_nDocId;
+        m_pContext->freeTermDocs( termDocs );
+    }
+    return matches;
 }
 
 void WeightedSpanTermExtractor::extract( Query * pQuery, WeightedSpanTerm::PositionSpans& spans, WeightedSpanTermExtractor::PositionCheckingMap& terms )
@@ -708,10 +743,10 @@ void WeightedSpanTermExtractor::processNonWeightedTerms( PositionCheckingMap& te
     for( TermSet::iterator iter = nonWeightedTerms.begin(); iter != nonWeightedTerms.end(); iter++ )
     {
         Term * pTerm = *iter;
-        if( matchesField( pTerm->field() )) 
+        if( matchesField( pTerm->field() ) && ( !m_bExactTerms || !spans.empty() || matchesDoc( pTerm ))) 
         {
             WeightedSpanTerm * pWeightedSpanTerm = terms.get( pTerm->text() );
-            if( ! pWeightedSpanTerm )
+            if( !pWeightedSpanTerm )
             {
                 WeightedSpanTerm * pWeightedSpanTerm = _CLNEW WeightedSpanTerm( fBoost, pTerm->text() );
                 if( ! spans.empty() )
