@@ -20,6 +20,7 @@
 #include <limits.h>
 
 #include "CLucene/search/Query.h"
+#include "CLucene/index/_Term.h"
 #include "CLucene/index/Terms.h"
 #include "CLucene/highlighter/SpanHighlightScorer.h"
 #include "CLucene/highlighter/WeightedSpanTerm.h"
@@ -28,7 +29,6 @@
 
 CL_CLASS_DEF(analysis,TokenStream);
 CL_CLASS_DEF(index,IndexReader);
-
 CL_CLASS_DEF(search,BooleanQuery);
 CL_CLASS_DEF(search,PhraseQuery);
 CL_CLASS_DEF(search,MultiPhraseQuery);
@@ -84,12 +84,12 @@ protected:
      */
     class CLUCENE_CONTRIBS_EXPORT Context
     {
-        std::map<CL_NS(search)::Query *, CL_NS(search)::Query *>                    cachedQueries;
-        std::map<CL_NS(search)::Query *, CL_NS(search)::Weight *>                   cachedWeights;
-        std::map<CL_NS(search)::Query *, CL_NS(search)::Scorer *>                   cachedScorers;
-        std::map<CL_NS(search)::Query *, CL_NS(index)::TermDocs *>                  cachedTermDocs;
-        std::map<CL_NS(search)::Query *, CL_NS(search)::TermSet *>                  cachedTermSets;
-        std::map<CL_NS2(search,spans)::SpanQuery *, CL_NS2(search,spans)::Spans *>  cachedSpans;
+        std::map<CL_NS(search)::Query *, CL_NS(search)::Query *>                                cachedQueries;
+        std::map<CL_NS(search)::Query *, CL_NS(search)::Weight *>                               cachedWeights;
+        std::map<CL_NS(search)::Query *, CL_NS(search)::Scorer *>                               cachedScorers;
+        std::map<CL_NS(search)::Query *, CL_NS(search)::TermSet *>                              cachedTermSets;
+        std::map<CL_NS(index)::Term *, CL_NS(index)::TermDocs *, CL_NS(index)::Term_Compare>    cachedTermDocs;
+        std::map<CL_NS2(search,spans)::SpanQuery *, CL_NS2(search,spans)::Spans *>              cachedSpans;
 
     public:
         Context();
@@ -113,8 +113,8 @@ protected:
         virtual void                            putSpans( CL_NS2(search,spans)::SpanQuery * pQuery, CL_NS2(search,spans)::Spans * pSpans ) { cachedSpans.emplace( pQuery, pSpans ); };
         virtual void                            freeSpans( CL_NS2(search,spans)::Spans * pSpans ) {};
 
-        virtual CL_NS(index)::TermDocs *        getTermDocs( CL_NS(search)::Query * pQuery ) { auto it = cachedTermDocs.find( pQuery ); return it == cachedTermDocs.end() ? NULL : it->second; };
-        virtual void                            putTermDocs( CL_NS(search)::Query * pQuery, CL_NS(index)::TermDocs * pTermDocs ) { cachedTermDocs.emplace( pQuery, pTermDocs ); };
+        virtual CL_NS(index)::TermDocs *        getTermDocs( CL_NS(index)::Term * pTerm ) { auto it = cachedTermDocs.find( pTerm ); return it == cachedTermDocs.end() ? NULL : it->second; };
+        virtual void                            putTermDocs( CL_NS(index)::Term * pTerm, CL_NS(index)::TermDocs * pTermDocs ) { cachedTermDocs.emplace( _CL_POINTER( pTerm ), pTermDocs ); };
         virtual void                            freeTermDocs( CL_NS(index)::TermDocs * pTermDocs ) {};
 
         virtual CL_NS(search)::TermSet *        getTermSet( CL_NS(search)::Query * pQuery ) { auto it = cachedTermSets.find( pQuery ); return it == cachedTermSets.end() ? NULL : it->second; };
@@ -157,8 +157,8 @@ protected:
         virtual void                            putSpans( CL_NS2(search,spans)::SpanQuery * pQuery, CL_NS2(search,spans)::Spans * pSpans ) {};
         virtual void                            freeSpans( CL_NS2(search,spans)::Spans * pSpans ) { freeSpansImpl( pSpans ); };
 
-        virtual CL_NS(index)::TermDocs *        getTermDocs( CL_NS(search)::Query * pQuery ) { return NULL;};
-        virtual void                            putTermDocs( CL_NS(search)::Query * pQuery, CL_NS(index)::TermDocs * pTermDocs ) {};
+        virtual CL_NS(index)::TermDocs *        getTermDocs( CL_NS(index)::Term * pQuery ) { return NULL;};
+        virtual void                            putTermDocs( CL_NS(index)::Term * pQuery, CL_NS(index)::TermDocs * pTermDocs ) {};
         virtual void                            freeTermDocs( CL_NS(index)::TermDocs * pTermDocs ) { freeTermDocsImpl( pTermDocs ); };
 
         virtual CL_NS(search)::TermSet *        getTermSet( CL_NS(search)::Query * pQuery ) { return NULL;};
@@ -178,6 +178,7 @@ protected:
 
     bool                                        m_bAutoRewriteQueries;
     bool                                        m_bExactTermSpans;
+    bool                                        m_bExactTerms;
     bool                                        m_bScoreTerms;
 
 public:
@@ -219,6 +220,12 @@ public:
      */
     void setExtractExactTermSpans( bool bExactTermSpans );
     bool exactTermSpans();
+
+    /**
+     * Compute exact terms
+     */
+    void setExtractExactTerms( bool bExactTerms );
+    bool exactTerms();
 
     /**
      * Creates a Map of <code>WeightedSpanTerms</code> from the given <code>Query</code> and <code>TokenStream</code>. 
@@ -283,6 +290,11 @@ protected:
      * Checks the field to match the current field
      */
     bool matchesField( const TCHAR * tszFieldNameToCheck );
+
+    /**
+     * Checks the term to match the current document
+     */
+    bool matchesDoc( CL_NS(index)::Term * pTerm );
 
     /**
      * Returns reader for the current field - it returns the supplied reader if the docid is specified, otherwise it creates a new on
