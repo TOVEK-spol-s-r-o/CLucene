@@ -25,8 +25,8 @@
 #cmakedefine _CL_HAVE_DLFCN_H  1 
 #cmakedefine _CL_HAVE_EXT_HASH_MAP  1 
 #cmakedefine _CL_HAVE_EXT_HASH_SET  1 
-#cmakedefine _CL_HAVE_TR1_UNORDERED_MAP 1 
-#cmakedefine _CL_HAVE_TR1_UNORDERED_SET  1 
+#cmakedefine _CL_HAVE_UNORDERED_MAP 1 
+#cmakedefine _CL_HAVE_UNORDERED_SET  1 
 #cmakedefine _CL_HAVE_HASH_MAP
 #cmakedefine _CL_HAVE_HASH_SET
 #cmakedefine _CL_HAVE_NDIR_H

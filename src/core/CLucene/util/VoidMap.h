@@ -10,9 +10,9 @@
 #include "Equators.h"
 #include "CLucene/LuceneThreads.h"
 
-#if defined(_CL_HAVE_TR1_UNORDERED_MAP) && defined(_CL_HAVE_TR1_UNORDERED_SET)
-	#include <tr1/unordered_map>
-	#include <tr1/unordered_set>
+#if defined(_CL_HAVE_UNORDERED_MAP) && defined(_CL_HAVE_UNORDERED_SET)
+	#include <unordered_map>
+	#include <unordered_set>
 #elif defined(_CL_HAVE_HASH_MAP) && defined(_CL_HAVE_HASH_SET)
 	//hashing is all or nothing!
 	#include <hash_map>
