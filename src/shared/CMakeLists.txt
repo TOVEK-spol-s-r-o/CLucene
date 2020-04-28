@@ -57,17 +57,16 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 # test for headers
 ########################################################################
 
-CHECK_INCLUDE_FILES ("sys/time.h;time.h" _CL_TIME_WITH_SYS_TIME)
+CHECK_INCLUDE_FILES ("sys/time.h;time.h" _CL_TIME_WITH_SYS_TIME LANGUAGE CXX)
 
-CHECK_REQUIRED_HEADERS ( stdlib.h stdarg.h stdio.h stddef.h ctype.h algorithm  
+CHECK_REQUIRED_HEADERS ( cstdio cwchar stdlib.h stdarg.h stdio.h stddef.h ctype.h algorithm  
 						 functional map vector list set math.h fcntl.h limits.h)
 						 
-CHECK_OPTIONAL_HEADERS ( string.h sys/time.h memory.h sys/types.h 
+CHECK_OPTIONAL_HEADERS ( string.h time.h sys/time.h memory.h sys/types.h 
                         stdint.h unistd.h io.h direct.h sys/dir.h sys/ndir.h dirent.h wctype.h fcntl.h
                         stat.h sys/stat.h stdexcept errno.h fcntl.h windef.h windows.h wchar.h 
                         hash_map hash_set ext/hash_map ext/hash_map unordered_set unordered_map
                         sys/timeb.h tchar.h strings.h stdexcept sys/mman.h winerror.h )
-
 
 ########################################################################
 # test for types
@@ -96,8 +95,6 @@ DEFINE_DWORD()
 ########################################################################
 # Test for functions
 ########################################################################
-
-
 CHECK_REQUIRED_FUNCTIONS(  printf strftime wcscpy wcsncpy wcscat wcschr wcsstr wcslen 
                            wcscmp wcsncmp wcscspn )
 
@@ -150,8 +147,8 @@ CHOOSE_FUNCTION(_unlink "_unlink((const char*)0);unlink")
 CHOOSE_FUNCTION(_ftime "_ftime(0);ftime")
 CHOOSE_FUNCTION(_mkdir "_mkdir((const char*)0)" "#define _mkdir(x) mkdir(x,0777)")
 CHOOSE_FUNCTION(SLEEPFUNCTION "usleep;Sleep(0);_sleep")
-CHOOSE_FUNCTION(_snprintf "snprintf;_snprintf")
-CHOOSE_FUNCTION(_snwprintf "snwprintf;_snwprintf")
+CHOOSE_FUNCTION(_snprintf "_snprintf;snprintf")
+CHOOSE_FUNCTION(_snwprintf "_snwprintf;snwprintf")
 
 ########################################################################
 # test for symbols
