@@ -327,6 +327,7 @@ bool WeightedSpanTermExtractor::matchesDoc( CL_NS(index)::Term * pTerm )
         if( pReader )
         {
             termDocs = pReader->termDocs( pTerm );
+            termDocs->skipTo( m_nDocId );
             m_pContext->putTermDocs( pTerm, termDocs );
         }
     }
