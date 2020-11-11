@@ -253,7 +253,7 @@ bool NearSpansUnorderedComplete::skipTo( int32_t target )
         }
     }
 
-    return more && ( atMatch() ||  next() );
+    return more && ( atMatch() || next() );
 }
 
 TCHAR* NearSpansUnorderedComplete::toString() const
@@ -352,6 +352,9 @@ bool NearSpansUnorderedComplete::atMatch()
             return matchSlop <= maxSlop && minSlop <= matchSlop;
         }
     }
+    else
+        iCachedEnds = cachedEnds.end();
+
     return false;
 }
 
