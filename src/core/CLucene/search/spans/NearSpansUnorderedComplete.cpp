@@ -62,7 +62,17 @@ bool NearSpansUnorderedComplete::SpansCell::adjust( bool condition )
         length = end() - start(); 
         parentSpans->totalLength += length;  // add new length
 
-        if( ! parentSpans->max 
+        if (parentSpans->max == this)
+        {
+            for (SpansCell* cell = parentSpans->first; cell; cell = cell->nextCell)
+            {
+                if (cell->doc() == parentSpans->max->doc() && cell->end() > parentSpans->max->end())
+                {
+                    parentSpans->max = cell;
+                }
+            }
+        }
+        else if( ! parentSpans->max
             || doc() > parentSpans->max->doc()
             || ( doc() == parentSpans->max->doc() && end() > parentSpans->max->end()))
         {
