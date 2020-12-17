@@ -344,8 +344,9 @@ bool NearSpansUnorderedComplete::atMatch()
     if( minDoc == max->doc())
     {
         int32_t minStart = min()->start();
-        if( minStart > cachedStart || cachedDoc != minDoc )
+        if( cachedStart != minStart || cachedDoc != minDoc )
         {
+            iCachedEnds = cachedEnds.end();
             int32_t matchSlop = max->end() - minStart - totalLength;
             if( matchSlop <= maxSlop )
             {
@@ -356,7 +357,7 @@ bool NearSpansUnorderedComplete::atMatch()
                     return iCachedEnds != cachedEnds.end();
             }
         }
-        else if( minStart == cachedStart && iCachedEnds != cachedEnds.end())
+        else if( iCachedEnds != cachedEnds.end())
         {
             int32_t matchSlop = max->end() - minStart - totalLength;
             return matchSlop <= maxSlop && minSlop <= matchSlop;
