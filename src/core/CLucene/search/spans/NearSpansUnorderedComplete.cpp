@@ -154,10 +154,10 @@ NearSpansUnorderedComplete::NearSpansUnorderedComplete( SpanNearQuery * query, C
     this->minSlop = query->getMinSlop();
 
     SpanQuery ** clauses = query->getClauses();
-    this->queue = _CLNEW CellQueue( query->getClausesCount() );
+    this->queue = _CLNEW CellQueue( (int32_t)query->getClausesCount() );
     for( size_t i = 0; i < query->getClausesCount(); i++ )
     {
-        SpansCell * cell = _CLNEW SpansCell( this, clauses[ i ]->getSpans( reader, true ), i );
+        SpansCell * cell = _CLNEW SpansCell( this, clauses[ i ]->getSpans( reader, true ), (int32_t)i );
         ordered.push_back( cell );
     }
     clauses = NULL;
@@ -416,10 +416,10 @@ void NearSpansUnorderedComplete::SpansCell::addEnds( int32_t currentEnd, int32_t
     size_t sz = cache.size();
     for( size_t pos = 1; pos < sz; pos += 2 )
     {
-        end = cache.get( pos );
+        end = cache.get( (int32_t)pos );
         if( end > currentEnd )
         {
-            int32_t matchSlop = cache.get( pos-1 ) - slopBase;
+            int32_t matchSlop = cache.get( (int32_t)(pos-1) ) - slopBase;
             if( matchSlop <= maxSlop && minSlop <= matchSlop )
                 ends.insert( end );
         }
