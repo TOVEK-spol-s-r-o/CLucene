@@ -111,7 +111,9 @@ private:
 private:
     SpanNearQuery *     query;
 
-    list<SpansCell *>   ordered;                // spans in query order
+    SpansCell**         spanCells;              // spans in query order
+    size_t              spanCellCount;          // count of subSpans
+
     int32_t             maxSlop;                // from query
     int32_t             minSlop;                // from query
 

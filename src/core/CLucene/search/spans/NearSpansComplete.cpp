@@ -154,15 +154,14 @@ NearSpansComplete::NearSpansComplete( SpanNearQuery * query, CL_NS(index)::Index
     this->maxSlop = query->getMaxSlop();
     this->minSlop = query->getMinSlop();
 
-    SpanQuery ** clauses = query->getClauses();
-    this->queue = _CLNEW CellQueue( query->getClausesCount() );
-    for( size_t i = 0; i < query->getClausesCount(); i++ )
-    {
-        SpansCell * cell = _CLNEW SpansCell( this, clauses[ i ]->getSpans( reader, true ), i );
-        ordered.push_back( cell );
-    }
-    clauses = NULL;
+    spanCellCount = query->getClausesCount();
+    spanCells = _CL_NEWARRAY(SpansCell*, spanCellCount);
+    queue = _CLNEW CellQueue(query->getClausesCount());
+    SpanQuery** clauses = query->getClauses();
+    for (size_t i = 0; i < spanCellCount; i++)
+        spanCells[i] = _CLNEW SpansCell(this, clauses[i]->getSpans(reader, true), i);
 
+    clauses = NULL;
     cachedDoc = -1;
     cachedStart = -1;
     iCachedEnds = cachedEnds.end();
@@ -170,9 +169,10 @@ NearSpansComplete::NearSpansComplete( SpanNearQuery * query, CL_NS(index)::Index
 
 NearSpansComplete::~NearSpansComplete()
 {
-    for( list<SpansCell *>::iterator iCell = ordered.begin(); iCell != ordered.end(); iCell++ )
-        _CLLDELETE( *iCell );
+    for (size_t i = 0; i < spanCellCount; i++)
+        _CLLDELETE(spanCells[i]);
 
+    _CLDELETE_LARRAY(spanCells);
     _CLLDELETE( queue );
 }
 
@@ -295,13 +295,13 @@ TCHAR* NearSpansComplete::toString() const
 
 void NearSpansComplete::initList( bool next ) 
 {
-    for( list<SpansCell *>::iterator iCell = ordered.begin(); more && iCell != ordered.end(); iCell++ )
+    for (size_t i = 0; more && i < spanCellCount; i++)
     {
         if( next )
-            more = (*iCell)->next();            // move to first entry
+            more = spanCells[i]->next();         // move to first entry
 
         if( more )
-            addToList( *iCell );                // add to list
+            addToList(spanCells[i]);           // add to list
     }
 }
 
@@ -371,21 +371,22 @@ bool NearSpansComplete::atMatch()
 
 bool NearSpansComplete::inOrder()
 {
-    list<SpansCell*>::iterator iCell = ordered.begin();
-    if (*iCell == min())
+    if (min() == spanCells[0])
     {
-        int32_t start1 = (*iCell)->start();
-        int32_t end1 = (*iCell)->end();
-        for (iCell++; iCell != ordered.end(); iCell++)
+        if (spanCellCount == 2)
+            return true;    // the min spancell is the first one, so it must be in order
+        else if (max == spanCells[spanCellCount - 1]) // check the max spancell before checking all other cells
         {
-            int32_t start2 = (*iCell)->start();
-            int32_t end2 = (*iCell)->end();
-            if (start1 > start2 || (start1 == start2 && end1 > end2))
-                return false;
-            start1 = start2;
-            end1 = end2;
+            int32_t start1 = spanCells[0]->start();
+            for (size_t i = 1; i < spanCellCount; i++)
+            {
+                int32_t start2 = spanCells[i]->start();
+                if (start1 > start2 || (start1 == start2 && spanCells[i - 1]->end() > spanCells[i]->end()))
+                    return false;
+                start1 = start2;
+            }
+            return true;
         }
-        return true;
     }
     return false;
 }
