@@ -84,8 +84,12 @@ void testSpansAdvanced1( CuTest * tc )
     test.testSpanNearUnorderedComplete3();
     test.testSpanNearUnorderedComplete4();
     test.testSpanNearUnorderedComplete5();
-//     test.testSpanNearOrderedComplete();
-//     test.testSpanNearOrderedComplete1();
+    test.testSpanNearOrderedComplete();
+    test.testSpanNearOrderedComplete1();
+    test.testSpanNearOrderedComplete2();
+    test.testSpanNearOrderedComplete3();
+    test.testSpanNearOrderedComplete4();
+    test.testSpanNearOrderedComplete5();
 }
 
 

@@ -153,11 +153,11 @@ SET(clucene_core_Files
 	./CLucene/search/spans/_EmptySpans.h
 	./CLucene/search/spans/_NearSpansOrdered.h
 	./CLucene/search/spans/_NearSpansUnordered.h
-	./CLucene/search/spans/_NearSpansUnorderedComplete.h
+	./CLucene/search/spans/_NearSpansComplete.h
 	./CLucene/search/spans/_TermSpans.h
 	./CLucene/search/spans/NearSpansOrdered.cpp
 	./CLucene/search/spans/NearSpansUnordered.cpp
-	./CLucene/search/spans/NearSpansUnorderedComplete.cpp
+	./CLucene/search/spans/NearSpansComplete.cpp
 	./CLucene/search/spans/SpanFirstQuery.cpp
 	./CLucene/search/spans/SpanFirstQuery.h
 	./CLucene/search/spans/SpanNearQuery.cpp

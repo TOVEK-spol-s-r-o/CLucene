@@ -55,7 +55,7 @@ private:
     SpanNearQuery * query;
 
 public:
-    NearSpansOrdered( SpanNearQuery * spanNearQuery, CL_NS(index)::IndexReader * reader, bool complete );
+    NearSpansOrdered( SpanNearQuery * spanNearQuery, CL_NS(index)::IndexReader * reader );
     virtual ~NearSpansOrdered();
 
     bool next();

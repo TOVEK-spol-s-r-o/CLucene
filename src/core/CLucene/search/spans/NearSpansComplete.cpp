@@ -8,7 +8,7 @@
 #include "CLucene/index/IndexReader.h"
 #include "CLucene/util/StringBuffer.h"
 
-#include "_NearSpansUnorderedComplete.h"
+#include "_NearSpansComplete.h"
 #include "_NearSpansOrdered.h"
 #include "SpanNearQuery.h"
 
@@ -36,7 +36,7 @@ void Int32Cache::resizeAfterPush()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-NearSpansUnorderedComplete::SpansCell::SpansCell( NearSpansUnorderedComplete * parentSpans, Spans * spans, int32_t index )
+NearSpansComplete::SpansCell::SpansCell( NearSpansComplete * parentSpans, Spans * spans, int32_t index )
 {
     this->parentSpans = parentSpans;
     this->spans  = spans;
@@ -46,13 +46,13 @@ NearSpansUnorderedComplete::SpansCell::SpansCell( NearSpansUnorderedComplete * p
 }
 
 /////////////////////////////////////////////////////////////////////////////
-NearSpansUnorderedComplete::SpansCell::~SpansCell()
+NearSpansComplete::SpansCell::~SpansCell()
 {
     _CLLDELETE( spans );
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool NearSpansUnorderedComplete::SpansCell::adjust( bool condition )
+bool NearSpansComplete::SpansCell::adjust( bool condition )
 {
     if( length != -1 )
         parentSpans->totalLength -= length;  // subtract old length
@@ -84,7 +84,7 @@ bool NearSpansUnorderedComplete::SpansCell::adjust( bool condition )
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool NearSpansUnorderedComplete::SpansCell::next()
+bool NearSpansComplete::SpansCell::next()
 { 
     if( cache.empty() )
     {
@@ -100,7 +100,7 @@ bool NearSpansUnorderedComplete::SpansCell::next()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-bool NearSpansUnorderedComplete::SpansCell::skipTo( int32_t target )
+bool NearSpansComplete::SpansCell::skipTo( int32_t target )
 { 
     if( cache.empty() || doc() < target )
     {
@@ -113,7 +113,7 @@ bool NearSpansUnorderedComplete::SpansCell::skipTo( int32_t target )
 }
 
 /////////////////////////////////////////////////////////////////////////////
-TCHAR* NearSpansUnorderedComplete::SpansCell::toString() const
+TCHAR* NearSpansComplete::SpansCell::toString() const
 {
     CL_NS(util)::StringBuffer buffer;
     TCHAR * tszSpans = spans->toString();
@@ -128,7 +128,7 @@ TCHAR* NearSpansUnorderedComplete::SpansCell::toString() const
 
 
 /////////////////////////////////////////////////////////////////////////////
-bool NearSpansUnorderedComplete::CellQueue::lessThan(SpansCell * spans1, SpansCell* spans2 )
+bool NearSpansComplete::CellQueue::lessThan(SpansCell * spans1, SpansCell* spans2 )
 {
      if( spans1->doc() == spans2->doc() )
          return NearSpansOrdered::docSpansOrdered( spans1, spans2 );
@@ -138,11 +138,12 @@ bool NearSpansUnorderedComplete::CellQueue::lessThan(SpansCell * spans1, SpansCe
 
 
 /////////////////////////////////////////////////////////////////////////////
-NearSpansUnorderedComplete::NearSpansUnorderedComplete( SpanNearQuery * query, CL_NS(index)::IndexReader * reader )
+NearSpansComplete::NearSpansComplete( SpanNearQuery * query, CL_NS(index)::IndexReader * reader, bool inOrder )
 {
     // this->ordered = new ArrayList();
     this->more = true;
     this->firstTime = true;
+    this->ignoreOrder = !inOrder;
 
     this->max = NULL;                       // CLucene specific, SpansCell::adjust tests this member to NULL
     this->first = NULL;                     // CLucene specific
@@ -167,7 +168,7 @@ NearSpansUnorderedComplete::NearSpansUnorderedComplete( SpanNearQuery * query, C
     iCachedEnds = cachedEnds.end();
 }
 
-NearSpansUnorderedComplete::~NearSpansUnorderedComplete()
+NearSpansComplete::~NearSpansComplete()
 {
     for( list<SpansCell *>::iterator iCell = ordered.begin(); iCell != ordered.end(); iCell++ )
         _CLLDELETE( *iCell );
@@ -175,7 +176,7 @@ NearSpansUnorderedComplete::~NearSpansUnorderedComplete()
     _CLLDELETE( queue );
 }
 
-bool NearSpansUnorderedComplete::next()
+bool NearSpansComplete::next()
 {
     if( iCachedEnds != cachedEnds.end())
         iCachedEnds++;
@@ -183,7 +184,7 @@ bool NearSpansUnorderedComplete::next()
     return ( iCachedEnds != cachedEnds.end() ) ? true : _next();
 }
 
-bool NearSpansUnorderedComplete::_next()
+bool NearSpansComplete::_next()
 {
     if( firstTime )
     {
@@ -237,7 +238,7 @@ bool NearSpansUnorderedComplete::_next()
     return false;                               // no more matches
 }
 
-bool NearSpansUnorderedComplete::skipTo( int32_t target )
+bool NearSpansComplete::skipTo( int32_t target )
 {
     if( firstTime )                             // initialize
     {
@@ -266,12 +267,12 @@ bool NearSpansUnorderedComplete::skipTo( int32_t target )
     return more && ( atMatch() || next() );
 }
 
-TCHAR* NearSpansUnorderedComplete::toString() const
+TCHAR* NearSpansComplete::toString() const
 {
     CL_NS(util)::StringBuffer buffer;
     TCHAR * tszQuery = query->toString();
 
-    buffer.append( _T( "NearSpansUnorderedComplete(" ));
+    buffer.append( _T( "NearSpansComplete(" ));
     buffer.append( tszQuery );
     buffer.append( _T( ")@" ));
     if( firstTime )
@@ -292,7 +293,7 @@ TCHAR* NearSpansUnorderedComplete::toString() const
     return buffer.toString();
 }
 
-void NearSpansUnorderedComplete::initList( bool next ) 
+void NearSpansComplete::initList( bool next ) 
 {
     for( list<SpansCell *>::iterator iCell = ordered.begin(); more && iCell != ordered.end(); iCell++ )
     {
@@ -304,7 +305,7 @@ void NearSpansUnorderedComplete::initList( bool next )
     }
 }
 
-void NearSpansUnorderedComplete::addToList( SpansCell * cell )
+void NearSpansComplete::addToList( SpansCell * cell )
 {
     if( last )                                  // add next to end of list
         last->nextCell = cell;
@@ -315,7 +316,7 @@ void NearSpansUnorderedComplete::addToList( SpansCell * cell )
     cell->nextCell = NULL;
 }
 
-void NearSpansUnorderedComplete::firstToLast()
+void NearSpansComplete::firstToLast()
 {
     last->nextCell = first;			            // move first to end of list
     last = first;
@@ -323,7 +324,7 @@ void NearSpansUnorderedComplete::firstToLast()
     last->nextCell = NULL;
 }
 
-void NearSpansUnorderedComplete::queueToList()
+void NearSpansComplete::queueToList()
 {
     last = NULL;
     first = NULL;
@@ -331,14 +332,14 @@ void NearSpansUnorderedComplete::queueToList()
         addToList( queue->pop() );
 }
   
-void NearSpansUnorderedComplete::listToQueue()
+void NearSpansComplete::listToQueue()
 {
     queue->clear();                             // rebuild queue
     for( SpansCell * cell = first; cell; cell = cell->nextCell )
         queue->put( cell );                     // add to queue from list
 }
 
-bool NearSpansUnorderedComplete::atMatch() 
+bool NearSpansComplete::atMatch() 
 {
     int32_t minDoc = min()->doc();
     if( minDoc == max->doc())
@@ -351,16 +352,15 @@ bool NearSpansUnorderedComplete::atMatch()
             if( matchSlop <= maxSlop )
             {
                 prepareSpans();
-                if( minSlop <= matchSlop )
-                    return true;
-                else
-                    return iCachedEnds != cachedEnds.end();
+                if( minSlop <= matchSlop || iCachedEnds != cachedEnds.end())
+                    return ignoreOrder || inOrder();
             }
         }
         else if( iCachedEnds != cachedEnds.end())
         {
             int32_t matchSlop = max->end() - minStart - totalLength;
-            return matchSlop <= maxSlop && minSlop <= matchSlop;
+            if( matchSlop <= maxSlop && minSlop <= matchSlop )
+                return ignoreOrder || inOrder();
         }
     }
     else
@@ -369,7 +369,28 @@ bool NearSpansUnorderedComplete::atMatch()
     return false;
 }
 
-void NearSpansUnorderedComplete::prepareSpans() 
+bool NearSpansComplete::inOrder()
+{
+    list<SpansCell*>::iterator iCell = ordered.begin();
+    if (*iCell == min())
+    {
+        int32_t start1 = (*iCell)->start();
+        int32_t end1 = (*iCell)->end();
+        for (iCell++; iCell != ordered.end(); iCell++)
+        {
+            int32_t start2 = (*iCell)->start();
+            int32_t end2 = (*iCell)->end();
+            if (start1 > start2 || (start1 == start2 && end1 > end2))
+                return false;
+            start1 = start2;
+            end1 = end2;
+        }
+        return true;
+    }
+    return false;
+}
+
+void NearSpansComplete::prepareSpans() 
 {
     cachedStart = min()->start();
     cachedEnds.clear();
@@ -408,7 +429,7 @@ void NearSpansUnorderedComplete::prepareSpans()
 
 /////////////////////////////////////////////////////////////////////////////
 // spans->start() - slopBase <-> end - slopBase - length_of_current_span_interval == maxSlop
-void NearSpansUnorderedComplete::SpansCell::addEnds( int32_t currentEnd, int32_t minSlop, int32_t maxSlop, set<int32_t>& ends )
+void NearSpansComplete::SpansCell::addEnds( int32_t currentEnd, int32_t minSlop, int32_t maxSlop, set<int32_t>& ends )
 {
     int32_t slopBase = parentSpans->cachedStart + parentSpans->totalLength - length;
     int32_t end;

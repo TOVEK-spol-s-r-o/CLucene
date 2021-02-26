@@ -50,6 +50,10 @@ public:
     void testSpanNearUnorderedComplete5();
     void testSpanNearOrderedComplete();
     void testSpanNearOrderedComplete1();
+    void testSpanNearOrderedComplete2();
+    void testSpanNearOrderedComplete3();
+    void testSpanNearOrderedComplete4();
+    void testSpanNearOrderedComplete5();
 
     void testSpanOrEmpty();
     void testSpanOrSingle();
