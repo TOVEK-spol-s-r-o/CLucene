@@ -4,8 +4,8 @@
  * Distributable under the terms of either the Apache License (Version 2.0) or 
  * the GNU Lesser General Public License, as specified in the COPYING file.
  ------------------------------------------------------------------------------*/
-#ifndef _lucene_search_spans_NearSpansComplete_
-#define _lucene_search_spans_NearSpansComplete_
+#ifndef _lucene_search_spans_NearSpansUnorderedComplete_
+#define _lucene_search_spans_NearSpansUnorderedComplete_
 
 CL_CLASS_DEF(index, IndexReader)
 CL_CLASS_DEF2(search, spans, SpanNearQuery)
@@ -57,14 +57,14 @@ inline void Int32Cache::push2( int32_t value1, int32_t value2 )
 
 
 /////////////////////////////////////////////////////////////////////////////
-class NearSpansComplete : public Spans 
+class NearSpansUnorderedComplete : public Spans 
 {
 private:
     /////////////////////////////////////////////////////////////////////////////
     class SpansCell : public Spans
     {
     private:
-        NearSpansComplete *    parentSpans;
+        NearSpansUnorderedComplete *    parentSpans;
         Spans *                         spans;
         int32_t                         length;
         int32_t                         index;
@@ -76,7 +76,7 @@ private:
         SpansCell *                     nextCell;
 
     public:
-        SpansCell( NearSpansComplete * parentSpans, Spans * spans, int32_t index );
+        SpansCell( NearSpansUnorderedComplete * parentSpans, Spans * spans, int32_t index );
         virtual ~SpansCell();
 
         bool next();
@@ -90,7 +90,6 @@ private:
         void clearCache()               { cache.clear(); }
 
         TCHAR* toString() const;
-        int32_t getIndex() const        { return index; }
         
     private:
         bool adjust( bool condition );
@@ -111,13 +110,9 @@ private:
 private:
     SpanNearQuery *     query;
 
-    SpansCell**         spanCells;              // spans in query order
-    size_t              spanCellCount;          // count of subSpans
-
+    list<SpansCell *>   ordered;                // spans in query order
     int32_t             maxSlop;                // from query
     int32_t             minSlop;                // from query
-
-    bool                ignoreOrder;            // flag if order of child spans matters
 
     SpansCell *         first;                  // linked list of spans
     SpansCell *         last;                   // sorted by doc only
@@ -136,8 +131,8 @@ private:
     set<int32_t>::iterator  iCachedEnds;
 
 public:
-    NearSpansComplete( SpanNearQuery * query, CL_NS(index)::IndexReader * reader, bool inOrder );
-    virtual ~NearSpansComplete();
+    NearSpansUnorderedComplete( SpanNearQuery * query, CL_NS(index)::IndexReader * reader );
+    virtual ~NearSpansUnorderedComplete();
 
     bool next();
     bool skipTo( int32_t target );
@@ -157,7 +152,6 @@ private:
     void queueToList();
     void listToQueue();
     bool atMatch();
-    bool inOrder();
 
     void prepareSpans();
     
@@ -165,4 +159,4 @@ private:
 };
 
 CL_NS_END2
-#endif // _lucene_search_spans_NearSpansComplete_
+#endif // _lucene_search_spans_NearSpansUnorderedComplete_

@@ -11,7 +11,9 @@ CL_CLASS_DEF(index, IndexReader)
 CL_CLASS_DEF2(search, spans, SpanNearQuery)
 #include "Spans.h"
 
-CL_NS_DEF2( search, spans )
+CL_NS_DEF2(search, spans)
+
+bool spanDocCompare(Spans* s1, Spans* s2);
 
 /** A Spans that is formed from the ordered subspans of a SpanNearQuery
  * where the subspans do not overlap and have a maximum slop between them.
@@ -76,6 +78,11 @@ public:
      */
     static bool docSpansOrdered( Spans * spans1, Spans * spans2 );
 
+    /** Like {@link #docSpansOrdered(Spans,Spans)}, but use the spans
+     * starts and ends as parameters.
+     */
+    static bool docSpansOrdered(int32_t start1, int32_t end1, int32_t start2, int32_t end2);
+
 private:
     /** Advances the subSpans to just after an ordered match with a minimum slop
      * that is smaller than the slop allowed by the SpanNearQuery.
@@ -85,11 +92,6 @@ private:
   
     /** Advance the subSpans to the same document */
     bool toSameDoc();
-
-    /** Like {@link #docSpansOrdered(Spans,Spans)}, but use the spans
-     * starts and ends as parameters.
-     */
-    static bool docSpansOrdered( int32_t start1, int32_t end1, int32_t start2, int32_t end2 );
 
     /** Order the subSpans within the same document by advancing all later spans
      * after the previous one.
