@@ -56,7 +56,7 @@ public:
         _CLDELETE_LARRAY( d );
     }
 
-    void collect( const int32_t doc, const float_t score )
+    bool collect( const int32_t doc, const float_t score )
     {
         Explanation exp;
         s->explain( q, NULL, doc, &exp );
@@ -74,6 +74,7 @@ public:
 
         assertTrue( exp.getDetailsLength() == 1 );
         CheckHits::verifyExplanation( tc, d, doc, score, deep, exp.getDetail( 0 ) );        // ToDo: Fix IndexSearcher::explain() method
+        return true;
     }
 };
 
@@ -129,7 +130,7 @@ public:
     HitSetCollector() : HitCollector() {};
     virtual ~HitSetCollector() {};
 
-    virtual void collect( const int32_t doc, const float_t score ) { actual.insert( doc ); }
+    virtual bool collect(const int32_t doc, const float_t score) { actual.insert(doc); return true; }
 };
 
 

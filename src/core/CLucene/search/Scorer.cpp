@@ -18,14 +18,15 @@ Scorer::~Scorer(){
 
 void Scorer::score(HitCollector* hc) {
 	while (next()) {
-		hc->collect(doc(), score());
+		if (!hc->collect(doc(), score()))
+			break;
 	}
 }
 
 bool Scorer::score( HitCollector* results, const int32_t maxDoc ) {
 	while( doc() < maxDoc ) {
-		results->collect( doc(), score() );
-		if ( !next() )
+		bool cr = results->collect( doc(), score() );
+		if ( !cr || !next() )
 			return false;
 	}
 	return true;

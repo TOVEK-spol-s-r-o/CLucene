@@ -51,7 +51,8 @@ DisjunctionSumScorer::~DisjunctionSumScorer()
 void DisjunctionSumScorer::score( HitCollector* hc )
 {
 	while( next() ) {
-		hc->collect( currentDoc, currentScore );
+		if (!hc->collect(currentDoc, currentScore))
+			break;
 	}
 }
 
@@ -146,8 +147,8 @@ Explanation* DisjunctionSumScorer::explain( int32_t doc ){
 bool DisjunctionSumScorer::score( HitCollector* hc, const int32_t max )
 {
 	while ( currentDoc < max ) {
-		hc->collect( currentDoc, currentScore );
-		if ( !next() ) {
+		bool cr = hc->collect( currentDoc, currentScore );
+		if ( !cr || !next() ) {
 			return false;
 		}
 	}

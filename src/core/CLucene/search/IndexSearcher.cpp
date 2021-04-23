@@ -44,7 +44,7 @@ CL_NS_DEF(search)
     	{
     	}
 		~SimpleTopDocsCollector(){}
-		void collect(const int32_t doc, const float_t score){
+		bool collect(const int32_t doc, const float_t score){
     		if (score > 0.0f &&			  // ignore zeroed buckets
     			(bits==NULL || bits->get(doc))) {	  // skip docs not in bits
     			++totalHits[0];
@@ -55,6 +55,7 @@ CL_NS_DEF(search)
     					minScore = hq->top().score; // maintain minScore
     			}
     		}
+            return true;
     	}
 	};
 
@@ -74,7 +75,7 @@ CL_NS_DEF(search)
     	}
 		~SortedTopDocsCollector(){
 		}
-		void collect(const int32_t doc, const float_t score){
+		bool collect(const int32_t doc, const float_t score){
     		if (score > 0.0f &&			  // ignore zeroed buckets
     			(bits==NULL || bits->get(doc))) {	  // skip docs not in bits
     			++totalHits[0];
@@ -82,6 +83,7 @@ CL_NS_DEF(search)
     			if ( !hq->insert(fd) )	  // update hit queue
     				_CLDELETE(fd);
     		}
+            return true;
     	}
 	};
 
@@ -98,9 +100,9 @@ CL_NS_DEF(search)
 		~SimpleFilteredCollector(){
 		}
 	protected:
-		void collect(const int32_t doc, const float_t score){
+		bool collect(const int32_t doc, const float_t score){
             if (bits->get(doc)) {		  // skip docs not in bits
-                results->collect(doc, score);
+                return results->collect(doc, score);
             }
         }
 	};

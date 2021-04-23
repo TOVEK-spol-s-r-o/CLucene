@@ -159,10 +159,12 @@ CL_NS_DEF(search)
     			}
 
     			if ( current->coord >= minNrShouldMatch ) {
-    				results->collect( current->doc, current->score * coordFactors[current->coord] );
+                    if (!results->collect(current->doc, current->score * coordFactors[current->coord]))
+                    {
+                        return false;
+                    }
     			}
     		}
-
     		current = current->next;
     	}
 
@@ -277,7 +279,7 @@ CL_NS_DEF(search)
   {
   }
 
-  void BooleanScorer::Collector::collect(const int32_t doc, const float_t score){
+  bool BooleanScorer::Collector::collect(const int32_t doc, const float_t score){
     BucketTable* table = bucketTable;
     int32_t i = doc & (BooleanScorer::BucketTable_SIZE-1);
     Bucket* bucket = &table->buckets[i];
@@ -295,6 +297,7 @@ CL_NS_DEF(search)
       bucket->bits |= mask;			  // add bits in mask
       bucket->coord++;				  // increment coord
     }
+    return true;
   }
 
 
