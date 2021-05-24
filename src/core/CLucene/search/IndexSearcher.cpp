@@ -104,6 +104,7 @@ CL_NS_DEF(search)
             if (bits->get(doc)) {		  // skip docs not in bits
                 return results->collect(doc, score);
             }
+            return true;
         }
 	};
 
