@@ -180,6 +180,7 @@ protected:
     bool                                        m_bExactTermSpans;
     bool                                        m_bExactTerms;
     bool                                        m_bScoreTerms;
+    bool                                        m_bIndexToMemory;
 
 public:
     /**
@@ -234,10 +235,11 @@ public:
      * @param pQuery                    query that caused hit
      * @param tszFieldName              restricts Term's used based on field name
      * @param pTokenFilter              text to be scored
+     * @param indexToMemory             should be the provided token stream indexed to memory index and used to score the doc
      * @param nDocId                    id of document to be scored
      * @throws IOException
      */
-    void extractWeightedSpanTerms( WeightedSpanTermMap& weightedSpanTerms, CL_NS(search)::Query * pQuery, const TCHAR * tszFieldName, CL_NS(analysis)::TokenStream * pTokenStream, int32_t nDocId = -1 );
+    void extractWeightedSpanTerms( WeightedSpanTermMap& weightedSpanTerms, CL_NS(search)::Query * pQuery, const TCHAR * tszFieldName, CL_NS(analysis)::TokenStream * pTokenStream, bool indexToMemory, int32_t nDocId = -1 );
 
 protected:
     /**
@@ -297,7 +299,7 @@ protected:
     bool matchesDoc( CL_NS(index)::Term * pTerm );
 
     /**
-     * Returns reader for the current field - it returns the supplied reader if the docid is specified, otherwise it creates a new on
+     * Returns reader for the current field - it returns the supplied reader (the given docid must be specified) or creates a new one if indexToMemory is set to true or there is no reader
      */
     CL_NS(index)::IndexReader * getFieldReader();
 
