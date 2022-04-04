@@ -74,7 +74,7 @@ public:
     CuTest *    tc;
 
 public:
-    void collect( const int32_t doc, const float_t score )
+    bool collect( const int32_t doc, const float_t score )
     {
         int32_t op = order[ (opidx[ 0 ]++ ) % orderLength ];
         bool more = ( op == QueryUtils::skip_op ) ? scorer->skipTo( sdoc[ 0 ] + 1 ) : scorer->next();
@@ -130,6 +130,7 @@ public:
 
             assertTrueMsg( buffer.getBuffer(), false );
         }
+        return true;
     }
 };
 
@@ -143,7 +144,7 @@ public:
     CuTest *            tc;
 
 public:
-    void collect( const int32_t doc, const float_t score )
+    bool collect( const int32_t doc, const float_t score )
     {
         for( int32_t i = lastDoc[ 0 ] + 1; i <= doc; i++ )
         {
@@ -206,6 +207,7 @@ public:
             _CLLDELETE( w );
         }
         lastDoc[ 0 ] = doc;
+        return true;
     }
 };
 

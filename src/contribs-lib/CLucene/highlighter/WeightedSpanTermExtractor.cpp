@@ -274,14 +274,15 @@ bool WeightedSpanTermExtractor::exactTerms()
     return m_bExactTerms;
 }
 
-void WeightedSpanTermExtractor::extractWeightedSpanTerms( WeightedSpanTermMap& weightedSpanTerms, CL_NS(search)::Query * pQuery, const TCHAR * tszFieldName, CL_NS(analysis)::TokenStream * pTokenStream, int32_t nDocId )
+void WeightedSpanTermExtractor::extractWeightedSpanTerms( WeightedSpanTermMap& weightedSpanTerms, CL_NS(search)::Query * pQuery, const TCHAR * tszFieldName, CL_NS(analysis)::TokenStream * pTokenStream, bool indexToMemory, int32_t nDocId )
 {
     if( !m_pContext )
         m_pContext = _CLNEW DummyContext();
 
-    m_tszFieldName = tszFieldName;
-    m_pTokenStream = pTokenStream;
-    m_nDocId       = nDocId;
+    m_tszFieldName   = tszFieldName;
+    m_pTokenStream   = pTokenStream;
+    m_bIndexToMemory = indexToMemory || !m_pReader;
+    m_nDocId         = indexToMemory ? 0 : nDocId;
 
     WeightedSpanTermExtractor::PositionCheckingMap terms( weightedSpanTerms );
     WeightedSpanTerm::PositionSpans wholeDocSpan;
@@ -772,7 +773,7 @@ IndexReader * WeightedSpanTermExtractor::getFieldReader()
 {
     if( ! m_pFieldReader )
     {
-        if( m_pReader && m_nDocId != -1 )
+        if( m_pReader && !m_bIndexToMemory)
         {
             m_pFieldReader = m_pReader;
         }

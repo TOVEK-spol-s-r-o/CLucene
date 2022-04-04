@@ -10,9 +10,9 @@
 #include "Equators.h"
 #include "CLucene/LuceneThreads.h"
 
-#if defined(_CL_HAVE_TR1_UNORDERED_MAP) && defined(_CL_HAVE_TR1_UNORDERED_SET)
-	#include <tr1/unordered_map>
-	#include <tr1/unordered_set>
+#if defined(_CL_HAVE_UNORDERED_MAP) && defined(_CL_HAVE_UNORDERED_SET)
+	#include <unordered_map>
+	#include <unordered_set>
 #elif defined(_CL_HAVE_HASH_MAP) && defined(_CL_HAVE_HASH_SET)
 	//hashing is all or nothing!
 	#include <hash_map>
@@ -149,16 +149,16 @@ public:
 
  //a CLSet with CLHashMap traits
 template<typename _kt, typename _vt,
-	typename _Compare,
+	typename __Compare,
 	typename _EqualDummy,
 	typename _KeyDeletor=CL_NS(util)::Deletor::Dummy,
 	typename _ValueDeletor=CL_NS(util)::Deletor::Dummy>
 class CLUCENE_INLINE_EXPORT CLHashMap:public __CLMap<_kt,_vt,
-	CL_NS_STD(map)<_kt,_vt, _Compare>,
+	CL_NS_STD(map)<_kt,_vt, __Compare >,
 	_KeyDeletor,_ValueDeletor>
 {
-	typedef typename CL_NS_STD(map)<_kt,_vt,_Compare> _base;
-	typedef __CLMap<_kt, _vt, CL_NS_STD(map)<_kt,_vt, _Compare>,
+	typedef typename CL_NS_STD(map)<_kt,_vt, __Compare > _base;
+	typedef __CLMap<_kt, _vt, CL_NS_STD(map)<_kt,_vt, __Compare >,
 		_KeyDeletor,_ValueDeletor> _this;
 public:
 	CLHashMap ( const bool deleteKey=false, const bool deleteValue=false )
@@ -255,15 +255,15 @@ public:
 //A collection that contains no duplicates
 //does not guarantee that the order will remain constant over time
 template<typename _kt, typename _vt,
-	typename _Compare,
+	typename __Compare,
 	typename _KeyDeletor=CL_NS(util)::Deletor::Dummy,
 	typename _ValueDeletor=CL_NS(util)::Deletor::Dummy>
 class CLUCENE_INLINE_EXPORT CLSet:public __CLMap<_kt,_vt,
-	CL_NS_STD(map)<_kt,_vt, _Compare>,
+	CL_NS_STD(map)<_kt,_vt, __Compare >,
 	_KeyDeletor,_ValueDeletor>
 {
-	typedef typename CL_NS_STD(map)<_kt,_vt,_Compare> _base;
-	typedef __CLMap<_kt, _vt, CL_NS_STD(map)<_kt,_vt, _Compare>,
+	typedef typename CL_NS_STD(map)<_kt,_vt, __Compare > _base;
+	typedef __CLMap<_kt, _vt, CL_NS_STD(map)<_kt,_vt, __Compare >,
 		_KeyDeletor,_ValueDeletor> _this;
 public:
 	CLSet ( const bool deleteKey=false, const bool deleteValue=false )

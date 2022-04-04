@@ -20,9 +20,10 @@ public:
 
     virtual ~MockHitCollector() {}
 
-    virtual void collect(const int32_t doc, const float_t score)
+    virtual bool collect(const int32_t doc, const float_t score)
     {
         collectCalls++;
+        return true;
     }
 
     int32_t getCollectCalls() const

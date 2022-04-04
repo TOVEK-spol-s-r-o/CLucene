@@ -416,10 +416,10 @@ void NearSpansUnorderedComplete::SpansCell::addEnds( int32_t currentEnd, int32_t
     size_t sz = cache.size();
     for( size_t pos = 1; pos < sz; pos += 2 )
     {
-        end = cache.get( pos );
+        end = cache.get( (int32_t)pos );
         if( end > currentEnd )
         {
-            int32_t matchSlop = cache.get( pos-1 ) - slopBase;
+            int32_t matchSlop = cache.get( (int32_t)(pos-1) ) - slopBase;
             if( matchSlop <= maxSlop && minSlop <= matchSlop )
                 ends.insert( end );
         }

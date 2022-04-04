@@ -23,8 +23,9 @@ public:
 	QFHitCollector(CL_NS(util)::BitSet* bits){
 		this->bits = bits;
 	}
-	void collect(const int32_t doc, const float_t /*score*/){
+	bool collect(const int32_t doc, const float_t /*score*/){
 		bits->set(doc);  // set bit for hit
+		return true;
 	}
 };
 

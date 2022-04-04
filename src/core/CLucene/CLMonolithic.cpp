@@ -109,6 +109,7 @@
 #include "CLucene/search/WildcardQuery.cpp"
 #include "CLucene/search/WildcardTermEnum.cpp"
 #include "CLucene/search/spans/NearSpansOrdered.cpp"
+#include "CLucene/search/spans/NearSpansOrderedComplete.cpp"
 #include "CLucene/search/spans/NearSpansUnordered.cpp"
 #include "CLucene/search/spans/NearSpansUnorderedComplete.cpp"
 #include "CLucene/search/spans/SpanFirstQuery.cpp"

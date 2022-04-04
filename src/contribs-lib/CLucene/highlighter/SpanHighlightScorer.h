@@ -130,9 +130,11 @@ public:
     /**
      * @param query         - initialize the span term scores based on this query
      * @param field         - score terms of this field
-     * @param tokenStream   - this token stream defines the document content 
+     * @param tokenStream   - this token stream defines the document content
+     * @param indexToMemory - the given token stream will be indexed to memory index in order to evaluate the query
+     * @param nDocId        - if index to memory is false, than this is the doc id from the main index
      */
-    void init( CL_NS(search)::Query * pQuery, const TCHAR * tszField, CL_NS(analysis)::TokenStream * pTokenStream, int32_t nDocId = -1 );
+    void init( CL_NS(search)::Query * pQuery, const TCHAR * tszField, CL_NS(analysis)::TokenStream * pTokenStream, bool indexToMemory, int32_t nDocId = -1 );
 
     /**
      * If you call Highlighter#getBestFragment() more than once you must reset

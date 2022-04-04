@@ -633,7 +633,8 @@ void BooleanScorer2::score( HitCollector* hc )
 			_internal->initCountingSumScorer();
 		}
 		while ( _internal->countingSumScorer->next() ) {
-			hc->collect( _internal->countingSumScorer->doc(), score() );
+			if (!hc->collect(_internal->countingSumScorer->doc(), score()))
+				break;
 		}
 	}
 }
@@ -684,8 +685,8 @@ bool BooleanScorer2::score( HitCollector* hc, int32_t max )
 {
 	int32_t docNr = _internal->countingSumScorer->doc();
 	while ( docNr < max ) {
-		hc->collect( docNr, score() );
-		if ( !_internal->countingSumScorer->next() ) {
+		bool cr = hc->collect( docNr, score() );
+		if ( !cr || !_internal->countingSumScorer->next() ) {
 			return false;
 		}
 		docNr = _internal->countingSumScorer->doc();

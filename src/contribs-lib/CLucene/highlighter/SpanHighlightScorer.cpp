@@ -160,7 +160,7 @@ bool SpanHighlightScorer::scoredPositions()
     return m_bScorePositions;
 }
 
-void SpanHighlightScorer::init( CL_NS(search)::Query * pQuery, const TCHAR * tszField, CL_NS(analysis)::TokenStream * pTokenStream, int32_t nDocId )
+void SpanHighlightScorer::init( CL_NS(search)::Query * pQuery, const TCHAR * tszField, CL_NS(analysis)::TokenStream * pTokenStream, bool indexToMemory, int32_t nDocId )
 {
     if( ! m_pSpanExtractor )
     {
@@ -174,7 +174,7 @@ void SpanHighlightScorer::init( CL_NS(search)::Query * pQuery, const TCHAR * tsz
 
     freeWeightedSpanTerms();
     m_bDeleteWeightedSpanTerms = true;
-    m_pSpanExtractor->extractWeightedSpanTerms( m_fieldWeightedSpanTerms, pQuery, tszField, pTokenStream, nDocId );
+    m_pSpanExtractor->extractWeightedSpanTerms( m_fieldWeightedSpanTerms, pQuery, tszField, pTokenStream, indexToMemory, nDocId );
 
     if( m_bPositionBased )
         extractTermPositions( tszField, nDocId );

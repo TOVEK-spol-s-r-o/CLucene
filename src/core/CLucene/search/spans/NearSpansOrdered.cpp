@@ -22,7 +22,7 @@ bool spanDocCompare( Spans * s1, Spans * s2 )
     return s1->doc() < s2->doc();
 }
 
-NearSpansOrdered::NearSpansOrdered( SpanNearQuery * spanNearQuery, CL_NS(index)::IndexReader * reader, bool complete )
+NearSpansOrdered::NearSpansOrdered( SpanNearQuery * spanNearQuery, CL_NS(index)::IndexReader * reader )
 {
     firstTime = true;
     more = false;
@@ -53,7 +53,7 @@ NearSpansOrdered::NearSpansOrdered( SpanNearQuery * spanNearQuery, CL_NS(index):
     SpanQuery ** clauses = spanNearQuery->getClauses();
     for( size_t i = 0; i < subSpansCount; i++ )
     {
-        subSpans[ i ] = clauses[ i ]->getSpans( reader, complete );
+        subSpans[ i ] = clauses[ i ]->getSpans( reader, false );
         subSpansByDoc[ i ] = subSpans[ i ];             // used in toSameDoc()
     }
     clauses = NULL;

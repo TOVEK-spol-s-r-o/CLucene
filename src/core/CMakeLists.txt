@@ -152,10 +152,12 @@ SET(clucene_core_Files
 	./CLucene/search/SpanQueryFilter.h	
 	./CLucene/search/spans/_EmptySpans.h
 	./CLucene/search/spans/_NearSpansOrdered.h
+	./CLucene/search/spans/_NearSpansOrderedComplete.h
 	./CLucene/search/spans/_NearSpansUnordered.h
 	./CLucene/search/spans/_NearSpansUnorderedComplete.h
 	./CLucene/search/spans/_TermSpans.h
 	./CLucene/search/spans/NearSpansOrdered.cpp
+	./CLucene/search/spans/NearSpansOrderedComplete.cpp
 	./CLucene/search/spans/NearSpansUnordered.cpp
 	./CLucene/search/spans/NearSpansUnorderedComplete.cpp
 	./CLucene/search/spans/SpanFirstQuery.cpp

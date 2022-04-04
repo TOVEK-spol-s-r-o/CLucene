@@ -20,7 +20,7 @@ _LUCENE_THREAD_FUNC(searchDocs, _searcher) {
     Query * query = QueryParser::parse(_T("one"), _T("content"), &an);
     Hits * hits = searcher->search(query, NULL);
 
-#ifndef WIN32
+#ifndef WIN32 
     usleep(9999); //make sure that searchMutex is being waited on...
 #endif
 
@@ -34,8 +34,11 @@ _LUCENE_THREAD_FUNC(searchDocs, _searcher) {
     _CLLDELETE(hits);
     _CLLDELETE(query);
 
+#ifndef WIN32
+    _LUCENE_THREAD_FUNC_RETURN(0); //uncommenting this produces deadlock on win
+#endif
+
     CONDITION_WAIT(deleteMutex, deleteCondition);
-    //_LUCENE_THREAD_FUNC_RETURN(0); uncommenting this produces deadlock on win
 }
 
 void testEndThreadException(CuTest *tc) {

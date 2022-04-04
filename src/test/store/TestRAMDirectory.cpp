@@ -124,19 +124,34 @@ static int docsPerThread = 40;
 
 _LUCENE_THREAD_FUNC(indexDocs, _data) {
 
-    ThreadData * data = (ThreadData *)_data;
-    int cnt = 0;
-    TCHAR * text;
-    for (int j=1; j<docsPerThread; j++) {
-        Document doc;
-        text = English::IntToEnglish(data->num*docsPerThread+j);
-        doc.add(*new Field(_T("sizeContent"), text, Field::STORE_YES | Field::INDEX_UNTOKENIZED));
-        data->writer->addDocument(&doc);
-        _CLDELETE_ARRAY(text);
-        {
-            SCOPED_LOCK_MUTEX(data->dir->THIS_LOCK);
-            CuAssertTrue(data->tc, data->dir->sizeInBytes == data->dir->getRecomputedSizeInBytes());
+    ThreadData* data = (ThreadData*)_data;
+    try
+    {
+        int cnt = 0;
+        TCHAR* text;
+        for (int j = 1; j < docsPerThread; j++) {
+            Document doc;
+            text = English::IntToEnglish(data->num * docsPerThread + j);
+            doc.add(*new Field(_T("sizeContent"), text, Field::STORE_YES | Field::INDEX_UNTOKENIZED));
+            data->writer->addDocument(&doc);
+            _CLDELETE_ARRAY(text);
+            {
+                SCOPED_LOCK_MUTEX(data->dir->THIS_LOCK);
+                CuAssertTrue(data->tc, data->dir->sizeInBytes == data->dir->getRecomputedSizeInBytes());
+            }
         }
+    }
+    catch (CLuceneError& luce)
+    {
+        CuMessage(data->tc, _T("CLuceneError text=%s code=%d\n"), luce.twhat(), luce.number());
+    }
+    catch (const std::exception& stde)
+    {
+        CuMessage(data->tc, _T("std::exception text=%S\n"), stde.what());
+    }
+    catch (...)
+    {
+        CuMessage(data->tc, _T("Unspecified exception\n"));
     }
     _LUCENE_THREAD_FUNC_RETURN( 0 );
 }

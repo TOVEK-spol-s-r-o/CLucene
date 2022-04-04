@@ -61,7 +61,7 @@ CL_NS_DEF(search)
 		public:
 			Collector(const int32_t mask, BucketTable* bucketTable);
 			
-			void collect(const int32_t doc, const float_t score);
+			bool collect(const int32_t doc, const float_t score);
 		};
 
 		SubScorer* scorers;

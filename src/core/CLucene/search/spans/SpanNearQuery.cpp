@@ -11,6 +11,7 @@
 #include "SpanNearQuery.h"
 #include "_EmptySpans.h"
 #include "_NearSpansOrdered.h"
+#include "_NearSpansOrderedComplete.h"
 #include "_NearSpansUnordered.h"
 #include "_NearSpansUnorderedComplete.h"
 
@@ -218,8 +219,8 @@ Spans * SpanNearQuery::getSpans( CL_NS(index)::IndexReader * reader, bool comple
       return clauses[ 0 ]->getSpans( reader, complete );
 
     return inOrder
-            ? (Spans *) _CLNEW NearSpansOrdered( this, reader, complete )
-            : ( complete || minSlop > 0 ?  (Spans *) _CLNEW NearSpansUnorderedComplete( this, reader ) : (Spans *) _CLNEW NearSpansUnordered( this, reader ));
+            ? ( complete || minSlop > 0 ? (Spans *) _CLNEW NearSpansOrderedComplete(this, reader) : (Spans *) _CLNEW NearSpansOrdered( this, reader ))
+            : ( complete || minSlop > 0 ? (Spans *) _CLNEW NearSpansUnorderedComplete( this, reader ) : (Spans *) _CLNEW NearSpansUnordered( this, reader ));
 }
 
 CL_NS_END2

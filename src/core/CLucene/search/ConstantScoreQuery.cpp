@@ -184,7 +184,7 @@ TCHAR* ConstantScoreQuery::toString(const TCHAR* /*field*/) const
     buf.append(_T("ConstantScore("));
     TCHAR* tmp = filter->toString();
     buf.append(tmp);
-    _CLLDELETE(tmp);
+    _CLDELETE_CARRAY(tmp);
     buf.appendBoost(getBoost());
     buf.appendChar(_T(')'));
     return buf.giveBuffer();

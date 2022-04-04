@@ -93,8 +93,10 @@ CL_NS_DEF(search)
       * <p>Note: The <code>score</code> passed to this method is a raw score.
       * In other words, the score will not necessarily be a float whose value is
       * between 0 and 1.
+      * 
+      * BK - collect can return false to stop search
       */
-      virtual void collect(const int32_t doc, const float_t score) = 0;
+      virtual bool collect(const int32_t doc, const float_t score) = 0;
       virtual ~HitCollector(){}
     };
 

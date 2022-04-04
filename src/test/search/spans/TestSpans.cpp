@@ -426,11 +426,6 @@ void TestSpans::testSpanNearUnorderedComplete4()
         {
             SpanNearQuery * snq = _CLNEW SpanNearQuery( clauses, clauses+2, maxSlop, minSlop, false, minSlop == 4 );
             Spans * spans = snq->getSpans( searcher->getReader(), true );
-            
-//            printf( "SPANS for NEAR/%d,%d\n", minSlop, maxSlop );
-//            printSpans( spans );
-//            printf( "\n" );
-
             for( int span = minSlop+2; span <= maxSlop+2; span++ )
             {
                 tstNextSpans( spans, 12, 0, span );
@@ -450,7 +445,6 @@ void TestSpans::testSpanNearUnorderedComplete5()
     clauses[ 0 ] = makeSpanTermQuery( _T( "a2" ));
     clauses[ 1 ] = makeSpanTermQuery( _T( "b2" ));
 
-
     {
         SpanNearQuery * snq = _CLNEW SpanNearQuery( clauses, clauses+2, 1, 1, false, false );
         Spans * spans = snq->getSpans( searcher->getReader(), true );
@@ -466,11 +460,6 @@ void TestSpans::testSpanNearUnorderedComplete5()
         {
             SpanNearQuery * snq = _CLNEW SpanNearQuery( clauses, clauses+2, maxSlop, minSlop, false, minSlop == 4 );
             Spans * spans = snq->getSpans( searcher->getReader(), true );
-
-//            printf( "SPANS for NEAR/%d,%d\n", minSlop, maxSlop );
-//            printSpans( spans );
-//            printf( "\n" );
-
             for( int span = maxSlop+2; span >= minSlop+2; span-- )
             {
                 tstNextSpans( spans, 13, 6-span, 6);
@@ -483,7 +472,6 @@ void TestSpans::testSpanNearUnorderedComplete5()
 
     _CLDELETE_LARRAY( clauses );
 }
-
 
 void TestSpans::testSpanNearOrderedComplete()
 {
@@ -498,21 +486,11 @@ void TestSpans::testSpanNearOrderedComplete()
     _CLDELETE_LARRAY( clauses );
 
     Spans * spans = snq->getSpans( searcher->getReader(), true );
-    printSpans( spans );
-    
-//     tstNextSpans( spans, 0, 0, 2 );
-//     tstNextSpans( spans, 0, 0, 3 );
-// 
-//     tstNextSpans( spans, 1, 0, 2 );
-//     tstNextSpans( spans, 1, 0, 3 );
-//     tstNextSpans( spans, 1, 0, 4 );
-// 
-//     tstNextSpans( spans, 2, 0, 3 );
-//     tstNextSpans( spans, 2, 0, 5 );
-// 
-//     tstNextSpans( spans, 3, 0, 2 );
-//     tstNextSpans( spans, 3, 0, 4 );
-//     tstNextSpans( spans, 3, 0, 6 );
+
+    tstNextSpans(spans, 11, 1, 3);
+    tstNextSpans(spans, 11, 1, 4);
+    tstNextSpans(spans, 11, 1, 6);
+    tstNextSpans(spans, 11, 4, 6);
 
     assertTrueMsg( _T( "final next" ), ! spans->next());
     _CLLDELETE( spans );
@@ -532,21 +510,113 @@ void TestSpans::testSpanNearOrderedComplete1()
     _CLDELETE_LARRAY( clauses );
 
     Spans * spans = snq->getSpans( searcher->getReader(), true );
-    printSpans( spans );
 
-//     tstNextSpans( spans, 0, 0, 2 );
-//     tstNextSpans( spans, 0, 0, 3 );
-// 
-//     tstNextSpans( spans, 1, 0, 2 );
-//     tstNextSpans( spans, 1, 0, 3 );
-// 
-//     tstNextSpans( spans, 2, 0, 3 );
-// 
-//     tstNextSpans( spans, 3, 0, 2 );
+    tstNextSpans( spans, 0, 0, 2 );
+    tstNextSpans( spans, 0, 0, 3 );
+    tstNextSpans( spans, 1, 0, 2 );
+    tstNextSpans( spans, 1, 0, 3 );
+    tstNextSpans( spans, 2, 0, 3 );
+    tstNextSpans( spans, 3, 0, 2 );
 
     assertTrueMsg( _T( "final next" ), ! spans->next());
     _CLLDELETE( spans );
     _CLLDELETE( snq );
+}
+
+void TestSpans::testSpanNearOrderedComplete2()
+{
+    SpanQuery** clauses = _CL_NEWARRAY(SpanQuery*, 2);
+    clauses[0] = makeSpanTermQuery(_T("b1"));
+    clauses[1] = makeSpanTermQuery(_T("a1"));
+
+    SpanNearQuery* snq = _CLNEW SpanNearQuery(clauses, clauses + 2, 1, 1, true, true);
+    Spans* spans = snq->getSpans(searcher->getReader(), true);
+    assertTrueMsg(_T("final next"), !spans->next());
+    _CLLDELETE(spans);
+    _CLLDELETE(snq);
+    _CLDELETE_LARRAY(clauses);
+}
+
+void TestSpans::testSpanNearOrderedComplete3()
+{
+    SpanQuery** clauses = _CL_NEWARRAY(SpanQuery*, 2);
+    clauses[0] = makeSpanTermQuery(_T("a2"));
+    clauses[1] = makeSpanTermQuery(_T("b2"));
+
+    SpanNearQuery* snq = _CLNEW SpanNearQuery(clauses, clauses + 2, 1, 1, true, true);
+    Spans* spans = snq->getSpans(searcher->getReader(), true);
+    assertTrueMsg(_T("final next"), !spans->next());
+    _CLLDELETE(spans);
+    _CLLDELETE(snq);
+    _CLDELETE_LARRAY(clauses);
+}
+
+void TestSpans::testSpanNearOrderedComplete4()
+{
+    SpanQuery** clauses = _CL_NEWARRAY(SpanQuery*, 2);
+    clauses[0] = makeSpanTermQuery(_T("a1"));
+    clauses[1] = makeSpanTermQuery(_T("b1"));
+
+    {
+        SpanNearQuery* snq = _CLNEW SpanNearQuery(clauses, clauses + 2, 1, 1, true, false);
+        Spans* spans = snq->getSpans(searcher->getReader(), true);
+        tstNextSpans(spans, 12, 0, 3);
+        assertTrueMsg(_T("final next"), !spans->next());
+        _CLLDELETE(spans);
+        _CLLDELETE(snq);
+    }
+
+    for (int maxSlop = 1; maxSlop < 5; maxSlop++)
+    {
+        for (int minSlop = 0; minSlop <= maxSlop; minSlop++)
+        {
+            SpanNearQuery* snq = _CLNEW SpanNearQuery(clauses, clauses + 2, maxSlop, minSlop, true, minSlop == 4);
+            Spans* spans = snq->getSpans(searcher->getReader(), true);
+            for (int span = minSlop + 2; span <= maxSlop + 2; span++)
+            {
+                tstNextSpans(spans, 12, 0, span);
+            }
+            assertTrueMsg(_T("final next"), !spans->next());
+            _CLLDELETE(spans);
+            _CLLDELETE(snq);
+        }
+    }
+
+    _CLDELETE_LARRAY(clauses);
+}
+
+void TestSpans::testSpanNearOrderedComplete5()
+{
+    SpanQuery** clauses = _CL_NEWARRAY(SpanQuery*, 2);
+    clauses[0] = makeSpanTermQuery(_T("b2"));
+    clauses[1] = makeSpanTermQuery(_T("a2"));
+
+    {
+        SpanNearQuery* snq = _CLNEW SpanNearQuery(clauses, clauses + 2, 1, 1, true, false);
+        Spans* spans = snq->getSpans(searcher->getReader(), true);
+        tstNextSpans(spans, 13, 3, 6);
+        assertTrueMsg(_T("final next"), !spans->next());
+        _CLLDELETE(spans);
+        _CLLDELETE(snq);
+    }
+
+    for (int maxSlop = 1; maxSlop < 5; maxSlop++)
+    {
+        for (int minSlop = 0; minSlop <= maxSlop; minSlop++)
+        {
+            SpanNearQuery* snq = _CLNEW SpanNearQuery(clauses, clauses + 2, maxSlop, minSlop, true, minSlop == 4);
+            Spans* spans = snq->getSpans(searcher->getReader(), true);
+            for (int span = maxSlop + 2; span >= minSlop + 2; span--)
+            {
+                tstNextSpans(spans, 13, 6 - span, 6);
+            }
+            assertTrueMsg(_T("final next"), !spans->next());
+            _CLLDELETE(spans);
+            _CLLDELETE(snq);
+        }
+    }
+
+    _CLDELETE_LARRAY(clauses);
 }
 
 void TestSpans::printSpans( Spans * spans )

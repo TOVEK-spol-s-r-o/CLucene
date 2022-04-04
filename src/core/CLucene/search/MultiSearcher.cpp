@@ -26,7 +26,7 @@ CL_NS_DEF(search)
       int32_t start;
     public: 
       MultiHitCollector(HitCollector* _results, int32_t _start);
-      void collect(const int32_t doc, const float_t score) ;
+      bool collect(const int32_t doc, const float_t score) ;
     };
     
 
@@ -237,8 +237,8 @@ CL_NS_DEF(search)
 	start(_start) {
   }
 
-  void MultiHitCollector::collect(const int32_t doc, const float_t score) {
-    results->collect(doc + start, score);
+  bool MultiHitCollector::collect(const int32_t doc, const float_t score) {
+    return results->collect(doc + start, score);
   }
 
 CL_NS_END
