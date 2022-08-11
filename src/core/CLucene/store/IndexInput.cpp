@@ -30,14 +30,32 @@ CL_NS_USE(util)
     return (b | readByte());
   }
 
-  int32_t IndexInput::readVInt() {
-    uint8_t b = readByte();
-    int32_t i = b & 0x7F;
-    for (int32_t shift = 7; (b & 0x80) != 0; shift += 7) {
+  int32_t IndexInput::readVInt()
+  {
+      uint8_t b = readByte();
+      if (b < 0x80)
+          return (int32_t)b;
+
+      int32_t i = b & 0x7F;
       b = readByte();
-      i |= (b & 0x7F) << shift;
-    }
-    return i;
+      i |= (b & 0x7F) << 7;
+      if (b < 0x80)
+          return i;
+
+      b = readByte();
+      i |= (b & 0x7F) << 14;
+      if (b < 0x80)
+          return i;
+
+      b = readByte();
+      i |= (b & 0x7F) << 21;
+      if (b < 0x80)
+          return i;
+
+      b = readByte();
+      if (b >= 0x10)
+          _CLTHROWA(CL_ERR_IO, "IndexInput::readVInt too many bytes");
+      return i | ((b & 0x0F) << 28);
   }
 
   int64_t IndexInput::readLong() {
