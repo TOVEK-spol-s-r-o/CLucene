@@ -33,7 +33,7 @@ CL_NS_USE2(analysis, standard)
 
 #include "CuTest.h"
 
-CuSuite *testsnowball(void);
+// CuSuite *testsnowball(void);
 CuSuite *testhighlighter(void);
 CuSuite *teststreams(void);
 CuSuite *testutf8(void);

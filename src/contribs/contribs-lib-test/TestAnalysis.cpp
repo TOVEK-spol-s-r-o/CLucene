@@ -7,7 +7,7 @@
 #include "test.h"
 #include "CLucene/analysis/cjk/CJKAnalyzer.h"
 #include "CLucene/analysis/LanguageBasedAnalyzer.h"
-#include "CLucene/snowball/SnowballFilter.h"
+// #include "CLucene/snowball/SnowballFilter.h"
 
 #include <fcntl.h>
 #ifdef _CL_HAVE_IO_H
@@ -25,7 +25,7 @@
 #include <errno.h>
 
 CL_NS_USE2(analysis, cjk)
-CL_NS_USE2(analysis, snowball)
+// CL_NS_USE2(analysis, snowball)
 
 void test(CuTest *tc, char* orig, Reader* reader, bool verbose, int64_t bytes) {
     StandardAnalyzer analyzer;
