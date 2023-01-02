@@ -12,7 +12,7 @@ file(GLOB_RECURSE test_HEADERS ${CMAKE_SOURCE_DIR}/test/*.h)
 SET(test_files
   ./contribTests.cpp
   ./TestHighlight.cpp
-  ./TestSnowball.cpp
+  #./TestSnowball.cpp
   ./TestStreams.cpp
   ./TestUtf8.cpp
   ./TestAnalysis.cpp

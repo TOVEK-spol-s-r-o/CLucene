@@ -48,37 +48,37 @@ SET(clucene_contribs_Files
     ./CLucene/highlighter/SpanHighlightScorer.cpp
     ./CLucene/highlighter/WeightedSpanTerm.cpp
     ./CLucene/highlighter/WeightedSpanTermExtractor.cpp
-	
-    ./CLucene/snowball/Snowball.cpp
-    ./CLucene/snowball/libstemmer/libstemmer.c
-    ./CLucene/snowball/runtime/api.c
-    ./CLucene/snowball/runtime/utilities.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_danish.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_dutch.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_english.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_finnish.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_french.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_german.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_italian.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_norwegian.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_porter.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_portuguese.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_spanish.c
-    ./CLucene/snowball/src_c/stem_ISO_8859_1_swedish.c
-    ./CLucene/snowball/src_c/stem_KOI8_R_russian.c
-    ./CLucene/snowball/src_c/stem_UTF_8_danish.c
-    ./CLucene/snowball/src_c/stem_UTF_8_dutch.c
-    ./CLucene/snowball/src_c/stem_UTF_8_english.c
-    ./CLucene/snowball/src_c/stem_UTF_8_finnish.c
-    ./CLucene/snowball/src_c/stem_UTF_8_french.c
-    ./CLucene/snowball/src_c/stem_UTF_8_german.c
-    ./CLucene/snowball/src_c/stem_UTF_8_italian.c
-    ./CLucene/snowball/src_c/stem_UTF_8_norwegian.c
-    ./CLucene/snowball/src_c/stem_UTF_8_porter.c
-    ./CLucene/snowball/src_c/stem_UTF_8_portuguese.c
-    ./CLucene/snowball/src_c/stem_UTF_8_russian.c
-    ./CLucene/snowball/src_c/stem_UTF_8_spanish.c
-    ./CLucene/snowball/src_c/stem_UTF_8_swedish.c
+
+    #./CLucene/snowball/Snowball.cpp
+    #./CLucene/snowball/libstemmer/libstemmer.c
+    #./CLucene/snowball/runtime/api.c
+    #./CLucene/snowball/runtime/utilities.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_danish.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_dutch.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_english.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_finnish.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_french.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_german.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_italian.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_norwegian.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_porter.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_portuguese.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_spanish.c
+    #./CLucene/snowball/src_c/stem_ISO_8859_1_swedish.c
+    #./CLucene/snowball/src_c/stem_KOI8_R_russian.c
+    #./CLucene/snowball/src_c/stem_UTF_8_danish.c
+    #./CLucene/snowball/src_c/stem_UTF_8_dutch.c
+    #./CLucene/snowball/src_c/stem_UTF_8_english.c
+    #./CLucene/snowball/src_c/stem_UTF_8_finnish.c
+    #./CLucene/snowball/src_c/stem_UTF_8_french.c
+    #./CLucene/snowball/src_c/stem_UTF_8_german.c
+    #./CLucene/snowball/src_c/stem_UTF_8_italian.c
+    #./CLucene/snowball/src_c/stem_UTF_8_norwegian.c
+    #./CLucene/snowball/src_c/stem_UTF_8_porter.c
+    #./CLucene/snowball/src_c/stem_UTF_8_portuguese.c
+    #./CLucene/snowball/src_c/stem_UTF_8_russian.c
+    #./CLucene/snowball/src_c/stem_UTF_8_spanish.c
+    #./CLucene/snowball/src_c/stem_UTF_8_swedish.c
 )
 SET ( clucene_contrib_extra_libs clucene-core clucene-shared ${EXTRA_LIBS})
 
