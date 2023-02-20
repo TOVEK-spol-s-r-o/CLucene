@@ -159,7 +159,7 @@ void TermVectorsReader::get(const int32_t docNum, const TCHAR* field, TermVector
 		//We don't need to do this in other seeks because we already have the
 		// file pointer
 		//that was written in another file
-        tvx->seek(((docNum + docStoreOffset) * 8L) + FORMAT_SIZE);
+        tvx->seek((((int64_t)docNum + (int64_t)docStoreOffset) * 8L) + FORMAT_SIZE);
         int64_t position = tvx->readLong();
 
         tvd->seek(position);
@@ -221,7 +221,7 @@ ArrayBase<TermFreqVector*>* TermVectorsReader::get(const int32_t docNum){
     // Check if no term vectors are available for this segment at all
     if (tvx != NULL) {
         //We need to offset by
-		tvx->seek(((docNum + docStoreOffset) * 8L) + FORMAT_SIZE);
+		tvx->seek((((int64_t)docNum + (int64_t)docStoreOffset) * 8L) + FORMAT_SIZE);
         int64_t position = tvx->readLong();
 
         tvd->seek(position);
@@ -268,7 +268,7 @@ void TermVectorsReader::get(const int32_t docNumber, TermVectorMapper* mapper) {
     // Check if no term vectors are available for this segment at all
     if (tvx != NULL) {
       //We need to offset by
-      tvx->seek((docNumber * 8L) + FORMAT_SIZE);
+      tvx->seek(((int64_t)docNumber * 8L) + FORMAT_SIZE);
       int64_t position = tvx->readLong();
 
       tvd->seek(position);
