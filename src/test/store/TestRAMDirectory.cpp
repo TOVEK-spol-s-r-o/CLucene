@@ -136,8 +136,11 @@ _LUCENE_THREAD_FUNC(indexDocs, _data) {
             data->writer->addDocument(&doc);
             _CLDELETE_ARRAY(text);
             {
-                SCOPED_LOCK_MUTEX(data->dir->THIS_LOCK);
-                CuAssertTrue(data->tc, data->dir->sizeInBytes == data->dir->getRecomputedSizeInBytes());
+                SCOPED_LOCK_MUTEX(data->dir->files_mutex);
+                {
+                    SCOPED_LOCK_MUTEX(data->dir->THIS_LOCK);
+                    CuAssertTrue(data->tc, data->dir->sizeInBytes == data->dir->getRecomputedSizeInBytes());
+                }
             }
         }
     }
