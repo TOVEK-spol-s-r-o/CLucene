@@ -1016,7 +1016,7 @@ void IndexWriter::rollbackTransaction() {
     deleter->decRef(segmentInfos);
 
   deleter->refresh();
-  finishMerges(false);
+  finishMerges_LOCKED(false);
   stopMerges = false;
 }
 
@@ -1100,8 +1100,14 @@ void IndexWriter::abort() {
     waitForClose();
 }
 
-void IndexWriter::finishMerges(bool waitForMerges) {
-	SCOPED_LOCK_MUTEX(THIS_LOCK)
+void IndexWriter::finishMerges(bool waitForMerges)
+{
+    SCOPED_LOCK_MUTEX(THIS_LOCK)
+    finishMerges_LOCKED(waitForMerges);
+}
+
+void IndexWriter::finishMerges_LOCKED(bool waitForMerges)
+{
   if (!waitForMerges) {
 
     stopMerges = true;
