@@ -130,7 +130,7 @@ FOREACH(file ${HEADERS})
 ENDFOREACH(file)
 
 #and install library
-install(TARGETS clucene-contribs-lib 
+install(TARGETS clucene-contribs-lib EXPORT CLuceneTargets 
         DESTINATION ${LIB_DESTINATION}  
         COMPONENT runtime )
 

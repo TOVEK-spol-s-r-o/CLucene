@@ -341,7 +341,7 @@ IF ( EXTRA_LIBS )
   TARGET_LINK_LIBRARIES(clucene-shared ${EXTRA_LIBS})
 ENDIF ( EXTRA_LIBS )
 
-install(TARGETS clucene-shared 
+install(TARGETS clucene-shared EXPORT CLuceneTargets 
         DESTINATION ${LIB_DESTINATION} 
         COMPONENT development )
 

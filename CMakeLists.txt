@@ -190,6 +190,12 @@ IF ( BUILD_CONTRIBS_LIB )
   ADD_SUBDIRECTORY (src/contribs-lib)
 ENDIF ( BUILD_CONTRIBS_LIB )
 
+# export targets
+install(EXPORT CLuceneTargets
+        FILE CLuceneConfig.cmake
+        DESTINATION share/cmake/CLucene
+        NAMESPACE CLucene::
+)
 
 #add uninstall command
 CONFIGURE_FILE(

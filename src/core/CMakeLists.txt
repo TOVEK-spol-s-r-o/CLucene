@@ -230,12 +230,9 @@ FOREACH(file ${HEADERS})
 	get_filename_component(apath ${file} PATH)
 	get_filename_component(aname ${file} NAME)
 	file(RELATIVE_PATH relpath ${CMAKE_SOURCE_DIR}/src/core ${apath})
-    # HT: Some _ headres are user in tlcore
-	#IF ( NOT aname MATCHES "^_.*" )
-		install(FILES ${file} 
-		        DESTINATION include/${relpath}
-		        COMPONENT development)
-	#ENDIF ( NOT aname MATCHES "^_.*" )
+	install(FILES ${file} 
+		    DESTINATION include/${relpath}
+		    COMPONENT development)
 ENDFOREACH(file)
 
 #tempoarary
@@ -262,21 +259,6 @@ install(FILES ${clucene-shared_SOURCE_DIR}/CLucene/config/repl_tchar.h
         COMPONENT development )
 
 
-
-# code for installing an script to help cmake applications determine
-# the CLucene version number
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/CLuceneConfig.cmake" "
-    set(CLUCENE_VERSION_MAJOR ${CLUCENE_VERSION_MAJOR})
-    set(CLUCENE_VERSION_MINOR ${CLUCENE_VERSION_MINOR})
-    set(CLUCENE_VERSION_REVISION ${CLUCENE_VERSION_REVISION})
-    set(CLUCENE_VERSION_PATCH ${CLUCENE_VERSION_PATCH})
-    
-    set(CLUCENE_VERSION ${CLUCENE_VERSION})
-    set(CLUCENE_SOVERSION ${CLUCENE_SOVERSION})
-")
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/CLuceneConfig.cmake"
-        DESTINATION ${LIB_DESTINATION}/CLuceneConfig.cmake)
-
 # install pkg-config file
 IF(NOT WIN32)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libclucene-core.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/libclucene-core.pc @ONLY)
@@ -290,20 +272,15 @@ IF ( LUCENE_SYS_INCLUDES )
     install(FILES ${clucene-shared_BINARY_DIR}/CLucene/clucene-config.h 
             DESTINATION ${LUCENE_SYS_INCLUDES}/CLucene  
             COMPONENT development)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CLuceneConfig.cmake 
-            DESTINATION ${LUCENE_SYS_INCLUDES}/CLucene  
-            COMPONENT development)
 ELSE ( LUCENE_SYS_INCLUDES )
     install(FILES ${clucene-shared_BINARY_DIR}/CLucene/clucene-config.h 
-            DESTINATION include/CLucene
-            COMPONENT development)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CLuceneConfig.cmake 
             DESTINATION include/CLucene
             COMPONENT development)
 ENDIF ( LUCENE_SYS_INCLUDES )
 
 
 #and install library
-install(TARGETS clucene-core 
-        DESTINATION ${LIB_DESTINATION}  
-        COMPONENT runtime )
+install(TARGETS clucene-core EXPORT CLuceneTargets 
+        DESTINATION ${LIB_DESTINATION}
+        INCLUDES DESTINATION include
+        )
