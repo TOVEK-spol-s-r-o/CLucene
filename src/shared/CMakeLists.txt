@@ -39,19 +39,7 @@ find_package(Threads REQUIRED)
 INCLUDE (CheckPthread)
 INCLUDE (CheckAtomicFunctions)
 
-find_package(ZLIB)
-IF ( ZLIB_FOUND )
-  SET ( EXTRA_LIBS ${EXTRA_LIBS} ${ZLIB_LIBRARY} )
-ELSEIF ( ZLIB_FOUND )
-  MESSAGE( "ZLIB not found, using local: ${clucene-ext_SOURCE_DIR}/zlib" )
-  SET(ZLIB_INCLUDE_DIR ${clucene-ext_SOURCE_DIR}/zlib )
-  SET(ZLIB_LIBRARY ${clucene-ext_BINARY_DIR})
-ENDIF ( ZLIB_FOUND )
-INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} )
-
-find_package(Boost)
-LINK_DIRECTORIES( ${Boost_LIBRARY_DIR} )
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+find_package(ZLIB REQUIRED)
 
 ########################################################################
 # test for headers
@@ -304,27 +292,14 @@ MACRO (GET_SHARED_FILES result)
     	${rel}/CLucene/util/Misc.cpp
       ${rel}/CLucene/util/dirent.cpp
     )
-
-    IF ( NOT ZLIB_FOUND )
-      SET(${result} ${${result}}
-        ${clucene-ext_SOURCE_DIR}/zlib/adler32.c
-        ${clucene-ext_SOURCE_DIR}/zlib/compress.c
-        ${clucene-ext_SOURCE_DIR}/zlib/crc32.c
-        ${clucene-ext_SOURCE_DIR}/zlib/deflate.c
-        ${clucene-ext_SOURCE_DIR}/zlib/gzio.c
-        ${clucene-ext_SOURCE_DIR}/zlib/inffast.c
-        ${clucene-ext_SOURCE_DIR}/zlib/inflate.c
-        ${clucene-ext_SOURCE_DIR}/zlib/inftrees.c
-        ${clucene-ext_SOURCE_DIR}/zlib/trees.c
-        ${clucene-ext_SOURCE_DIR}/zlib/zutil.c
-      )
-    ENDIF ( NOT ZLIB_FOUND )
 ENDMACRO (GET_SHARED_FILES)
 
 GET_SHARED_FILES(clucene_shared_Files ".")
 
 #find our headers
 file(GLOB_RECURSE HEADERS ${clucene-shared_SOURCE_DIR}/*.h)
+
+find_package(Boost 1.72.0 COMPONENTS boost)
 
 add_library(clucene-shared SHARED
 	${clucene_shared_Files} ${HEADERS}
@@ -336,10 +311,7 @@ SET_TARGET_PROPERTIES(clucene-shared PROPERTIES
     SOVERSION ${CLUCENE_SOVERSION}
     COMPILE_DEFINITIONS_DEBUG _DEBUG
 )
-TARGET_LINK_LIBRARIES(clucene-shared ${CMAKE_THREAD_LIBS_INIT})
-IF ( EXTRA_LIBS )
-  TARGET_LINK_LIBRARIES(clucene-shared ${EXTRA_LIBS})
-ENDIF ( EXTRA_LIBS )
+TARGET_LINK_LIBRARIES(clucene-shared ZLIB::ZLIB Boost::boost ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS clucene-shared EXPORT CLuceneTargets 
         DESTINATION ${LIB_DESTINATION} 

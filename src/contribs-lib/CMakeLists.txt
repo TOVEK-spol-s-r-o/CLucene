@@ -86,12 +86,7 @@ SET ( clucene_contrib_extra_libs clucene-core clucene-shared ${EXTRA_LIBS})
 file(GLOB_RECURSE HEADERS ${clucene-contribs-lib_SOURCE_DIR}/*.h)
 
 #add extra capabilities
-find_package(ZLIB)
-IF ( NOT ZLIB_FOUND )
-  MESSAGE ( FATAL "ZLib not found" )
-ENDIF ( NOT ZLIB_FOUND )
-INCLUDE_DIRECTORIES( ${ZLIB_INCLUDE_DIR} )
-SET ( clucene_contrib_extra_libs "${clucene_contrib_extra_libs}" ${ZLIB_LIBRARIES} )
+find_package(ZLIB REQUIRED)
 
 find_package(Iconv)
 #find_package(Strigi)
@@ -108,7 +103,7 @@ INCLUDE_DIRECTORIES( ${clucene_SOURCE_DIR}/src/contribs-lib )
 add_library(clucene-contribs-lib SHARED
 	${clucene_contribs_Files} ${clucene_shared_Files} ${HEADERS}
 )
-TARGET_LINK_LIBRARIES(clucene-contribs-lib ${clucene_contrib_extra_libs})
+TARGET_LINK_LIBRARIES(clucene-contribs-lib ZLIB::ZLIB ${clucene_contrib_extra_libs})
 
 #set properties on the libraries
 SET_TARGET_PROPERTIES(clucene-contribs-lib PROPERTIES
