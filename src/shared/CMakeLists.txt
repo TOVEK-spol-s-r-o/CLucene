@@ -299,7 +299,7 @@ GET_SHARED_FILES(clucene_shared_Files ".")
 #find our headers
 file(GLOB_RECURSE HEADERS ${clucene-shared_SOURCE_DIR}/*.h)
 
-find_package(Boost 1.72.0 COMPONENTS boost)
+find_package(Boost 1.72.0 COMPONENTS boost thread)
 
 add_library(clucene-shared SHARED
 	${clucene_shared_Files} ${HEADERS}
@@ -311,7 +311,7 @@ SET_TARGET_PROPERTIES(clucene-shared PROPERTIES
     SOVERSION ${CLUCENE_SOVERSION}
     COMPILE_DEFINITIONS_DEBUG _DEBUG
 )
-TARGET_LINK_LIBRARIES(clucene-shared ZLIB::ZLIB Boost::boost ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(clucene-shared ZLIB::ZLIB Boost::boost Boost::thread ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS clucene-shared EXPORT CLuceneTargets 
         DESTINATION ${LIB_DESTINATION} 
