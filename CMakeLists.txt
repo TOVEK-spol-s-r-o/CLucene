@@ -1,5 +1,5 @@
 #CMake 2.6+ is recommended to an improved Boost module
-CMAKE_MINIMUM_REQUIRED(VERSION 3.28 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.25 FATAL_ERROR)
 
 PROJECT (clucene)
 
