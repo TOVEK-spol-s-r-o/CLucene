@@ -403,7 +403,7 @@ CL_NS_DEF(index)
 	  SegmentTermEnum* enumerator =  getEnum();
 	  enumerator->seek(
           indexPointers[indexOffset],
-		  (indexOffset * totalIndexInterval) - 1,
+		  ((int64_t) indexOffset * (int64_t)totalIndexInterval) - 1,
           &indexTerms[indexOffset],
 		  &indexInfos[indexOffset]
 	      );

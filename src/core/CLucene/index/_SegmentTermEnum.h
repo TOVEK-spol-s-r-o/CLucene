@@ -87,7 +87,7 @@ public:
 	/**
 	 * Repositions term and termInfo within the enumeration
 	 */
-	void seek(const int64_t pointer, const int32_t p, Term* t, TermInfo* ti);
+	void seek(const int64_t pointer, const int64_t p, Term* t, TermInfo* ti);
 	
 	/**
 	 * Returns a clone of the current termInfo
