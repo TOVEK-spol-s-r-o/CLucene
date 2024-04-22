@@ -118,9 +118,11 @@ int32_t FieldsReader::size() const{
 }
 
 bool FieldsReader::doc(int32_t n, Document& doc, const CL_NS(document)::FieldSelector* fieldSelector) {
-  if ( (n + docStoreOffset) * 8L > indexStream->length() )
-      return false;
-	indexStream->seek((n + docStoreOffset) * 8L);
+    int64_t seekPos = ((int64_t)n + (int64_t)docStoreOffset) * 8L;
+    if (seekPos > indexStream->length())
+        return false;
+	indexStream->seek(seekPos);
+
 	int64_t position = indexStream->readLong();
 	fieldsStream->seek(position);
 
@@ -169,7 +171,7 @@ bool FieldsReader::doc(int32_t n, Document& doc, const CL_NS(document)::FieldSel
 }
 
 CL_NS(store)::IndexInput* FieldsReader::rawDocs(int32_t* lengths, const int32_t startDocID, const int32_t numDocs) {
-	indexStream->seek((docStoreOffset+startDocID) * 8L);
+	indexStream->seek(((int64_t)docStoreOffset + (int64_t)startDocID) * 8L);
 	int64_t startOffset = indexStream->readLong();
 	int64_t lastOffset = startOffset;
 	int32_t count = 0;

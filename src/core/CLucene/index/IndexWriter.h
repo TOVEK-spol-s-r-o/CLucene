@@ -1173,6 +1173,7 @@ protected:
 private:
   void waitForClose();
   void deletePartialSegmentsFile();
+  void finishMerges_LOCKED(bool waitForMerges);
 
   /** Returns true if any merges in pendingMerges or
    *  runningMerges are optimization merges. */

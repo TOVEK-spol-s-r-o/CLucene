@@ -277,7 +277,13 @@ void DocumentsWriter::abort(AbortException* ae) {
     numWaiting = 0;
 
     // Wait for all other threads to finish with DocumentsWriter:
-    pauseAllThreads();
+    // Do not call pauseAllTreads directly because it leads to deadlock due to recursive locking of THIS_LOCK and CONDITION_WAIT, which unlocks THIS_LOCK only once!
+    // pauseAllThreads();
+    pauseThreads++;
+    while (!allThreadsIdle())
+    {
+        CONDITION_WAIT(THIS_LOCK, THIS_WAIT_CONDITION)
+    }
 
     assert (0 == numWaiting);
 

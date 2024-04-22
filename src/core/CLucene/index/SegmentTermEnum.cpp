@@ -242,7 +242,7 @@ CL_NS_DEF(index)
 		return termInfo->docFreq;
 	}
 
-	void SegmentTermEnum::seek(const int64_t pointer, const int32_t p, Term* t, TermInfo* ti) {
+	void SegmentTermEnum::seek(const int64_t pointer, const int64_t p, Term* t, TermInfo* ti) {
 	//Func - Repositions term and termInfo within the enumeration
 	//Pre  - pointer >= 0
 	//       p >= 0 and contains the new position within the enumeration
