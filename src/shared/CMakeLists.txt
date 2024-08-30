@@ -299,7 +299,7 @@ GET_SHARED_FILES(clucene_shared_Files ".")
 #find our headers
 file(GLOB_RECURSE HEADERS ${clucene-shared_SOURCE_DIR}/*.h)
 
-find_package(Boost 1.72.0 COMPONENTS boost thread)
+find_package(Boost 1.86.0 COMPONENTS boost thread)
 
 add_library(clucene-shared SHARED
 	${clucene_shared_Files} ${HEADERS}
