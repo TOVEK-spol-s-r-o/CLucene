@@ -128,4 +128,5 @@ ENDFOREACH(file)
 install(TARGETS clucene-contribs-lib EXPORT CLuceneTargets 
         DESTINATION ${LIB_DESTINATION}  
         COMPONENT runtime )
+install_pdb(clucene-contribs-lib ${LIB_DESTINATION})
 

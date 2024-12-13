@@ -284,3 +284,4 @@ install(TARGETS clucene-core EXPORT CLuceneTargets
         DESTINATION ${LIB_DESTINATION}
         INCLUDES DESTINATION include
         )
+install_pdb(clucene-core ${LIB_DESTINATION})

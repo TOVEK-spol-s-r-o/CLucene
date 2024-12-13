@@ -31,6 +31,8 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0074 NEW) 
   cmake_policy(SET CMP0075 NEW) 
   cmake_policy(SET CMP0077 NEW)
+  cmake_policy(SET CMP0144 NEW)
+  cmake_policy(SET CMP0167 NEW)
 endif(COMMAND cmake_policy)
 
 
@@ -40,12 +42,13 @@ if(WIN32)
 endif(WIN32)
 
 # include specific modules
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 #define options...
 
 Include (CLuceneDocs)
 Include (FindThreads)
+Include (InstallPDB)
 
 IF(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
@@ -198,7 +201,7 @@ install(EXPORT CLuceneTargets
 
 #add uninstall command
 CONFIGURE_FILE(
-  "${CMAKE_MODULE_PATH}/cmake_uninstall.cmake.in"
+  "${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
   

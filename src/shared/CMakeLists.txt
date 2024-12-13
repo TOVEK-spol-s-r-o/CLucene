@@ -316,6 +316,7 @@ TARGET_LINK_LIBRARIES(clucene-shared ZLIB::ZLIB Boost::boost Boost::thread ${CMA
 install(TARGETS clucene-shared EXPORT CLuceneTargets 
         DESTINATION ${LIB_DESTINATION} 
         COMPONENT development )
+install_pdb(clucene-shared ${LIB_DESTINATION})
 
 IF ( BUILD_STATIC_LIBRARIES )
 	add_library(clucene-shared-static STATIC
