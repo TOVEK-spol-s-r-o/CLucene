@@ -370,13 +370,13 @@ public:
    * an IllegalStateException is thrown.
    * @throws IllegalStateException if the term index has already been loaded into memory
    */
-  void setTermInfosIndexDivisor(int32_t indexDivisor);
+  virtual void setTermInfosIndexDivisor(int32_t indexDivisor);
 
   /** <p>For IndexReader implementations that use
    *  TermInfosReader to read terms, this returns the
    *  current indexDivisor.
    *  @see #setTermInfosIndexDivisor */
-  int32_t getTermInfosIndexDivisor();
+  virtual int32_t getTermInfosIndexDivisor();
 
   /**
    * Check whether this IndexReader is still using the
@@ -396,7 +396,7 @@ public:
    * @throws IOException if there is a low-level IO error
    * @throws UnsupportedOperationException unless overridden in subclass
    */
-	virtual bool isCurrent();
+  virtual bool isCurrent();
 
   /**
    * Checks is the index is optimized (if it has a single segment and

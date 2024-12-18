@@ -315,9 +315,9 @@ CL_NS_DEF(index)
 		  return;
 
       try {
-          indexTermsLength = (size_t)indexEnum->size;
+          indexTermsLength = (indexEnum->size % indexDivisor) == 0 ? (size_t) indexEnum->size / indexDivisor : (size_t)indexEnum->size / indexDivisor + 1;
 
-		      //Instantiate an block of Term's,so that each one doesn't have to be new'd
+          //Instantiate an block of Term's,so that each one doesn't have to be new'd
           indexTerms    = new Term[indexTermsLength];
           CND_CONDITION(indexTerms != NULL,"No memory could be allocated for indexTerms");//Check if is indexTerms is a valid array
 
