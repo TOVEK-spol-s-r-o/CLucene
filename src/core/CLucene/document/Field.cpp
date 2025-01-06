@@ -178,17 +178,23 @@ void Field::setConfig(const uint32_t x){
 		if ( x & INDEX_TOKENIZED && x & INDEX_UNTOKENIZED )
 			_CLTHROWA(CL_ERR_IllegalArgument,"it doesn't make sense to have an untokenised and tokenised field");
 
+        if (x & INDEX_TOKENIZED)
+        {
+            newConfig |= INDEX_TOKENIZED;
+            if (x & INDEX_NONORMS)
+                newConfig |= INDEX_NONORMS;
+            index = true;
+        }
+        else if (x & INDEX_UNTOKENIZED)
+        {
+            newConfig |= INDEX_UNTOKENIZED;
+            if (x & INDEX_NONORMS)
+                newConfig |= INDEX_NONORMS;
+            index = true;
+        }
 		if ( x & INDEX_NONORMS ){
 			newConfig |= INDEX_UNTOKENIZED;
 			newConfig |= INDEX_NONORMS;
-			index = true;
-		}
-		 else if ( x & INDEX_TOKENIZED ){
-			newConfig |= INDEX_TOKENIZED;
-			index = true;
-		}
-		else if ( x & INDEX_UNTOKENIZED ){
-			newConfig |= INDEX_UNTOKENIZED;
 			index = true;
 		}
 
