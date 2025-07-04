@@ -456,6 +456,8 @@ const TCHAR* FieldsReader::LazyField::stringValue() {
 
 #ifndef _ASCII
       TCHAR* str = _CL_NEWARRAY(TCHAR, uncompressed.length);
+	  if (!str)
+		  _CLTHROWA(CL_ERR_OutOfMemory, "IndexInput::readString");
       size_t l = lucene_utf8towcs(str, (const char*)uncompressed.values, uncompressed.length);
       str[l] = 0;
 
