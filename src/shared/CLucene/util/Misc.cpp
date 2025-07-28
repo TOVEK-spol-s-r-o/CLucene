@@ -467,12 +467,9 @@ std::string Misc::toString(const bool value){
   return value ? "true" : "false";
 }
 std::string Misc::toString(_LUCENE_THREADID_TYPE value){
-  static int32_t nextindex = 0;
-  static std::map<_LUCENE_THREADID_TYPE, int32_t> ids;
-  if (ids.find(value) == ids.end()) {
-    ids[value] = nextindex++;
-  }
-  return toString(ids[value]);
+  static std::atomic<int32_t> nextindex;
+  static thread_local int32_t id = ++nextindex;
+  return toString(id);
 }
 std::string Misc::toString(const int32_t value){
   char buf[20];
