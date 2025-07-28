@@ -431,6 +431,7 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
   }
 
   FSDirectory::~FSDirectory(){
+      THIS_LOCK.unlock();  // unlock mutex before delete
   }
 
   void FSDirectory::setFileMode(int mode){
@@ -600,7 +601,6 @@ void FSDirectory::FSIndexInput::readInternal(uint8_t* b, const int32_t len) {
 	        Directory* dir = DIRECTORIES.get(getDirName());
 	        if(dir){
 	            DIRECTORIES.remove( getDirName() ); //this will be removed in ~FSDirectory
-	            THIS_LOCK.unlock();  // unlock mutex before delete
 	            _CLDECDELETE(dir);
 	            return;
 	        }
