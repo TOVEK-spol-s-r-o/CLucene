@@ -17,7 +17,8 @@ CL_NS_DEF(search)
 
   SloppyPhraseScorer::SloppyPhraseScorer(Weight* _weight, TermPositions** tps, int32_t* offsets,
 			Similarity* similarity, int32_t _slop, uint8_t* norms):
-      PhraseScorer(_weight,tps,offsets,similarity,norms),slop(_slop),repeats(NULL),repeatsLen(0){
+      PhraseScorer(_weight,tps,offsets,similarity,norms),slop(_slop),repeats(NULL),repeatsLen(0), checkedRepeats(false)
+{
   //Func - Constructor
   //Pre  - tps != NULL 
   //       tpsLength >= 0
@@ -120,7 +121,7 @@ CL_NS_DEF(search)
 				  ++itr;
 				  ++pos;
 			  }
-			  repeats[repeatsLen + 1] = NULL; // NULL terminate the array
+			  repeats[repeatsLen] = NULL; // NULL terminate the array
 		  }
 		  delete m;
 	  }
