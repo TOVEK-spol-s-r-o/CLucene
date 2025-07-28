@@ -47,7 +47,7 @@ CL_NS_DEF(search)
 			CL_NS(util)::Equals::Void<PhrasePositions> >
 			PhrasePositionsMap;
 		static int comparePhrasePositions(const void* x, const void* y){
-			return static_cast<const PhrasePositions*>(y)->offset - static_cast<const PhrasePositions*>(x)->offset;
+			return (*((PhrasePositions**)y))->offset - (*((PhrasePositions**)x))->offset;
 		}
 
 		/**
